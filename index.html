@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World History Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY</title>
+    <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
+        #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
+        
+        #coords-box {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(10px);
+            color: #ffcc00; padding: 12px 20px; border-radius: 12px; z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-family: 'Courier New', monospace; font-size: 14px; pointer-events: none;
+        }
+
+        #ui-panel {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 85%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px);
+            padding: 25px 40px; border-radius: 20px; z-index: 1000; 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #toggle-ui {
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5); color: #ffcc00; 
+            border: 1px solid rgba(255,255,255,0.1); border-bottom: none;
+            border-radius: 10px 10px 0 0; cursor: pointer; padding: 5px 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        #year-input {
+            background: transparent; border: none;
+            font-size: 84px; font-weight: 900; color: #ffcc00; text-align: center;
+            width: 350px; outline: none; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+        }
+
+        .event-detail { font-size: 20px; color: #ffffff; margin: 5px 0 20px 0; font-style: italic; font-weight: 500; }
+        #slider { width: 100%; cursor: pointer; accent-color: #ffcc00; height: 10px; }
+
+        .island-label {
+            background: transparent !important; border: none !important;
+            color: #ffffff; font-weight: bold; font-size: 16px; text-shadow: 2px 2px 4px #000; white-space: nowrap;
+        }
+        
+        .event-marker-label {
+            background: transparent !important;
+            border: none !important;
+            color: #ff0000;
+            font-weight: 900;
+            font-size: 20px; /* Giảm nhẹ để cân đối khi zoom xa */
+            text-shadow: 0 0 10px #fff, 1px 1px 4px #000;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.1;
+            white-space: nowrap;
+            /* Căn chỉnh quan trọng */
+            width: 150px !important; 
+            display: flex;
+            justify-content: center;
+        }
+/* Bảng Wikipedia trượt từ bên phải */
+        #wiki-panel {
+            position: absolute;
+            top: 20px;
+            right: -380px; /* Ẩn mặc định */
+            width: 320px;
+            height: calc(100vh - 180px); /* Không đè lên panel dưới */
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 20px 0 0 20px;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        #wiki-panel.active { right: 0; }
+
+        #wiki-close {
+            float: right;
+            cursor: pointer;
+            color: #ffcc00;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #wiki-content h2 { color: #ffcc00; font-size: 20px; margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        #wiki-content img { width: 100%; border-radius: 10px; margin: 15px 0; border: 1px solid #555; }
+        #wiki-content p { font-size: 14px; line-height: 1.6; color: #ddd; text-align: justify; }
+        /* --- CHÈN VÀO ĐÂY (TRÊN DÒNG 108) --- */
+
+        .alliance-btn-small {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.alliance-btn-small:hover {
+    background: #ffcc00;
+    color: #000;
+    border-color: #ffcc00;
+}
+        .full-hidden { display: none !important; }
+        /* Container tạo hàng ngang */
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Nhóm bên trái gồm Select và các nút Liên minh */
+left-group {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Tăng khoảng cách giữa các ô chọn */
+}
+
+/* Chỉnh lại Select để nó không bay tự do nữa */
+#country-select {
+    position: static !important; /* Buộc nó phải nằm trong hàng */
+    background: rgba(30, 30, 30, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Làm đẹp thanh chọn Liên minh */
+#alliance-select {
+    background: rgba(30, 30, 30, 0.8);
+    color: #ffcc00; /* Chữ màu vàng cho đồng bộ với năm */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 12px;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 160px; /* Độ rộng tối thiểu để không bị nhảy chữ */
+}
+
+#alliance-select option {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+/* Nút liên minh kiểu mới */
+.alliance-btn-modern {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.alliance-btn-modern:hover, .alliance-btn-modern.active {
+    background: #ffcc00;
+    color: #000;
+    border-color: #ffcc00;
+}
+
+/* Chỉnh lại nút chụp ảnh */
+#screenshot-btn {
+    position: static !important; /* Buộc nó phải nằm trong hàng */
+    background: #ffcc00;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #000;
+}
+    </style>
+</head>
+<body> 
+    <div id="map"></div>
+    <div id="coords-box">LAT: 0.0000 | LNG: 0.0000</div>
+<div id="wiki-panel">
+        <span id="wiki-close">&times;</span>
+        <div id="wiki-content">
+            <h2 id="wiki-title">Sự kiện</h2>
+            <div id="wiki-body">Đang lấy dữ liệu...</div>
+        </div>
+    </div>
+    <div id="ui-panel">
+    <button id="toggle-ui">▼</button>
+
+    <div class="header-row">
+    <div class="left-group">
+        <select id="country-select">
+            <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam (Vietnam)</option>
+            <option value="germany">Cộng Hoà Liên Bang Đức (Germany)</option>
+            <option value="china">Liên Minh Phát Xít Trung Quốc (China)</option>
+            <option value="cuba">Cộng Hoà Cuba (Cuba)</option>
+            <option value="russia">Liên Bang Nga (Russia)</option>
+            <option value="usa">Hoa Kỳ (USA)</option>
+            <option value="france">Cộng Hoà Pháp (France)</option>
+        </select>
+
+        <select id="alliance-select" onchange="flyToRegion(this.value)">
+            <option value="" disabled selected>🌐 Chọn Liên minh</option>
+            <option value="asean">🌏 Hiệp hội ASEAN</option>
+            <option value="eu">🇪🇺 Liên minh Châu Âu (EU)</option>
+            <option value="nato">🛡️ Khối quân sự NATO-OTAN</option>
+            <option value="mena">🕌 Khu vực MENA</option>
+            <option value="brics">💰 Khối BRICS</option>
+            <option value="g7">🏛️ Nhóm G7</option>
+            <option value="african_union">🐘 Liên minh Châu Phi (AU)</option>
+        </select>
+    </div>
+
+    <button id="screenshot-btn">📸 CHỤP ẢNH</button>
+</div>
+
+    <input type="number" id="year-input" value="1784">
+    <div class="event-detail" id="event-val">Chuẩn bị lực lượng Tây Sơn</div>
+    <input type="range" id="slider" min="1784" max="2025" value="1784">
+</div>
+
+    <div style="color: #666; font-size: 11px; margin-top: 10px;">HỆ THỐNG ĐỊA LÝ-LỊCH SỬ-THIÊN VĂN - ATHEMIANARTORY</div>
+</div>
+
+    <script>
+        const historyData = {
+            1784: "Chuẩn bị lực lượng Tây Sơn",
+            1785: "Chiến thắng Rạch Gầm - Xoài Mút",
+            1887: "Thành lập Liên bang Đông Dương", 
+            1930: "Thành lập Đảng Cộng sản Việt Nam",
+            1945: "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9",
+            1954: "Hiệp định Genève - Chia cắt Việt Nam",
+            1973: "Hiệp định Paris - Kết thúc chiến tranh Việt Nam",
+            1975: "Giải phóng miền Nam - Thống nhất đất nước",
+            1979: "Chiến tranh biên giới Việt - Trung",
+            1988: "Trận chiến Gạc Ma",
+            1995: "Gia nhập ASEAN",
+            2000: "Gia nhập WTO",
+            2025: "Kỷ niệm 50 năm ngày Thống nhất đất nước"
+        };
+
+const specialEvents = {
+    1785: { pos: [10.345, 106.250], text: "TRẬN CHIẾN<br>RẠCH GẦM XOÀI MÚT<br>⚔️" },
+    1979: [
+        { pos: [22.82, 104.85], text: "HÀ GIANG ⚔️" },
+        { pos: [22.48, 103.97], text: "LÀO CAI ⚔️" },
+        { pos: [22.67, 106.25], text: "CAO BẰNG ⚔️" },
+        { pos: [21.85, 106.75], text: "LẠNG SƠN ⚔️" },
+        { pos: [21.54, 107.97], text: "MÓNG CÁI ⚔️" }
+    ], 
+    1988: { pos: [8.814, 114.28], text: "TRẬN CHIẾN<br>GẠC MA<br>⚔️" }
+    
+};
+
+        const countryCoords = {
+            "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
+            "vietnam": { center: [16.0, 108.0], zoom: 6, adminName: "Vietnam" },
+            "china": { center: [35.0, 105.0], zoom: 4.5, adminName: "China" },
+            "cuba": { center: [21.5217, -77.7812], zoom: 7, adminName: "Cuba" },
+            "russia": { center: [61.524, 105.318], zoom: 3, adminName: "Russia" },
+            "usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
+            "france": { center: [46.2276, 2.2137], zoom: 6, adminName: "France" }
+        };
+
+        var map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true }).setView([16.0, 108.0], 5); 
+
+        L.tileLayer('https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=DTclk8hQeqS7po0Jyfmi', { maxZoom: 20 }).addTo(map);
+
+        map.on('mousemove', function(e) {
+            document.getElementById('coords-box').innerHTML = `LAT: ${e.latlng.lat.toFixed(4)} | LNG: ${e.latlng.lng.toFixed(4)}`;
+        });
+
+        const islandMarkers = [
+            L.marker([16.5, 112.0], { icon: L.divIcon({ className: 'island-label', html: 'Hoàng Sa (VN)' }) }),
+            L.marker([10.0, 114.5], { icon: L.divIcon({ className: 'island-label', html: 'Trường Sa (VN)' }) }),
+            L.marker([10.2, 103.9], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quốc (VN)' }) })
+        ];
+
+        function updateLabels() {
+            const z = map.getZoom();
+            islandMarkers.forEach(m => {
+                if (z < 4) { if (map.hasLayer(m)) map.removeLayer(m); }
+                else { if (!map.hasLayer(m)) m.addTo(map); }
+            });
+        }
+
+        let geojsonLayer;
+        let activeEventMarker;
+        let worldDataCache = null;
+
+        // Tải dữ liệu biên giới từ nguồn tin cậy
+        async function fetchBorders() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson');
+                worldDataCache = await response.json();
+                renderBorders(document.getElementById('year-input').value);
+            } catch (err) {
+                console.warn("Lỗi fetch biên giới. Hãy kiểm tra kết nối internet.");
+            }
+        }
+
+        function renderBorders(year) {
+    if (!worldDataCache) return;
+    if (geojsonLayer) map.removeLayer(geojsonLayer);
+
+    const selectedCountry = document.getElementById('country-select').value;
+    const targetAdmin = countryCoords[selectedCountry].adminName;
+
+    geojsonLayer = L.geoJSON(worldDataCache, {
+        style: (feature) => {
+            const name = feature.properties.ADMIN || feature.properties.name || "";
+            let isHighlighted = false;
+
+            // Ưu tiên 1: Nếu đang chọn một khối (ASEAN, EU...)
+            if (activeAlliance && activeAlliance.includes(name)) {
+                isHighlighted = true;
+            } 
+            // Ưu tiên 2: Nếu chọn thủ công từng nước
+            else {
+                if (selectedCountry === "vietnam") {
+                    if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
+                        isHighlighted = true;
+                    }
+                } else {
+                    // So sánh tên nước trong GeoJSON với adminName trong countryCoords
+                    if (name === targetAdmin) isHighlighted = true;
+                }
+            }
+
+            return isHighlighted ? {
+                color: "#ff0000",
+                weight: 4,
+                fillColor: "#ff0000",
+                fillOpacity: 0.2,
+                interactive: true
+            } : {
+                color: "rgba(255, 255, 255, 0.1)",
+                weight: 1,
+                fillOpacity: 0,
+                interactive: false
+            };
+        }
+    }).addTo(map);
+}
+
+        // 1. Hàm lấy dữ liệu tự động từ Wikipedia
+        async function fetchWiki(eventName) {
+            const panel = document.getElementById('wiki-panel');
+            const body = document.getElementById('wiki-body');
+            const title = document.getElementById('wiki-title');
+            
+            // Danh sách ánh xạ tên sự kiện sang tiêu đề Wikipedia chuẩn
+            const wikiMap = {
+                "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9": "Tuyên ngôn độc lập Việt Nam Dân chủ Cộng hòa",
+                "Chiến thắng Rạch Gầm - Xoài Mút": "Trận Rạch Gầm – Xoài Mút",
+                "Hiệp định Genève - Chia cắt Việt Nam": "Hiệp định Genève (1954)",
+                "Giải phóng miền Nam - Thống nhất đất nước": "Sự kiện 30 tháng 4 năm 1975",
+                "Trận chiến Gạc Ma": "Hải chiến Gạc Ma 1988",
+                "Chiến tranh biên giới Việt - Trung": "Chiến tranh biên giới Việt–Trung, 1979"
+            };
+            
+            const searchName = wikiMap[eventName] || eventName;
+            title.innerText = eventName;
+            panel.classList.add('active'); // Trượt bảng ra
+            body.innerHTML = "<div style='color:#ffcc00'>Đang kết nối thư viện Wikipedia...</div>";
+
+            try {
+                const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchName)}`);
+                const data = await response.json();
+                
+                if (data.extract) {
+                    body.innerHTML = `
+                        ${data.originalimage ? `<img src="${data.originalimage.source}" alt="Event Image">` : ''}
+                        <p>${data.extract}</p>
+                        <hr style="border:0; border-top:1px solid #444; margin:15px 0;">
+                        <a href="${data.content_urls.desktop.page}" target="_blank" style="color:#ffcc00; text-decoration:none; font-weight:bold; font-size:13px;">ĐỌC BÀI CHI TIẾT TRÊN WIKIPEDIA →</a>
+                    `;
+                } else {
+                    body.innerHTML = "<p>Không tìm thấy tóm tắt sự kiện. Vui lòng kiểm tra kết nối hoặc tên sự kiện.</p>";
+                }
+            } catch (error) {
+                body.innerHTML = "<p style='color:red'>Lỗi tải dữ liệu từ Wikipedia.</p>";
+            }
+        }
+
+        // 2. Nút đóng bảng thủ công
+        document.getElementById('wiki-close').onclick = () => {
+            document.getElementById('wiki-panel').classList.remove('active');
+        };
+
+        // 3. Hàm cập nhật hệ thống (Đã tích hợp Wiki)
+        let flyTimer;
+        function updateSystem(val, manualMode = false) {
+            if (manualMode) {
+        activeAlliance = null; // Reset khối khi người dùng chọn thủ công một quốc gia cụ thể
+    }
+            let year = parseInt(val);
+            if (isNaN(year)) year = 1784;
+            
+            document.getElementById('year-input').value = year;
+            document.getElementById('slider').value = year;
+            
+            const eventName = historyData[year];
+            document.getElementById('event-val').innerHTML = eventName ? eventName : "...";
+
+            renderBorders(year);
+
+            // KIỂM TRA ĐỂ MỞ/ĐÓNG BẢNG WIKIPEDIA
+            if (eventName && eventName !== "...") {
+                fetchWiki(eventName);
+            } else {
+                document.getElementById('wiki-panel').classList.remove('active');
+            }
+
+            // Logic di chuyển camera (flyTo)
+            clearTimeout(flyTimer);
+            flyTimer = setTimeout(() => {
+                const mode = document.getElementById('country-select').value;
+                if (manualMode) {
+                    map.flyTo(countryCoords[mode].center, countryCoords[mode].zoom);
+                } else if (mode === "vietnam") {
+                    if (year === 1785) map.flyTo([10.342, 106.250], 12);
+                    else if (year >= 1887 && year < 1975) map.flyTo([15.5, 107.0], 5);
+                    else if (year === 1979) map.flyTo([22.5, 106.0], 7);
+                    else if (year === 1988) map.flyTo([8.814, 114.28], 10);
+                }
+            }, 250);
+        }
+
+        map.on('zoomend', () => {
+            updateLabels();
+            renderBorders(document.getElementById('year-input').value);
+        });
+
+        document.getElementById('slider').oninput = (e) => updateSystem(e.target.value);
+        document.getElementById('year-input').oninput = (e) => updateSystem(e.target.value);
+        document.getElementById('country-select').onchange = () => updateSystem(document.getElementById('year-input').value, true);
+
+        let isPanelHidden = false;
+        document.getElementById('toggle-ui').onclick = function() {
+            isPanelHidden = !isPanelHidden;
+            document.getElementById('ui-panel').style.transform = isPanelHidden ? 'translateX(-50%) translateY(85%)' : 'translateX(-50%) translateY(0)';
+            this.innerHTML = isPanelHidden ? '▲' : '▼';
+        };
+
+        document.addEventListener('keydown', e => {
+            if (e.key.toLowerCase() === 'h') {
+                document.getElementById('ui-panel').classList.toggle('full-hidden');
+                document.getElementById('coords-box').classList.toggle('full-hidden');
+            }
+        });
+
+
+        document.getElementById('screenshot-btn').onclick = function() {
+    const btn = this;
+    const panel = document.getElementById('ui-panel');
+    const coords = document.getElementById('coords-box');
+
+    // 1. Tạm ẩn nút bấm và tọa độ để ảnh chụp sạch sẽ, chuyên nghiệp
+    btn.style.display = 'none';
+    coords.style.opacity = '0'; 
+
+    // 2. Thực hiện chụp màn hình
+    html2canvas(document.body, {
+        useCORS: true, 
+        backgroundColor: "#000",
+        scale: 2 
+    }).then(canvas => {
+        // 3. Tạo link tải ảnh tự động
+        const link = document.createElement('a');
+        const year = document.getElementById('year-input').value;
+        link.download = `BanDo_LichSu_${year}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        
+        // 4. Hiện lại nút bấm và tọa độ sau khi chụp xong
+        btn.style.display = 'block';
+        coords.style.opacity = '1';
+    });
+};// Danh sách tọa độ các khu vực
+        const regionCoords = {
+    'asean': {
+        center: [10.8, 110.0], zoom: 4,
+
+        countries: ["Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"]
+    },
+    'eu': {
+        center: [50.0, 10.0], zoom: 4,
+        countries: ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden"]
+
+    },
+
+            'nato': { 
+                center: [45.0, -20.0], zoom: 3, 
+                countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"
+]
+
+            },
+            'mena': { 
+                center: [25.0, 30.0], zoom: 4, 
+                countries: [ "Algeria", "Bahrain", "Egypt", "Iran", "Iraq", "Israel", "Jordan", "Kuwait", "Lebanon", "Libya", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Syria", "Tunisia","United Arab Emirates","Yemen","Mauritania","Sudan"]
+            },
+            'brics': {
+        center: [0.0, 20.0], zoom: 2,
+        countries: ["Brazil", "Russia", "India", "China", "South Africa", "Egypt", "Ethiopia", "Iran", "United Arab Emirates"]
+    },
+    'g7': {
+        center: [45.0, -10.0], zoom: 3,
+        countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"]
+    },
+    'african_union': {
+        center: [1.0, 20.0], zoom: 3,
+        countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cameroon", "Cape Verde", "Central African Republic", "Chad", "Comoros", "Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"]
+    },
+
+};
+            
+        
+
+        let activeAlliance = null; // Biến lưu khối đang được chọn
+
+        // Hàm thực hiện hiệu ứng bay
+        function flyToRegion(region) {
+    if (!region) return; // Nếu chọn dòng tiêu đề thì không làm gì cả
+
+    const data = regionCoords[region];
+    if (data) {
+        // 1. Cập nhật danh sách các nước trong khối để bôi đỏ
+        activeAlliance = data.countries; 
+        
+        // 2. Vẽ lại biên giới ngay lập tức để thấy màu đỏ
+        renderBorders(document.getElementById('year-input').value);
+
+        // 3. Thực hiện hiệu ứng bay
+        map.flyTo(data.center, data.zoom, {
+            animate: true,
+            duration: 2 
+        });
+    }
+}
+        fetchBorders();
+    </script>
+</body>
+</html>
