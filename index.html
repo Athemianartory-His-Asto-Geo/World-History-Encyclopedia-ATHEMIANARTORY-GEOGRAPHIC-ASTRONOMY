@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <title>World History Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY</title>
     <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -9,6 +12,61 @@
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
         #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
+        
+    /* Chỉnh màu cho ô Select2 giống giao diện của bạn */
+.select2-container--default .select2-selection--single {
+    background-color: rgba(30, 30, 30, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    height: 38px !important;
+    color: white !important;
+}
+
+#country-select {
+    background: rgba(30, 30, 30, 0.8);
+    color: #ffcc00;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 12px;
+    border-radius: 8px;
+    outline: none;
+    width: 250px;
+}
+#country-select::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #ffcc00 !important; /* Chữ màu vàng */
+    line-height: 35px !important;
+    font-weight: bold;
+}
+
+.select2-dropdown {
+    background-color: #1a1a1a !important;
+    color: white !important;
+    border: 1px solid #ffcc00 !important;
+}
+
+.select2-search__field {
+    background-color: #333 !important;
+    color: white !important;
+    border: 1px solid #444 !important;
+}
+
+.select2-results__option--highlighted[aria-selected] {
+    background-color: #ffcc00 !important;
+    color: black !important;
+}
+        .system-credit {
+            color: #ffffff; 
+            font-size: 11px; 
+            margin-top: 15px; 
+            line-height: 1.5; 
+            font-weight: 500; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+            letter-spacing: 0.5px; 
+            opacity: 1 !important; 
+        }
         
         #coords-box {
             position: absolute; top: 20px; right: 20px;
@@ -19,11 +77,11 @@
         }
 
         #ui-panel {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 85%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px);
-            padding: 25px 40px; border-radius: 20px; z-index: 1000; 
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            width: 85%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
+            padding: 10px 30px; border-radius: 15px; z-index: 1000; 
             border: 1px solid rgba(255, 255, 255, 0.15);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -36,10 +94,13 @@
         }
 
         #year-input {
-            background: transparent; border: none;
-            font-size: 84px; font-weight: 900; color: #ffcc00; text-align: center;
-            width: 350px; outline: none; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-        }
+    background: transparent; border: none;
+    font-size: 84px; font-weight: 900; color: #ffcc00; text-align: center;
+    width: 350px; outline: none; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+    display: block; margin: 0 auto; /* Căn giữa số năm */
+}
+
+.system-credit { color: #ffffff !important; opacity: 1 !important; }
 
         .event-detail { font-size: 20px; color: #ffffff; margin: 5px 0 20px 0; font-style: italic; font-weight: 500; }
         #slider { width: 100%; cursor: pointer; accent-color: #ffcc00; height: 10px; }
@@ -97,7 +158,6 @@
         #wiki-content h2 { color: #ffcc00; font-size: 20px; margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; }
         #wiki-content img { width: 100%; border-radius: 10px; margin: 15px 0; border: 1px solid #555; }
         #wiki-content p { font-size: 14px; line-height: 1.6; color: #ddd; text-align: justify; }
-        /* --- CHÈN VÀO ĐÂY (TRÊN DÒNG 108) --- */
 
         .alliance-btn-small {
     background: rgba(255, 255, 255, 0.1);
@@ -109,7 +169,7 @@
     font-size: 11px;
     font-weight: bold;
     transition: all 0.3s;
-}
+};
 
 .alliance-btn-small:hover {
     background: #ffcc00;
@@ -206,60 +266,75 @@ left-group {
             <div id="wiki-body">Đang lấy dữ liệu...</div>
         </div>
     </div>
+
+
+
     <div id="ui-panel">
-    <button id="toggle-ui">▼</button>
+        <button id="toggle-ui">▼</button>
 
-    <div class="header-row">
-    <div class="left-group">
-        <select id="country-select">
-            <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam (Vietnam)</option>
-            <option value="germany">Cộng Hoà Liên Bang Đức (Germany)</option>
-            <option value="china">Liên Minh Phát Xít Trung Quốc (China)</option>
-            <option value="cuba">Cộng Hoà Cuba (Cuba)</option>
-            <option value="russia">Liên Bang Nga (Russia)</option>
-            <option value="usa">Hoa Kỳ (USA)</option>
-            <option value="france">Cộng Hoà Pháp (France)</option>
-        </select>
+        <div class="header-row">
+            <div class="left-group">
+                <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
+                <datalist id="country-list">
+                    <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
+                    <option value="germany">Cộng Hoà Liên Bang Đức</option>
+                    <option value="china">Trung Quốc</option>
+                    <option value="cuba">Cộng Hoà Cuba</option>
+                    <option value="russia">Liên Bang Nga</option>
+                    <option value="usa">Hợp Chúng Quốc Hoa Kỳ</option>
+                    <option value="france">Công Hoà Pháp</option>
+                </datalist>
 
-        <select id="alliance-select" onchange="flyToRegion(this.value)">
-            <option value="" disabled selected>🌐 Chọn Liên minh</option>
-            <option value="asean">🌏 Hiệp hội ASEAN</option>
-            <option value="eu">🇪🇺 Liên minh Châu Âu (EU)</option>
-            <option value="nato">🛡️ Khối quân sự NATO-OTAN</option>
-            <option value="mena">🕌 Khu vực MENA</option>
-            <option value="brics">💰 Khối BRICS</option>
-            <option value="g7">🏛️ Nhóm G7</option>
-            <option value="african_union">🐘 Liên minh Châu Phi (AU)</option>
-        </select>
+                <select id="alliance-select" onchange="flyToRegion(this.value)">
+                    <option value="" disabled selected>🌐 Chọn Liên minh</option>
+                    <option value="asean">ASEAN</option>
+                    <option value="eu">EUROPEAN UNION (EU)</option>
+                    <option value="nato">NATO-OTAN</option>
+                    <option value="brics">BRICS</option>
+                    <option value="african_union">Liên minh Châu Phi (AU)</option>
+                </select>
+            </div>
+            <button id="screenshot-btn">📸 CHỤP ẢNH</button>
+        </div>
+
+        <input type="number" id="year-input" value="1784">
+        <input type="range" id="slider" min="1784" max="2025" value="1784">
+        
+        <div class="system-credit">
+            HỆ THỐNG ĐỊA LÝ-LỊCH SỬ-THIÊN VĂN - ATHEMIANARTORY<br>
+            WORLD HISTORY ENCYCLOPEDIA
+        </div>
     </div>
 
-    <button id="screenshot-btn">📸 CHỤP ẢNH</button>
-</div>
-
-    <input type="number" id="year-input" value="1784">
-    <div class="event-detail" id="event-val">Chuẩn bị lực lượng Tây Sơn</div>
-    <input type="range" id="slider" min="1784" max="2025" value="1784">
-</div>
-
-    <div style="color: #666; font-size: 11px; margin-top: 10px;">HỆ THỐNG ĐỊA LÝ-LỊCH SỬ-THIÊN VĂN - ATHEMIANARTORY</div>
-</div>
-
     <script>
+        function showHistoryByCountry(countryName) {
+    // 1. Xóa tất cả các Marker (dấu mốc) cũ trên bản đồ
+    clearAllMarkers(); 
+
+    // 2. Lọc dữ liệu lịch sử chỉ lấy các sự kiện của countryName
+    const countryHistory = allEvents.filter(event => event.country === countryName);
+
+    // 3. Hiển thị các sự kiện đã lọc lên bản đồ
+    countryHistory.forEach(event => {
+        addMarker(event.coords, event.description);
+    });
+
+    // 4. (Tùy chọn) Tự động phóng to vào quốc gia đó
+    const coords = countryCoords[countryName];
+    map.flyTo(coords, 5); 
+}
         const historyData = {
-            1784: "Chuẩn bị lực lượng Tây Sơn",
-            1785: "Chiến thắng Rạch Gầm - Xoài Mút",
-            1887: "Thành lập Liên bang Đông Dương", 
-            1930: "Thành lập Đảng Cộng sản Việt Nam",
-            1945: "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9",
-            1954: "Hiệp định Genève - Chia cắt Việt Nam",
-            1973: "Hiệp định Paris - Kết thúc chiến tranh Việt Nam",
-            1975: "Giải phóng miền Nam - Thống nhất đất nước",
-            1979: "Chiến tranh biên giới Việt - Trung",
-            1988: "Trận chiến Gạc Ma",
-            1995: "Gia nhập ASEAN",
-            2000: "Gia nhập WTO",
-            2025: "Kỷ niệm 50 năm ngày Thống nhất đất nước"
-        };
+    1784: { text: "Chuẩn bị lực lượng Tây Sơn", country: "vietnam" },
+    1785: { text: "Chiến thắng Rạch Gầm - Xoài Mút", country: "vietnam" },
+    1887: { text: "Thành lập Liên bang Đông Dương", country: "vietnam" },
+    1930: { text: "Thành lập Đảng Cộng sản Việt Nam", country: "vietnam" },
+    1945: { text: "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9", country: "vietnam" },
+    1954: { text: "Hiệp định Genève - Chia cắt Việt Nam (Vĩ tuyến 17)", country: "vietnam" },
+    1973: { text: "Hiệp định Paris - Kết thúc chiến tranh Việt Nam", country: "vietnam" },
+    1975: { text: "Giải phóng miền Nam - Thống nhất đất nước", country: "vietnam" },
+    1989: { text: "Bức tường Berlin sụp đổ", country: "germany" }, 
+    2025: { text: "Kỷ niệm 50 năm ngày Thống nhất đất nước", country: "vietnam" }
+};
 
 const specialEvents = {
     1785: { pos: [10.345, 106.250], text: "TRẬN CHIẾN<br>RẠCH GẦM XOÀI MÚT<br>⚔️" },
@@ -275,6 +350,7 @@ const specialEvents = {
 };
 
         const countryCoords = {
+            
             "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
             "vietnam": { center: [16.0, 108.0], zoom: 6, adminName: "Vietnam" },
             "china": { center: [35.0, 105.0], zoom: 4.5, adminName: "China" },
@@ -322,48 +398,69 @@ const specialEvents = {
         }
 
         function renderBorders(year) {
-    if (!worldDataCache) return;
-    if (geojsonLayer) map.removeLayer(geojsonLayer);
+            if (!worldDataCache) return;
+            if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-    const selectedCountry = document.getElementById('country-select').value;
-    const targetAdmin = countryCoords[selectedCountry].adminName;
+            const selectedCountry = document.getElementById('country-select').value;
+            const targetAdmin = countryCoords[selectedCountry].adminName;
 
-    geojsonLayer = L.geoJSON(worldDataCache, {
-        style: (feature) => {
-            const name = feature.properties.ADMIN || feature.properties.name || "";
-            let isHighlighted = false;
+            geojsonLayer = L.geoJSON(worldDataCache, {
+                style: (feature) => {
+                    const name = feature.properties.ADMIN || feature.properties.name || "";
+                    let isHighlighted = false;
 
-            // Ưu tiên 1: Nếu đang chọn một khối (ASEAN, EU...)
-            if (activeAlliance && activeAlliance.includes(name)) {
-                isHighlighted = true;
-            } 
-            // Ưu tiên 2: Nếu chọn thủ công từng nước
-            else {
-                if (selectedCountry === "vietnam") {
-                    if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
+                    if (activeAlliance && activeAlliance.includes(name)) {
                         isHighlighted = true;
+                    } else {
+                        if (selectedCountry === "vietnam") {
+                            if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
+                                isHighlighted = true;
+                            }
+                        } else {
+                            if (name === targetAdmin) isHighlighted = true;
+                        }
                     }
-                } else {
-                    // So sánh tên nước trong GeoJSON với adminName trong countryCoords
-                    if (name === targetAdmin) isHighlighted = true;
-                }
-            }
 
-            return isHighlighted ? {
-                color: "#ff0000",
-                weight: 4,
-                fillColor: "#ff0000",
-                fillOpacity: 0.2,
-                interactive: true
-            } : {
-                color: "rgba(255, 255, 255, 0.1)",
-                weight: 1,
-                fillOpacity: 0,
-                interactive: false
-            };
+                    return isHighlighted ? {
+                        color: "#ff0000", weight: 3, fillColor: "#ff0000", fillOpacity: 0.15, interactive: true
+                    } : {
+                        color: "rgba(255, 255, 255, 0.1)", weight: 1, fillOpacity: 0, interactive: false
+                    };
+                }
+            }).addTo(map);
+
+            geojsonLayer.bringToBack();
+
+            // SỬA LỖI VĨ TUYẾN 17 TẠI ĐÂY
+            if (year >= 1954 && year < 1975 && selectedCountry === "vietnam") {
+                // 1. Vẽ đường chia cắt
+                const line17 = L.polyline([[17.0, 106.0], [17.0, 108.5]], {
+                    color: '#ffcc00', weight: 4, dashArray: '8, 8'
+                }).addTo(map);
+
+                // 2. Nhãn Miền Bắc (Sửa tên biến không dấu)
+                const labelNorth = L.marker([18.2, 105.8], { 
+                    icon: L.divIcon({ 
+                        className: 'island-label', 
+                        html: '<div class="dmz-label" style="color:#00ff00">VNDCCH (MIỀN BẮC)</div>' 
+                    }) 
+                }).addTo(map);
+
+                // 3. Nhãn Miền Nam
+                const labelSouth = L.marker([15.8, 107.5], { 
+                    icon: L.divIcon({ 
+                        className: 'island-label', 
+                        html: '<div class="dmz-label" style="color:#ffff00">VNCH (MIỀN NAM)</div>' 
+                    }) 
+                }).addTo(map);
+
+                // Gom vào layer để tự xóa khi chuyển năm
+                geojsonLayer.addLayer(line17);
+                geojsonLayer.addLayer(labelNorth);
+                geojsonLayer.addLayer(labelSouth);
+            }
         }
-    }).addTo(map);
-}
+
 
         // 1. Hàm lấy dữ liệu tự động từ Wikipedia
         async function fetchWiki(eventName) {
@@ -412,29 +509,41 @@ const specialEvents = {
 
         // 3. Hàm cập nhật hệ thống (Đã tích hợp Wiki)
         let flyTimer;
+        
         function updateSystem(val, manualMode = false) {
             if (manualMode) {
-        activeAlliance = null; // Reset khối khi người dùng chọn thủ công một quốc gia cụ thể
-    }
+                activeAlliance = null; 
+            }
             let year = parseInt(val);
             if (isNaN(year)) year = 1784;
             
             document.getElementById('year-input').value = year;
             document.getElementById('slider').value = year;
             
-            const eventName = historyData[year];
-            document.getElementById('event-val').innerHTML = eventName ? eventName : "...";
+            // --- ĐOẠN SỬA ĐỂ LỌC THEO NƯỚC ---
+            const selectedCountry = document.getElementById('country-select').value;
+            const dataYear = historyData[year];
+            
+            let eventName = "...";
+            
+            // Kiểm tra: Nếu có dữ liệu năm đó VÀ nước của sự kiện trùng với nước đang chọn trên bảng điều khiển
+            if (dataYear && dataYear.country === selectedCountry) {
+                eventName = dataYear.text;
+            }
+            // --------------------------------
+
+            document.getElementById('event-val').innerHTML = eventName;
 
             renderBorders(year);
 
-            // KIỂM TRA ĐỂ MỞ/ĐÓNG BẢNG WIKIPEDIA
-            if (eventName && eventName !== "...") {
+            // Chỉ mở Wiki nếu sự kiện đó thuộc về nước đang chọn
+            if (eventName !== "...") {
                 fetchWiki(eventName);
             } else {
                 document.getElementById('wiki-panel').classList.remove('active');
             }
 
-            // Logic di chuyển camera (flyTo)
+            // Logic di chuyển camera
             clearTimeout(flyTimer);
             flyTimer = setTimeout(() => {
                 const mode = document.getElementById('country-select').value;
@@ -560,7 +669,12 @@ const specialEvents = {
         });
     }
 }
-        fetchBorders();
+        fetchBorders(); 
+document.getElementById('country-select').addEventListener('change', function(e) {
+    updateSystem(document.getElementById('year-input').value, true);
+});
     </script>
+
+
 </body>
 </html>
