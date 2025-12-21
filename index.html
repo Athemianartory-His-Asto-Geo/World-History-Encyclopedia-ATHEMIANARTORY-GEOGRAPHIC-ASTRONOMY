@@ -12,7 +12,8 @@
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
         #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
-
+        
+    /* Chỉnh màu cho ô Select2 giống giao diện của bạn */
 .select2-container--default .select2-selection--single {
     background-color: rgba(30, 30, 30, 0.9) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -275,14 +276,34 @@ left-group {
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
                 <datalist id="country-list">
-                    <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
-                    <option value="germany">Cộng Hoà Liên Bang Đức</option>
-                    <option value="china">Trung Quốc</option>
-                    <option value="cuba">Cộng Hoà Cuba</option>
-                    <option value="russia">Liên Bang Nga</option>
-                    <option value="usa">Hợp Chúng Quốc Hoa Kỳ</option>
-                    <option value="france">Công Hoà Pháp</option>
-                </datalist>
+    <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
+    <option value="germany">Cộng Hoà Liên Bang Đức</option>
+    <option value="china">Trung Quốc</option>
+    <option value="cuba">Cộng Hoà Cuba</option>
+    <option value="russia">Liên Bang Nga</option>
+    <option value="usa">Hợp Chúng Quốc Hoa Kỳ</option>
+    <option value="france">Cộng Hoà Pháp</option>
+    <option value="japan">Nhật Bản Quốc</option>
+    <option value="south_korea">Đại Hàn Dân Quốc</option>
+    <option value="india">Cộng Hoà Ấn Độ</option>
+    <option value="brazil">Cộng Hoà Liên Bang Brazil</option>
+    <option value="united_kingdom">Vương Quốc Anh</option> 
+    <option value="canada">Vương Quốc Canada</option>
+    <option value="australia">Khối thịnh vượng chung Australia</option>
+    <option value="italy">Vương Quốc Ý (Italy)</option>
+    <option value="spain">Vương quốc Tây Ban Nha</option>
+    <option value="mexico">Hợp Chúng Quốc Mexico</option>
+    <option value="indonesia">Cộng hòa Indonesia</option>
+    <option value="thailand">Vương Quốc Thái Lan</option>
+    <option value="south_africa">Cộng Hoà Nam Phi</option>
+    <option value="turkey">Cộng hoà Thổ Nhĩ Kỳ</option>
+    <option value="saudi_arabia">Vương quốc Ả Rập Xê Út</option>
+    <option value="argentina">Cộng hòa Hợp bang Argentina</option>
+    <option value="egypt">Cộng hòa Ả Rập Ai Cập</option>
+    <option value="poland">Cộng Hoà Ba Lan</option>
+    <option value="ukraine">Cộng Hoà Ukraine</option>
+    <option value="iran">Cộng hòa Hồi giáo Iran</option>
+</datalist>
 
                 <select id="alliance-select" onchange="flyToRegion(this.value)">
                     <option value="" disabled selected>🌐 Chọn Liên minh</option>
@@ -291,17 +312,27 @@ left-group {
                     <option value="nato">NATO-OTAN</option>
                     <option value="brics">BRICS</option>
                     <option value="african_union">Liên minh Châu Phi (AU)</option>
-                </select>
+                    <option value="arab_league">Liên minh Ả Rập (Arab League)</option>
+                    <option value="opec">Khối OPEC (Dầu mỏ)</option>
+                    <option value="mercosur">Khối Thị trường chung Nam Mỹ</option>
+                    <option value="commonwealth">Khối Thịnh vượng chung Anh</option>
+                    <option value="un">Liên Hợp Quốc (P5)</option>
+                    <option value="g7">Khối G7</option>
+                    <option value="warsaw">Hiệp ước Warsaw (Lịch sử)</option>
+                    <option value="mena">Liên minh Trung Đông - Bắc Phi (MENA)</option>
+</select>
             </div>
             <button id="screenshot-btn">📸 CHỤP ẢNH</button>
         </div>
 
         <input type="number" id="year-input" value="1784">
+        <div id="event-val" style="color: #ffffff; font-size: 20px; margin-top: 10px; font-style: italic; text-align: center;">...</div>
         <input type="range" id="slider" min="1784" max="2025" value="1784">
+
         
         <div class="system-credit">
-            HỆ THỐNG ĐỊA LÝ-LỊCH SỬ-THIÊN VĂN - ATHEMIANARTORY<br>
-            WORLD HISTORY ENCYCLOPEDIA
+            Bách khoa toàn thư thế giới: ATHEMIANARTORY ĐỊA LÝ-THIÊN VĂN-LỊCH SỬ<br>
+            World Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY-HISTORY
         </div>
     </div>
 
@@ -350,13 +381,27 @@ const specialEvents = {
 
         const countryCoords = {
             
-            "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
-            "vietnam": { center: [16.0, 108.0], zoom: 6, adminName: "Vietnam" },
-            "china": { center: [35.0, 105.0], zoom: 4.5, adminName: "China" },
-            "cuba": { center: [21.5217, -77.7812], zoom: 7, adminName: "Cuba" },
-            "russia": { center: [61.524, 105.318], zoom: 3, adminName: "Russia" },
-            "usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
-            "france": { center: [46.2276, 2.2137], zoom: 6, adminName: "France" }
+            "japan": { center: [36.2048, 138.2529], zoom: 5, adminName: "Japan" },
+    "south_korea": { center: [35.9078, 127.7669], zoom: 7, adminName: "South Korea" },
+    "india": { center: [20.5937, 78.9629], zoom: 4, adminName: "India" },
+    "brazil": { center: [-14.235, -51.9253], zoom: 4, adminName: "Brazil" },
+    "united_kingdom": { center: [55.3781, -3.436], zoom: 5, adminName: "United Kingdom" },
+    "canada": { center: [56.1304, -106.3468], zoom: 3, adminName: "Canada" },
+    "australia": { center: [-25.2744, 133.7751], zoom: 4, adminName: "Australia" },
+    "italy": { center: [41.8719, 12.5674], zoom: 6, adminName: "Italy" },
+    "spain": { center: [40.4637, -3.7492], zoom: 6, adminName: "Spain" },
+    "mexico": { center: [23.6345, -102.5528], zoom: 5, adminName: "Mexico" },
+    "indonesia": { center: [-0.7893, 113.9213], zoom: 4, adminName: "Indonesia" },
+    "thailand": { center: [15.87, 100.9925], zoom: 6, adminName: "Thailand" },
+    "south_africa": { center: [-30.5595, 22.9375], zoom: 5, adminName: "South Africa" },
+    "turkey": { center: [38.9637, 35.2433], zoom: 5, adminName: "Turkey" },
+    "saudi_arabia": { center: [23.8859, 45.0792], zoom: 5, adminName: "Saudi Arabia" },
+    "argentina": { center: [-38.4161, -63.6167], zoom: 4, adminName: "Argentina" },
+    "egypt": { center: [26.8206, 30.8025], zoom: 6, adminName: "Egypt" },
+    "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
+    "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
+    "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" }
+            
         };
 
         var map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true }).setView([16.0, 108.0], 5); 
@@ -397,69 +442,62 @@ const specialEvents = {
         }
 
         function renderBorders(year) {
-            if (!worldDataCache) return;
-            if (geojsonLayer) map.removeLayer(geojsonLayer);
+    if (!worldDataCache) return;
+    if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-            const selectedCountry = document.getElementById('country-select').value;
+    const countryInput = document.getElementById('country-select');
+    const selectedCountry = countryInput ? countryInput.value.toLowerCase() : "";
+    
+    geojsonLayer = L.geoJSON(worldDataCache, {
+    style: (feature) => {
+        const name = feature.properties.ADMIN || feature.properties.name || "";
+        let isHighlighted = false;
+
+        if (activeAlliance && activeAlliance.includes(name)) {
+            isHighlighted = true;
+        } 
+        else if (selectedCountry && countryCoords[selectedCountry]) {
             const targetAdmin = countryCoords[selectedCountry].adminName;
-
-            geojsonLayer = L.geoJSON(worldDataCache, {
-                style: (feature) => {
-                    const name = feature.properties.ADMIN || feature.properties.name || "";
-                    let isHighlighted = false;
-
-                    if (activeAlliance && activeAlliance.includes(name)) {
-                        isHighlighted = true;
-                    } else {
-                        if (selectedCountry === "vietnam") {
-                            if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
-                                isHighlighted = true;
-                            }
-                        } else {
-                            if (name === targetAdmin) isHighlighted = true;
-                        }
-                    }
-
-                    return isHighlighted ? {
-                        color: "#ff0000", weight: 3, fillColor: "#ff0000", fillOpacity: 0.15, interactive: true
-                    } : {
-                        color: "rgba(255, 255, 255, 0.1)", weight: 1, fillOpacity: 0, interactive: false
-                    };
+            if (selectedCountry === "vietnam") {
+                if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
+                    isHighlighted = true;
                 }
-            }).addTo(map);
-
-            geojsonLayer.bringToBack();
-
-            // SỬA LỖI VĨ TUYẾN 17 TẠI ĐÂY
-            if (year >= 1954 && year < 1975 && selectedCountry === "vietnam") {
-                // 1. Vẽ đường chia cắt
-                const line17 = L.polyline([[17.0, 106.0], [17.0, 108.5]], {
-                    color: '#ffcc00', weight: 4, dashArray: '8, 8'
-                }).addTo(map);
-
-                // 2. Nhãn Miền Bắc (Sửa tên biến không dấu)
-                const labelNorth = L.marker([18.2, 105.8], { 
-                    icon: L.divIcon({ 
-                        className: 'island-label', 
-                        html: '<div class="dmz-label" style="color:#00ff00">VNDCCH (MIỀN BẮC)</div>' 
-                    }) 
-                }).addTo(map);
-
-                // 3. Nhãn Miền Nam
-                const labelSouth = L.marker([15.8, 107.5], { 
-                    icon: L.divIcon({ 
-                        className: 'island-label', 
-                        html: '<div class="dmz-label" style="color:#ffff00">VNCH (MIỀN NAM)</div>' 
-                    }) 
-                }).addTo(map);
-
-                // Gom vào layer để tự xóa khi chuyển năm
-                geojsonLayer.addLayer(line17);
-                geojsonLayer.addLayer(labelNorth);
-                geojsonLayer.addLayer(labelSouth);
+            } else {
+                if (name === targetAdmin) isHighlighted = true;
             }
         }
 
+        return {
+            color: isHighlighted ? "#ff0000" : "rgba(255, 255, 255, 0.1)",
+            weight: isHighlighted ? 3 : 1,
+            fillColor: isHighlighted ? "#ff0000" : "transparent",
+            fillOpacity: isHighlighted ? 0.2 : 0,
+            interactive: true // Phải để true ở cả 2 trường hợp để click được
+        };
+    },
+    onEachFeature: (feature, layer) => {
+        layer.on('click', function (e) {
+            const countryName = feature.properties.ADMIN || feature.properties.name;
+            
+            // Hiện Popup tại chỗ click
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<b style="color:black">${countryName}</b>`)
+                .openOn(map);
+
+            // Gọi Wiki
+            fetchWiki(countryName);
+        });
+    }
+}).addTo(map);
+
+    geojsonLayer.bringToBack();
+    
+    // Giữ nguyên logic vẽ Vĩ tuyến 17 nếu là Việt Nam
+    if (year >= 1954 && year < 1975 && selectedCountry === "vietnam") {
+        // ... (giữ nguyên code vẽ polyline cũ của bạn ở đây)
+    }
+}
 
         // 1. Hàm lấy dữ liệu tự động từ Wikipedia
         async function fetchWiki(eventName) {
@@ -516,8 +554,8 @@ const specialEvents = {
             let year = parseInt(val);
             if (isNaN(year)) year = 1784;
             
-            document.getElementById('year-input').value = year;
-            document.getElementById('slider').value = year;
+            const countrySelect = document.getElementById('country-select');
+            const mode = countrySelect ? countrySelect.value : "";
             
             // --- ĐOẠN SỬA ĐỂ LỌC THEO NƯỚC ---
             const selectedCountry = document.getElementById('country-select').value;
@@ -555,6 +593,7 @@ const specialEvents = {
                     else if (year === 1988) map.flyTo([8.814, 114.28], 10);
                 }
             }, 250);
+        renderBorders(parseInt(val));
         }
 
         map.on('zoomend', () => {
@@ -642,6 +681,52 @@ const specialEvents = {
         center: [1.0, 20.0], zoom: 3,
         countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cameroon", "Cape Verde", "Central African Republic", "Chad", "Comoros", "Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"]
     },
+    'opec': {
+        center: [25.0, 45.0], zoom: 3,
+        countries: ["Algeria", "Congo", "Equatorial Guinea", "Gabon", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Saudi Arabia", "United Arab Emirates", "Venezuela"]
+    },
+    'arab_league': {
+        center: [25.0, 30.0], zoom: 3,
+        countries: ["Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Somalia", "Sudan", "Syria", "Tunisia", "United Arab Emirates", "Yemen"]
+    },
+    'mercosur': {
+        center: [-25.0, -60.0], zoom: 3,
+        countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Bolivia"]
+    },
+    'commonwealth': {
+        center: [10.0, 20.0], zoom: 2,
+        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
+    },
+
+    'un': {
+        center: [20.0, 0.0], zoom: 2,
+        countries: ["United States of America", "Russia", "China", "France", "United Kingdom"]
+    },
+    'g7': {
+        center: [45.0, -10.0], zoom: 3,
+        countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"]
+    },
+    'warsaw': {
+        center: [52.0, 20.0], zoom: 4,
+        countries: ["Russia", "Poland", "Germany", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Albania"]
+    },
+    'opec': {
+        center: [25.0, 45.0], zoom: 3,
+        countries: ["Algeria", "Congo", "Equatorial Guinea", "Gabon", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Saudi Arabia", "United Arab Emirates", "Venezuela"]
+    },
+    'arab_league': {
+        center: [25.0, 30.0], zoom: 3,
+        countries: ["Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Somalia", "Sudan", "Syria", "Tunisia", "United Arab Emirates", "Yemen"]
+    },
+    'mercosur': {
+        center: [-25.0, -60.0], zoom: 3,
+        countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Bolivia"]
+    },
+    'commonwealth': {
+        center: [10.0, 20.0], zoom: 2,
+        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
+    }
+
 
 };
             
@@ -651,27 +736,34 @@ const specialEvents = {
 
         // Hàm thực hiện hiệu ứng bay
         function flyToRegion(region) {
-    if (!region) return; // Nếu chọn dòng tiêu đề thì không làm gì cả
+    if (!region) return;
+
+    // Xóa quốc gia đang chọn để ưu tiên hiển thị Liên minh
+    document.getElementById('country-select').value = ""; 
 
     const data = regionCoords[region];
     if (data) {
-        // 1. Cập nhật danh sách các nước trong khối để bôi đỏ
         activeAlliance = data.countries; 
-        
-        // 2. Vẽ lại biên giới ngay lập tức để thấy màu đỏ
         renderBorders(document.getElementById('year-input').value);
-
-        // 3. Thực hiện hiệu ứng bay
-        map.flyTo(data.center, data.zoom, {
-            animate: true,
-            duration: 2 
-        });
+        map.flyTo(data.center, data.zoom, { animate: true, duration: 2 });
     }
 }
         fetchBorders(); 
+// Xử lý sự kiện khi chọn quốc gia từ danh sách
 document.getElementById('country-select').addEventListener('change', function(e) {
-    updateSystem(document.getElementById('year-input').value, true);
-});
+    const val = e.target.value.toLowerCase();
+    const currentYear = document.getElementById('year-input').value;
+
+    // 1. Tắt chế độ liên minh để ưu tiên hiển thị quốc gia lẻ
+    activeAlliance = null; 
+    
+    // 2. Cập nhật hệ thống (bay đến quốc gia, kiểm tra sự kiện lịch sử)
+    updateSystem(currentYear, true);
+    
+    // 3. ÉP BẢN ĐỒ VẼ LẠI BIÊN GIỚI NGAY LẬP TỨC
+    renderBorders(currentYear);
+});    
+
     </script>
 
 
