@@ -320,14 +320,61 @@ left-group {
                     <option value="g7">Khối G7</option>
                     <option value="warsaw">Hiệp ước Warsaw (Lịch sử)</option>
                     <option value="mena">Liên minh Trung Đông - Bắc Phi (MENA)</option>
+                    <option value="asia">Châu Á</option>
+        <option value="europe">Châu Âu</option>
+        <option value="africa">Châu Phi</option>
+        <option value="americas">Châu Mỹ</option>
+        <option value="oceania">Châu Đại Dương</option>
+    </optgroup>
+
+    <optgroup label="🌏 TIỂU VÙNG CHÂU Á">
+        <option value="asean">Đông Nam Á (ASEAN)</option>
+        <option value="east_asia">Đông Á (Trung, Nhật, Hàn...)</option>
+        <option value="south_asia">Nam Á (Ấn Độ, Pakistan...)</option>
+        <option value="west_asia">Tây Á (Trung Đông)</option>
+        <option value="central_asia">Trung Á</option>
+    </optgroup>
+
+    <optgroup label="🌍 CÁC TIỂU VÙNG CHÂU ÂU">
+    <option value="northern_europe">Bắc Âu</option>
+    <option value="southern_europe">Nam Âu</option>
+    <option value="western_europe">Tây Âu</option>
+    <option value="eastern_europe">Đông Âu</option>
+</optgroup>
+
+<optgroup label="🌎 CÁC TIỂU VÙNG CHÂU MỸ">
+    <option value="north_america">Bắc Mỹ</option>
+    <option value="central_america">Trung Mỹ</option>
+    <option value="south_america">Nam Mỹ</option>
+    <option value="caribbean">Vùng Caribbean</option>
+</optgroup>
+
+<optgroup label=" CÁC TIỂU VÙNG CHÂU PHI">
+    <option value="north_africa">Bắc Phi</option>
+    <option value="west_africa">Tây Phi</option>
+    <option value="east_africa">Đông Phi</option>
+    <option value="central_africa">Trung Phi</option>
+    <option value="southern_africa">Nam Phi</option>
+</optgroup>
+
+<optgroup label=" ĐẠI DƯƠNG & KHÁC">
+    <option value="australasia">Australasia (Úc & NZ)</option>
+    <option value="melanesia">Melanesia</option>
+    <option value="micronesia">Micronesia</option>
+    <option value="polynesia">Polynesia</option>
+    <option value="antarctica">Châu Nam Cực</option>
+    <option value="zealandia">Zealandia (Lục địa chìm)</option>
+</optgroup>
+
+                    
 </select>
             </div>
             <button id="screenshot-btn">📸 CHỤP ẢNH</button>
         </div>
 
         <input type="number" id="year-input" value="1784">
-        <div id="event-val" style="color: #ffffff; font-size: 20px; margin-top: 10px; font-style: italic; text-align: center;">...</div>
         <input type="range" id="slider" min="1784" max="2025" value="1784">
+        <div id="event-val" style="color: #ffffff; font-size: 20px; margin-top: 10px; font-style: italic; text-align: center; font-weight: 500;">...</div>
 
         
         <div class="system-credit">
@@ -453,17 +500,14 @@ const specialEvents = {
         const name = feature.properties.ADMIN || feature.properties.name || "";
         let isHighlighted = false;
 
+        // Giữ nguyên logic bôi đỏ cũ của bạn
         if (activeAlliance && activeAlliance.includes(name)) {
             isHighlighted = true;
         } 
         else if (selectedCountry && countryCoords[selectedCountry]) {
             const targetAdmin = countryCoords[selectedCountry].adminName;
-            if (selectedCountry === "vietnam") {
-                if (name === "Vietnam" || name === "Viet Nam" || name.includes("Paracel") || name.includes("Spratly")) {
-                    isHighlighted = true;
-                }
-            } else {
-                if (name === targetAdmin) isHighlighted = true;
+            if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
+                isHighlighted = true;
             }
         }
 
@@ -471,22 +515,26 @@ const specialEvents = {
             color: isHighlighted ? "#ff0000" : "rgba(255, 255, 255, 0.1)",
             weight: isHighlighted ? 3 : 1,
             fillColor: isHighlighted ? "#ff0000" : "transparent",
-            fillOpacity: isHighlighted ? 0.2 : 0,
-            interactive: true // Phải để true ở cả 2 trường hợp để click được
+            fillOpacity: isHighlighted ? 0.3 : 0,
+            interactive: true // Chỉnh thành true để click được mọi nước
         };
     },
+    // THÊM ĐOẠN NÀY: Khi click hiện Popup và gọi Wiki
     onEachFeature: (feature, layer) => {
         layer.on('click', function (e) {
             const countryName = feature.properties.ADMIN || feature.properties.name;
             
-            // Hiện Popup tại chỗ click
             L.popup()
                 .setLatLng(e.latlng)
-                .setContent(`<b style="color:black">${countryName}</b>`)
+                .setContent(`
+                    <div style="color:black; font-family:Arial; padding:5px;">
+                        <b style="font-size:14px;">${countryName}</b><br>
+                        <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#ffcc00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
+                    </div>
+                `)
                 .openOn(map);
-
-            // Gọi Wiki
-            fetchWiki(countryName);
+            
+            fetchWiki(countryName); // Mở luôn bảng Wikipedia bên phải
         });
     }
 }).addTo(map);
@@ -647,88 +695,90 @@ const specialEvents = {
         coords.style.opacity = '1';
     });
 };// Danh sách tọa độ các khu vực
-        const regionCoords = {
+        // THAY THẾ TOÀN BỘ ĐOẠN TỪ DÒNG 548 ĐẾN 650 BẰNG ĐOẠN NÀY
+const regionCoords = {
+    // --- CÁC LIÊN MINH ---
     'asean': {
         center: [10.8, 110.0], zoom: 4,
-
         countries: ["Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"]
     },
     'eu': {
         center: [50.0, 10.0], zoom: 4,
         countries: ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden"]
-
     },
-
-            'nato': { 
-                center: [45.0, -20.0], zoom: 3, 
-                countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"
-]
-
-            },
-            'mena': { 
-                center: [25.0, 30.0], zoom: 4, 
-                countries: [ "Algeria", "Bahrain", "Egypt", "Iran", "Iraq", "Israel", "Jordan", "Kuwait", "Lebanon", "Libya", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Syria", "Tunisia","United Arab Emirates","Yemen","Mauritania","Sudan"]
-            },
-            'brics': {
+    'nato': { 
+        center: [45.0, -20.0], zoom: 3, 
+        countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"]
+    },
+    'brics': {
         center: [0.0, 20.0], zoom: 2,
         countries: ["Brazil", "Russia", "India", "China", "South Africa", "Egypt", "Ethiopia", "Iran", "United Arab Emirates"]
     },
-    'g7': {
-        center: [45.0, -10.0], zoom: 3,
-        countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"]
-    },
-    'african_union': {
-        center: [1.0, 20.0], zoom: 3,
-        countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cameroon", "Cape Verde", "Central African Republic", "Chad", "Comoros", "Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Swaziland", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"]
-    },
-    'opec': {
-        center: [25.0, 45.0], zoom: 3,
-        countries: ["Algeria", "Congo", "Equatorial Guinea", "Gabon", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Saudi Arabia", "United Arab Emirates", "Venezuela"]
-    },
-    'arab_league': {
-        center: [25.0, 30.0], zoom: 3,
-        countries: ["Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Somalia", "Sudan", "Syria", "Tunisia", "United Arab Emirates", "Yemen"]
-    },
-    'mercosur': {
-        center: [-25.0, -60.0], zoom: 3,
-        countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Bolivia"]
-    },
-    'commonwealth': {
-        center: [10.0, 20.0], zoom: 2,
-        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
-    },
-
     'un': {
         center: [20.0, 0.0], zoom: 2,
         countries: ["United States of America", "Russia", "China", "France", "United Kingdom"]
     },
-    'g7': {
-        center: [45.0, -10.0], zoom: 3,
-        countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"]
+    'commonwealth': {
+        center: [10.0, 20.0], zoom: 2,
+        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
     },
     'warsaw': {
         center: [52.0, 20.0], zoom: 4,
         countries: ["Russia", "Poland", "Germany", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Albania"]
     },
-    'opec': {
-        center: [25.0, 45.0], zoom: 3,
-        countries: ["Algeria", "Congo", "Equatorial Guinea", "Gabon", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Saudi Arabia", "United Arab Emirates", "Venezuela"]
-    },
-    'arab_league': {
-        center: [25.0, 30.0], zoom: 3,
-        countries: ["Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Somalia", "Sudan", "Syria", "Tunisia", "United Arab Emirates", "Yemen"]
-    },
-    'mercosur': {
-        center: [-25.0, -60.0], zoom: 3,
-        countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Bolivia"]
-    },
-    'commonwealth': {
-        center: [10.0, 20.0], zoom: 2,
-        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
-    }
 
+    // --- CÁC LỤC ĐỊA ---
+    'asia': { 
+        center: [30.0, 90.0], zoom: 3, 
+        countries: ["Vietnam", "China", "Japan", "India", "Thailand", "Indonesia", "South Korea", "North Korea", "Malaysia", "Philippines", "Saudi Arabia", "Iran", "Turkey", "Kazakhstan", "Mongolia", "Pakistan", "Myanmar", "Laos", "Cambodia"] 
+    },
+    'europe': { 
+        center: [50.0, 15.0], zoom: 4, 
+        countries: ["France", "Germany", "United Kingdom", "Italy", "Spain", "Poland", "Ukraine", "Norway", "Sweden", "Finland", "Greece", "Austria", "Belgium", "Switzerland"] 
+    },
+    'africa': { 
+        center: [0.0, 20.0], zoom: 3, 
+        countries: ["Egypt", "South Africa", "Nigeria", "Algeria", "Morocco", "Ethiopia", "Kenya", "Angola", "Ghana", "Sudan", "Libya", "Congo", "Tanzania"] 
+    },
+    'americas': { 
+        center: [15.0, -85.0], zoom: 3, 
+        countries: ["United States of America", "Canada", "Mexico", "Brazil", "Argentina", "Chile", "Colombia", "Peru", "Cuba", "Venezuela"] 
+    },
+    'oceania': { 
+        center: [-25.0, 140.0], zoom: 4, 
+        countries: ["Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] 
+    },
+    'antarctica': { 
+        center: [-80.0, 0.0], zoom: 3, 
+        countries: ["Antarctica"] 
+    },
+    'zealandia': { 
+        center: [-40.0, 170.0], zoom: 4, 
+        countries: ["New Zealand", "New Caledonia"] 
+    },
 
+    // --- CÁC TIỂU VÙNG ---
+    'east_asia': { center: [35.0, 115.0], zoom: 4, countries: ["China", "Japan", "South Korea", "North Korea", "Mongolia", "Taiwan"] },
+    'south_asia': { center: [22.0, 78.0], zoom: 4, countries: ["India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Bhutan", "Afghanistan"] },
+    'west_asia': { center: [25.0, 45.0], zoom: 4, countries: ["Saudi Arabia", "Iran", "Iraq", "Turkey", "United Arab Emirates", "Israel", "Jordan", "Kuwait", "Oman", "Qatar", "Syria", "Yemen"] },
+    'central_asia': { center: [45.0, 65.0], zoom: 4, countries: ["Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"] },
+    'northern_europe': { center: [62.0, 15.0], zoom: 4, countries: ["Norway", "Sweden", "Finland", "Denmark", "Iceland", "Estonia", "Latvia", "Lithuania"] },
+    'southern_europe': { center: [40.0, 15.0], zoom: 5, countries: ["Italy", "Spain", "Portugal", "Greece", "Albania", "Croatia", "Serbia", "Slovenia", "Montenegro"] },
+    'western_europe': { center: [48.0, 2.0], zoom: 5, countries: ["France", "Belgium", "Netherlands", "Luxembourg", "Switzerland", "Austria", "Germany", "United Kingdom", "Ireland"] },
+    'eastern_europe': { center: [50.0, 30.0], zoom: 4, countries: ["Russia", "Ukraine", "Poland", "Romania", "Bulgaria", "Hungary", "Czech Republic", "Slovakia", "Belarus", "Moldova"] },
+    'north_america': { center: [45.0, -100.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Greenland"] },
+    'central_america': { center: [15.0, -85.0], zoom: 5, countries: ["Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panama"] },
+    'south_america': { center: [-20.0, -60.0], zoom: 3, countries: ["Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname"] },
+    'north_africa': { center: [25.0, 15.0], zoom: 4, countries: ["Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Western Sahara", "Sudan"] },
+    'west_africa': { center: [15.0, 0.0], zoom: 4, countries: ["Nigeria", "Ghana", "Senegal", "Mali", "Ivory Coast", "Niger", "Burkina Faso", "Guinea", "Benin", "Togo", "Sierra Leone", "Liberia", "Mauritania", "Gambia", "Guinea-Bissau"] },
+    'southern_africa': { center: [-25.0, 25.0], zoom: 4, countries: ["South Africa", "Namibia", "Botswana", "Zimbabwe", "Mozambique", "Lesotho", "Swaziland"] },
+    'melanesia': { center: [-8.0, 150.0], zoom: 4, countries: ["Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] },
+    'micronesia': { center: [7.0, 150.0], zoom: 4, countries: ["Palau", "Kiribati", "Marshall Islands", "Nauru"] },
+    'polynesia': { center: [-15.0, -160.0], zoom: 3, countries: ["Samoa", "Tonga", "Tuvalu", "Cook Islands", "French Polynesia"] }
 };
+    
+
+
             
         
 
