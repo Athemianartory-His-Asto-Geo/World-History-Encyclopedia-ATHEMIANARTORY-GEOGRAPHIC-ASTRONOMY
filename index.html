@@ -259,7 +259,15 @@ left-group {
 <body> 
     <div id="map"></div>
     <div id="coords-box">LAT: 0.0000 | LNG: 0.0000</div>
-<div id="wiki-panel">
+
+    <div id="custom-panel" style="position: absolute; top: 50%; left: -260px; transform: translateY(-50%); width: 250px; background: rgba(0,0,0,0.9); color: white; padding: 15px; border-radius: 0 15px 15px 0; border: 1px solid #ffcc00; z-index: 2000; transition: 0.4s;">
+        <button id="toggle-custom" style="position: absolute; right: -35px; top: 50%; transform: translateY(-50%); background: #ffcc00; border: none; padding: 10px 5px; cursor: pointer; font-weight: bold; border-radius: 0 5px 5px 0;">🖌️<br>T<br>Ù<br>Y<br><br>C<br>H<br>Ỉ<br>N<br>H</button>
+        <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 16px;">CHẾ ĐỘ TÔ MÀU</h3>
+        <p style="font-size: 12px; color: #ccc;">• <b>Ấn đúp chuột (Double Click)</b> vào một nước để tô/xóa màu vàng.</p>
+        <button onclick="clearCustomColors()" style="width:100%; background:#cc0000; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px; font-weight:bold; margin-top:10px;">XÓA TẤT CẢ MÀU</button>
+    </div>
+
+    <div id="wiki-panel">
         <span id="wiki-close">&times;</span>
         <div id="wiki-content">
             <h2 id="wiki-title">Sự kiện</h2>
@@ -430,8 +438,14 @@ const specialEvents = {
 };
 
         const countryCoords = {
-            
-            "japan": { center: [36.2048, 138.2529], zoom: 5, adminName: "Japan" },
+    "vietnam": { center: [16.4637, 107.5908], zoom: 6, adminName: "Vietnam" },
+    "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
+    "china": { center: [35.8617, 104.1954], zoom: 4, adminName: "China" },
+    "cuba": { center: [21.5218, -77.7812], zoom: 6, adminName: "Cuba" },
+    "russia": { center: [61.524, 105.3188], zoom: 3, adminName: "Russia" },
+    "usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
+    "france": { center: [46.2276, 2.2137], zoom: 6, adminName: "France" },
+    "japan": { center: [36.2048, 138.2529], zoom: 5, adminName: "Japan" },
     "south_korea": { center: [35.9078, 127.7669], zoom: 7, adminName: "South Korea" },
     "india": { center: [20.5937, 78.9629], zoom: 4, adminName: "India" },
     "brazil": { center: [-14.235, -51.9253], zoom: 4, adminName: "Brazil" },
@@ -451,12 +465,11 @@ const specialEvents = {
     "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
     "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
     "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" }
-            
-        };
+};
 
         var map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true }).setView([16.0, 108.0], 5); 
 
-        L.tileLayer('https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=DTclk8hQeqS7po0Jyfmi', { maxZoom: 20 }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
         map.on('mousemove', function(e) {
             document.getElementById('coords-box').innerHTML = `LAT: ${e.latlng.lat.toFixed(4)} | LNG: ${e.latlng.lng.toFixed(4)}`;
@@ -701,9 +714,11 @@ const specialEvents = {
         // THAY THẾ TOÀN BỘ ĐOẠN TỪ DÒNG 548 ĐẾN 650 BẰNG ĐOẠN NÀY
 const regionCoords = {
     // --- CÁC LIÊN MINH ---
+    
+    
     'asean': {
         center: [10.8, 110.0], zoom: 4,
-        countries: ["Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"]
+        countries: ["East Timor", "Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"]
     },
     'eu': {
         center: [50.0, 10.0], zoom: 4,
