@@ -306,7 +306,7 @@ left-group {
 </datalist>
 
                 <select id="alliance-select" onchange="flyToRegion(this.value)">
-                    <option value="" disabled selected>🌐 Chọn Liên minh</option>
+                    <option value="" none=">🌐 Chọn Liên minh</option>
                     <option value="asean">ASEAN</option>
                     <option value="eu">EUROPEAN UNION (EU)</option>
                     <option value="nato">NATO-OTAN</option>
@@ -349,7 +349,7 @@ left-group {
     <option value="caribbean">Vùng Caribbean</option>
 </optgroup>
 
-<optgroup label=" CÁC TIỂU VÙNG CHÂU PHI">
+<optgroup label="🌍 CÁC TIỂU VÙNG CHÂU PHI">
     <option value="north_africa">Bắc Phi</option>
     <option value="west_africa">Tây Phi</option>
     <option value="east_africa">Đông Phi</option>
@@ -730,19 +730,37 @@ const regionCoords = {
     // --- CÁC LỤC ĐỊA ---
     'asia': { 
         center: [30.0, 90.0], zoom: 3, 
-        countries: ["Vietnam", "China", "Japan", "India", "Thailand", "Indonesia", "South Korea", "North Korea", "Malaysia", "Philippines", "Saudi Arabia", "Iran", "Turkey", "Kazakhstan", "Mongolia", "Pakistan", "Myanmar", "Laos", "Cambodia"] 
+        countries: ["Russia", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei Darussalam", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"]
+
     },
     'europe': { 
-        center: [50.0, 15.0], zoom: 4, 
-        countries: ["France", "Germany", "United Kingdom", "Italy", "Spain", "Poland", "Ukraine", "Norway", "Sweden", "Finland", "Greece", "Austria", "Belgium", "Switzerland"] 
+        center: [52.0, 15.0], 
+        zoom: 4, 
+        countries: [
+            "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", 
+            "Bulgaria", "Croatia", "Czechia", "Denmark", "Estonia", "Finland", 
+            "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", 
+            "Latvia", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", 
+            "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", 
+            "Portugal", "Romania", "Russia", "San Marino", "Republic of Serbia", "Slovakia", 
+            "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom",
+            "Vatican City", "Liechtenstein"
+        ] 
     },
     'africa': { 
         center: [0.0, 20.0], zoom: 3, 
-        countries: ["Egypt", "South Africa", "Nigeria", "Algeria", "Morocco", "Ethiopia", "Kenya", "Angola", "Ghana", "Sudan", "Libya", "Congo", "Tanzania"] 
+        countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo (Republic)", "Congo (Democratic Republic)", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"]
+
     },
     'americas': { 
         center: [15.0, -85.0], zoom: 3, 
-        countries: ["United States of America", "Canada", "Mexico", "Brazil", "Argentina", "Chile", "Colombia", "Peru", "Cuba", "Venezuela"] 
+        countries: [
+            "United States of America", "Canada", "Mexico", "Brazil", "Argentina", 
+            "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", 
+            "Paraguay", "Uruguay", "Guyana", "Suriname", "Guatemala", "Belize", 
+            "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", 
+            "Cuba", "Jamaica", "Haiti", "Dominican Republic"
+        ] 
     },
     'oceania': { 
         center: [-25.0, 140.0], zoom: 4, 
