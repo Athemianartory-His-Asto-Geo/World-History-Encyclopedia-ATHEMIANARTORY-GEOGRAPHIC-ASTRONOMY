@@ -31,6 +31,18 @@ path.leaflet-interactive:hover {
     color: white !important;
 }
 
+#climate-select {
+    background: rgba(30, 30, 30, 0.8);
+    color: #00f2ff; /* Màu xanh neon cho khác biệt với Liên minh */
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    padding: 8px 12px;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+}
+#climate-select option { background: #1a1a1a; color: #fff; }
 .equator-label {
     color: #00f2ff;
     font-size: 10px;
@@ -151,6 +163,16 @@ path.leaflet-interactive:hover {
     pointer-events: auto !important; 
     margin: 15px 0;
 }
+.climate-zone-text {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    pointer-events: none;
+    text-shadow: 2px 2px 4px #000; /* Đổ bóng để nổi trên nền xám */
+}
+
 
         .island-label {
             background: transparent !important; border: none !important;
@@ -346,9 +368,16 @@ left-group {
 
 
     <div id="ui-panel">
-        <button id="toggle-ui">▼</button>
+    <button id="toggle-ui">▼</button>
 
-        <div class="header-row">
+    <div class="header-row">
+        <div class="left-group">
+            <select id="climate-select" onchange="toggleClimateLayer(this.value)">
+                <option value="none">🌡️ Khí hậu: Tắt</option>
+                <option value="lines">🌐 Hiện các đường Vĩ độ</option>
+                <option value="zones">🌤️ Hiện các Đai khí hậu</option>
+                <option value="all">✨ Hiện tất cả</option>
+            </select>
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
                 <datalist id="country-list">
@@ -379,6 +408,7 @@ left-group {
     <option value="poland">Cộng Hoà Ba Lan</option>
     <option value="ukraine">Cộng Hoà Ukraine</option>
     <option value="iran">Cộng hòa Hồi giáo Iran</option>
+
 </datalist>
 
                 <select id="alliance-select" onchange="flyToRegion(this.value)">
@@ -409,6 +439,9 @@ left-group {
         <option value="south_asia">Nam Á (Ấn Độ, Pakistan...)</option>
         <option value="west_asia">Tây Á (Trung Đông)</option>
         <option value="central_asia">Trung Á</option>
+        <option value="north_asia">Bắc Á (Nga, Mông Cổ)</option>
+        <option value="middle_east">Trung Đông</option>
+        <option value="southeast_asia">Đông Nam Á</option>
     </optgroup>
 
     <optgroup label="🌍 CÁC TIỂU VÙNG CHÂU ÂU">
@@ -416,6 +449,7 @@ left-group {
     <option value="southern_europe">Nam Âu</option>
     <option value="western_europe">Tây Âu</option>
     <option value="eastern_europe">Đông Âu</option>
+    <option value="central_europe">Trung Âu</option>
 </optgroup>
 
 <optgroup label="🌎 CÁC TIỂU VÙNG CHÂU MỸ">
@@ -431,6 +465,10 @@ left-group {
     <option value="east_africa">Đông Phi</option>
     <option value="central_africa">Trung Phi</option>
     <option value="southern_africa">Nam Phi</option>
+    <option value="central_southern_africa">Trung Nam Phi</option>
+    <option value='south_west_africa'>Tây Nam Phi</option>
+    <option value='south_west_africa'>Đông Nam Phi</option>
+
 </optgroup>
 
 <optgroup label=" ĐẠI DƯƠNG & KHÁC">
@@ -447,13 +485,10 @@ left-group {
             </div>
             <button id="screenshot-btn">📸 CHỤP ẢNH</button>
         </div>
-    <div style="margin: 15px 0;">
-    <input type="number" id="year-input" value="1784">
-
-    <input type="range" id="slider" min="1784" max="2025" value="1784">
-
-    <div id="event-val" style="color: #ffcc00; font-size: 20px; margin-top: 10px; font-style: italic; text-align: center; font-weight: bold; min-height: 30px;">
-        ...
+    <div class="timeline-container">
+        <input type="number" id="year-input" value="1784">
+        <input type="range" id="slider" min="1784" max="2025" value="1784">
+        <div id="event-val">...</div>
     </div>
         
 <div class="system-credit">
@@ -489,7 +524,10 @@ left-group {
     1973: { text: "Hiệp định Paris - Kết thúc chiến tranh Việt Nam", country: "vietnam" },
     1975: { text: "Giải phóng miền Nam - Thống nhất đất nước", country: "vietnam" },
     1989: { text: "Bức tường Berlin sụp đổ", country: "germany" }, 
-    2025: { text: "Kỷ niệm 50 năm ngày Thống nhất đất nước", country: "vietnam" }
+    2025: { text: "Kỷ niệm 50 năm ngày Thống nhất đất nước", country: "vietnam" },
+    1950: { text: "Chiến dịch Biên Giới 1950", country: "vietnam" },
+    1972: { text: "Chiến dịch Quảng Trị 1972", country: "vietnam" },
+    1988: { text: "Hải chiến Trường Sa 1988", country: "vietnam" }
 };
 
 const specialEvents = {
@@ -535,30 +573,44 @@ const specialEvents = {
     "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" }
 };
 
-        var map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true }).setView([16.0, 108.0], 5); 
+        // --- 1. KHỞI TẠO BẢN ĐỒ ---
+var map = L.map('map', { 
+    zoomControl: false, 
+    attributionControl: false, 
+    preferCanvas: true 
+}).setView([16.0, 108.0], 5); 
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
 
-        // --- CÁC ĐƯỜNG VĨ ĐỘ & ĐỚI KHÍ HẬU (English - Tiếng Việt) ---
-        const climateLineStyle = {
-            color: "#ffffff",
-            weight: 1,
-            opacity: 0.2,
-            dashArray: "5, 10",
-            interactive: false
-        };
+// --- 2. CẤU TRÌNH QUẢN LÝ KHÍ HẬU (QUAN TRỌNG) ---
+// Tạo "khay" chứa để có thể bật/tắt dễ dàng
+let climateLayerGroup = L.layerGroup().addTo(map);
 
-        // Danh sách các đường vĩ độ quan trọng
+function toggleClimateLayer(mode) {
+    // Xóa sạch mọi thứ trong khay trước khi vẽ cái mới (Hoặc để trống nếu chọn "none")
+    climateLayerGroup.clearLayers();
+    
+    if (mode === "none") return;
+
+    const climateLineStyle = {
+        color: "#ffffff",
+        weight: 1,
+        opacity: 0.2,
+        dashArray: "5, 10",
+        interactive: false
+    };
+
+    // A. Vẽ các đường Vĩ độ (Nếu chọn 'lines' hoặc 'all')
+    if (mode === "lines" || mode === "all") {
         const latitudes = [
-            { lat: 66.5, name: "Arctic Circle - Vòng Cực Bắc" },
-            { lat: 23.5, name: "Tropic of Cancer - Chí Tuyến Bắc" },
-            { lat: 0, name: "Equator - Xích Đạo", isEquator: true },
-            { lat: -23.5, name: "Tropic of Capricorn - Chí Tuyến Nam" },
-            { lat: -66.5, name: "Antarctic Circle - Vòng Cực Nam" }
+            { lat: 66.5,  name: "Arctic Circle - VÒNG CỰC BẮC" },
+            { lat: 23.5,  name: "Tropic of Cancer - CHÍ TUYẾN BẮC" },
+            { lat: 0,     name: "EQUADOR - ĐƯỜNG XÍCH ĐẠO", isEquator: true },
+            { lat: -23.5, name: "Tropic of Capricorn - CHÍ TUYẾN NAM" },
+            { lat: -66.5, name: "Antarctic Circle - VÒNG CỰC NAM" }
         ];
 
         latitudes.forEach(item => {
-            // Nếu là Xích đạo thì cho nét đậm và màu xanh neon như bạn muốn
             const style = item.isEquator ? {
                 color: "#00f2ff",
                 weight: 2,
@@ -567,37 +619,47 @@ const specialEvents = {
                 interactive: false
             } : climateLineStyle;
 
-            // Vẽ đường ngang qua bản đồ
-            L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(map);
+            L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(climateLayerGroup);
 
-            // Thêm nhãn tên (Đặt ở kinh độ 160 để tránh đè lên các lục địa chính)
             L.marker([item.lat, 160], {
                 icon: L.divIcon({
                     className: item.isEquator ? 'equator-label' : 'climate-label',
                     html: item.name,
                     iconSize: [250, 20]
                 })
-            }).addTo(map);
+            }).addTo(climateLayerGroup);
         });
+    }
 
-        // Thêm tên các Đới Khí Hậu (Nằm giữa các đường vĩ độ)
-        const climateZones = [
-            { lat: 75, name: "North Frigid Zone - Hàn Đới Bắc" },
-            { lat: 45, name: "North Temperate Zone - Ôn Đới Bắc" },
-            { lat: 12, name: "Torrid Zone - Nhiệt Đới" }, // Hơi lệch lên trên Xích đạo một chút
-            { lat: -45, name: "South Temperate Zone - Ôn Đới Nam" },
-            { lat: -75, name: "South Frigid Zone - Hàn Đới Nam" }
+    // B. Vẽ tên các Đới khí hậu (Nếu chọn 'zones' hoặc 'all')
+    if (mode === "zones" || mode === "all") {
+        const zones = [
+            { lat: 75,  name: "North Frigid Zone - HÀN ĐỚI BẮC" },
+            { lat: 45,  name: "North Temperate Zone - ÔN ĐỚI BẮC" },
+            { lat: 12,  name: "Torrid Zone - NHIỆT ĐỚI" },
+            { lat: -12, name: "Torrid Zone - NHIỆT ĐỚI" },
+            { lat: -45, name: "South Temperate Zone - ÔN ĐỚI NAM" },
+            { lat: -75, name: "South Frigid Zone - HÀN ĐỚI NAM" }
         ];
 
-        climateZones.forEach(zone => {
-            L.marker([zone.lat, 0], { // Đặt ở giữa bản đồ (Kinh độ 0)
+        zones.forEach(zone => {
+            L.marker([zone.lat, 0], {
                 icon: L.divIcon({
                     className: 'climate-zone-text',
                     html: zone.name,
                     iconSize: [300, 20]
                 })
-            }).addTo(map);
+            }).addTo(climateLayerGroup);
         });
+    }
+}
+
+// --- 3. ĐẢM BẢO SLIDER KHÔNG BỊ LỖI KÉO ---
+const mainSlider = document.getElementById('slider');
+if(mainSlider) {
+    mainSlider.addEventListener('mousedown', () => map.dragging.disable());
+    document.addEventListener('mouseup', () => map.dragging.enable());
+}
 
         // --- KHAI BÁO BIẾN TOÀN CỤC ---
         let geojsonLayer;
@@ -697,9 +759,14 @@ const specialEvents = {
             'un': { center: [20.0, 0.0], zoom: 2, countries: ["United States of America", "Russia", "China", "France", "United Kingdom", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Príncipe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"] },
             'commonwealth': { center: [10.0, 20.0], zoom: 2, countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"] },
             'warsaw': { center: [52.0, 20.0], zoom: 4, countries: ["Russia", "Poland", "Germany", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Albania"] },
-         
-         
-         // --- CÁC KHU VỰC TOÀN CHÂU ---
+            'african_union': { center: [0.0, 20.0], zoom: 3, countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Republic of the Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "United Republic of Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"] },
+            'arab_league': { center: [25.0, 15.0], zoom: 3, countries: ["Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Mauritania", "Morocco", "Oman"] },
+            'opec': { center: [20.0, 20.0], zoom: 2, countries: ["Algeria", "Angola", "Ecuador", "Gabon", "Indonesia", "Iran", "Iraq", "Kuwait", "Libya", "Nigeria", "Qatar", "Saudi Arabia", "United Arab Emirates", "Venezuela" ] },
+            'mercosur': { center: [-15.0, -60.0], zoom: 3, countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Venezuela"] },
+            'mena': { center: [25.0, 10.0], zoom: 3, countries: ["Algeria", "Bahrain", "Djibouti", "Egypt", "Iran", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Morocco", "Oman", "Qatar", "Saudi Arabia", "Syria", "Tunisia", "United Arab Emirates", "Yemen"] },
+            'g7': { center: [45.0, -10.0], zoom: 2, countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"] },
+        
+        // --- CÁC KHU VỰC TOÀN CHÂU ---
             'asia': { center: [30.0, 90.0], zoom: 3, countries: ["Taiwan", "Russia", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei Darussalam", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"] },
             'europe': { center: [52.0, 15.0], zoom: 4, countries: ["Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Republic of Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom", "Vatican City", "Liechtenstein"] },
             'africa': { center: [0.0, 20.0], zoom: 3, countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Republic of the Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles", "Sierra Leone", "Somaliland", "South Africa", "South Sudan", "Sudan", "United Republic of Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe", "Somalia"] },
@@ -710,12 +777,16 @@ const specialEvents = {
         // --- CÁC TIỂU VÙNG CHÂU Á ---
             'east_asia': { center: [35.0, 110.0], zoom: 4, countries: ["China", "Japan", "South Korea", "North Korea", "Mongolia", "Taiwan"] },
             'south_asia': { center: [22.0, 78.0], zoom: 4, countries: ["India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Bhutan", "Afghanistan"] },
+            'north_asia': { center: [60.0, 100.0], zoom: 3, countries: ["Russia", "Mongolia"] },
+            'middle_east': { center: [30.0, 40.0], zoom: 4, countries: ["Saudi Arabia", "Iran", "Iraq", "Turkey", "United Arab Emirates", "Israel", "Jordan", "Kuwait", "Oman", "Qatar", "Syria", "Yemen"] },
+            'southeast_asia': { center: [10.0, 105.0], zoom: 4, countries: ["Indonesia", "Malaysia", "Philippines", "Singapore", "Thailand", "Vietnam", "Viet Nam", "Cambodia", "Laos", "Myanmar", "Brunei Darussalam", "Timor-Leste"] },
             'west_asia': { center: [25.0, 45.0], zoom: 4, countries: ["Saudi Arabia", "Iran", "Iraq", "Turkey", "United Arab Emirates", "Israel", "Jordan", "Kuwait", "Oman", "Qatar", "Syria", "Yemen"] },
             'central_asia': { center: [45.0, 65.0], zoom: 4, countries: ["Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"] },
         // --- CÁC TIỂU VÙNG CHÂU ÂU ---
             'northern_europe': { center: [62.0, 15.0], zoom: 4, countries: ["Norway", "Sweden", "Finland", "Denmark", "Iceland", "Estonia", "Latvia", "Lithuania"] },
             'southern_europe': { center: [40.0, 15.0], zoom: 5, countries: ["Italy", "Spain", "Portugal", "Greece", "Albania", "Croatia", "Serbia", "Slovenia", "Montenegro"] },
             'western_europe': { center: [48.0, 2.0], zoom: 5, countries: ["France", "Belgium", "Netherlands", "Luxembourg", "Switzerland", "Austria", "Germany", "United Kingdom", "Ireland"] },
+            'central_europe': { center: [50.0, 15.0], zoom: 5, countries: ["Germany", "Poland", "Czech Republic", "Slovakia", "Hungary", "Switzerland", "Austria", "Slovenia", "Croatia"] },
             'eastern_europe': { center: [50.0, 30.0], zoom: 4, countries: ["Russia", "Ukraine", "Poland", "Romania", "Bulgaria", "Hungary", "Czech Republic", "Slovakia", "Belarus", "Moldova"] },
         // --- CÁC TIỂU VÙNG CHÂU MỸ ---
             'north_america': { center: [45.0, -100.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Greenland"] },
@@ -724,6 +795,14 @@ const specialEvents = {
         // --- CÁC TIỂU VÙNG CHÂU PHI ---
             'north_africa': { center: [25.0, 15.0], zoom: 4, countries: ["Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Western Sahara", "Sudan"] },
             'west_africa': { center: [15.0, 0.0], zoom: 4, countries: ["Nigeria", "Ghana", "Senegal", "Mali", "Ivory Coast", "Niger", "Burkina Faso", "Guinea", "Benin", "Togo", "Sierra Leone", "Liberia", "Mauritania", "Gambia", "Guinea-Bissau"] },
+            'central_africa': { center: [0.0, 20.0], zoom: 4, countries: ["Democratic Republic of the Congo", "Republic of the Congo", "Central African Republic", "Chad", "Cameroon", "Gabon", "Equatorial Guinea", "São Tomé and Príncipe"] },
+            'east_africa': { center: [5.0, 40.0], zoom: 4, countries: ["Kenya", "Tanzania", "Uganda", "Ethiopia", "Somalia", "Rwanda", "Burundi", "South Sudan", "Djibouti", "Eritrea"] },
+            'north_east_africa': { center: [20.0, 50.0], zoom: 4, countries: ["Sudan", "Eritrea", "Djibouti", "Somalia", "Ethiopia"] },
+            'East_southern_africa': { center: [-10.0, 35.0], zoom: 4, countries: ["Kenya", "Tanzania", "Uganda", "Malawi", "Mozambique", "Zambia", "Zimbabwe", "Madagascar"] },
+            'central_southern_africa': { center: [-10.0, 25.0], zoom: 4, countries: ["Democratic Republic of the Congo", "Angola", "Zambia", "Malawi", "Mozambique", "Zimbabwe", "Botswana", "Namibia"] },
+            'north_west_africa': { center: [15.0, -10.0], zoom: 4, countries: ["Mali", "Mauritania", "Senegal", "Gambia", "Guinea", "Guinea-Bissau", "Sierra Leone", "Liberia", "Ivory Coast"] },
+            'south_west_africa': { center: [-15.0, 10.0], zoom: 4, countries: ["Angola", "Namibia", "Botswana", "South Africa", "Lesotho", "Swaziland"] },
+            'west_southern_africa': { center: [-20.0, 15.0], zoom: 4, countries: ["Angola", "Namibia", "Botswana", "Zambia", "Zimbabwe", "South Africa"] },
             'southern_africa': { center: [-25.0, 25.0], zoom: 4, countries: ["South Africa", "Namibia", "Botswana", "Zimbabwe", "Mozambique", "Lesotho", "Swaziland"] },
         // --- ĐẠI DƯƠNG & KHÁC ---
             'australasia': { center: [-25.0, 135.0], zoom: 4, countries: ["Australia", "New Zealand"] },
@@ -756,7 +835,36 @@ const specialEvents = {
                 "Hiệp định Genève - Chia cắt Việt Nam": "Hiệp định Genève (1954)",
                 "Giải phóng miền Nam - Thống nhất đất nước": "Sự kiện 30 tháng 4 năm 1975",
                 "Trận chiến Gạc Ma": "Hải chiến Gạc Ma 1988",
-                "Chiến tranh biên giới Việt - Trung": "Chiến tranh biên giới Việt–Trung, 1979"
+                "Chiến tranh biên giới Việt - Trung": "Chiến tranh biên giới Việt–Trung, 1979",
+                "Hải chiến Hoàng Sa": "Trận hải chiến Hoàng Sa 1974",
+                "Phong trào Đông Du": "Phong trào Đông Du",
+                "Phong trào Duy Tân": "Phong trào Duy Tân",
+                "Phong trào Cần Vương": "Phong trào Cần Vương",
+                "Khởi nghĩa Yên Bái": "Khởi nghĩa Yên Bái",
+                "Khởi nghĩa Bãi Sậy": "Khởi nghĩa Bãi Sậy",
+                "Khởi nghĩa Hương Khê": "Khởi nghĩa Hương Khê",
+                "Phong trào Xô Viết Nghệ Tĩnh": "Xô viết Nghệ Tĩnh",
+                "Phong trào Vô sản hóa": "Chính sách vô sản hóa ở Việt Nam",
+                "Phong trào Bình dân học vụ": "Phong trào Bình dân học vụ ở Việt Nam",
+                "Phong trào Nhân văn - Giai phẩm": "Phong trào Nhân văn - Giai phẩm",
+                "Phong trào Tây Sơn": "Tây Sơn (phong trào)",
+                "Chiến dịch Điện Biên Phủ": "Chiến dịch Điện Biên Phủ",
+                "Chiến dịch Hồ Chí Minh": "Chiến dịch Hồ Chí Minh",  
+                "Chiến dịch Biên Giới Thu - Đông 1950": "Chiến dịch Biên giới Thu – Đông 1950",
+                "Chiến dịch Tây Nguyên": "Chiến dịch Tây Nguyên",   
+                "Chiến dịch Mậu Thân 1968": "Tổng tiến công và nổi dậy Tết Mậu Thân",
+                "Phong trào Đồng Khởi": "Phong trào Đồng Khởi",
+                "Phong trào Nhân dân Việt Nam": "Phong trào Nhân dân Việt Nam chống Pháp",
+                "Phong trào Chấn Hưng Đạo Đức": "Phong trào Chấn Hưng Đạo Đức",
+                "Phong trào Thiên Chúa Giáo Cứu Quốc": "Phong trào Thiên Chúa Giáo Cứu Quốc",           
+                "Phong trào Hòa Hảo": "Hòa Hảo",
+                "Phong trào Cao Đài": "Cao Đài",     
+                "Phong trào Việt Nam Quốc Dân Đảng": "Việt Nam Quốc Dân Đảng",
+                "Phong trào Đảng Cộng sản Việt Nam": "Đảng Cộng sản Việt Nam",    
+                "Phong trào Đông Kinh Nghĩa Thục": "Đông Kinh Nghĩa Thục",
+                "Chiến dịch Biên Giới 1950": "Chiến dịch Biên giới Thu – Đông 1950",
+                "Chiến dịch Quảng Trị 1972": "Chiến dịch Quảng Trị (1972)",
+                "Hải chiến Trường Sa 1988": "Hải chiến Trường Sa 1988",
             };
             const searchName = wikiMap[eventName] || eventName;
             title.innerText = eventName;
@@ -823,6 +931,63 @@ toggleBtn.onclick = function() {
         toggleBtn.innerHTML = '▼'; // Đổi mũi tên chỉ xuống
     }
     isHidden = !isHidden;
+    // 1. Khai báo một cái "khay" để chứa các đường khí hậu
+let climateLayerGroup = L.layerGroup().addTo(map); 
+
+function toggleClimateLayer(mode) {
+    // Xóa sạch mọi thứ trong khay (làm chúng biến mất hoàn toàn khỏi map)
+    climateLayerGroup.clearLayers();
+
+    if (mode === "none") return; // Nếu chọn Tắt thì dừng lại ở đây
+
+    // A. Vẽ các đường Vĩ độ
+    if (mode === "lines" || mode === "all") {
+        const latitudes = [
+            { lat: 66.5, name: "Arctic Circle - Vòng Cực Bắc" },
+            { lat: 23.5, name: "Tropic of Cancer - Chí Tuyến Bắc" },
+            { lat: 0, name: "Equator - Xích Đạo", isEquator: true },
+            { lat: -23.5, name: "Tropic of Capricorn - Chí Tuyến Nam" },
+            { lat: -66.5, name: "Antarctic Circle - Vòng Cực Nam" }
+        ];
+
+        latitudes.forEach(item => {
+            const style = item.isEquator ? 
+                { color: "#00f2ff", weight: 2, opacity: 0.8, dashArray: "15, 10" } : 
+                { color: "#ffffff", weight: 1, opacity: 0.4, dashArray: "8, 8" };
+
+            L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(climateLayerGroup);
+            
+            L.marker([item.lat, 160], {
+                icon: L.divIcon({
+                    className: item.isEquator ? 'equator-label' : 'climate-label',
+                    html: item.name,
+                    iconSize: [250, 20]
+                })
+            }).addTo(climateLayerGroup);
+        });
+    }
+
+    // B. Vẽ các Đai khí hậu
+    if (mode === "zones" || mode === "all") {
+        const zones = [
+            { lat: 75, name: "North Frigid Zone - Hàn Đới Bắc" },
+            { lat: 45, name: "North Temperate Zone - Ôn Đới Bắc" },
+            { lat: 10, name: "Torrid Zone - Nhiệt Đới" },
+            { lat: -45, name: "South Temperate Zone - Ôn Đới Nam" },
+            { lat: -75, name: "South Frigid Zone - Hàn Đới Nam" }
+        ];
+
+        zones.forEach(zone => {
+            L.marker([zone.lat, 0], {
+                icon: L.divIcon({
+                    className: 'climate-zone-text',
+                    html: zone.name,
+                    iconSize: [300, 20]
+                })
+            }).addTo(climateLayerGroup);
+        });
+    }
+}
 };
     </script>
 </body>
