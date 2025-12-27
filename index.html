@@ -117,6 +117,7 @@ path.leaflet-interactive:hover {
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-family: 'Courier New', monospace; font-size: 14px; pointer-events: none;
         }
+        
 #ui-panel {
     position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
     width: 85%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
@@ -381,33 +382,105 @@ left-group {
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
                 <datalist id="country-list">
-    <option value="vietnam">Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
-    <option value="germany">Cộng Hoà Liên Bang Đức</option>
-    <option value="china">Trung Quốc</option>
-    <option value="cuba">Cộng Hoà Cuba</option>
-    <option value="russia">Liên Bang Nga</option>
-    <option value="usa">Hợp Chúng Quốc Hoa Kỳ</option>
-    <option value="france">Cộng Hoà Pháp</option>
-    <option value="japan">Nhật Bản Quốc</option>
-    <option value="south_korea">Đại Hàn Dân Quốc</option>
-    <option value="india">Cộng Hoà Ấn Độ</option>
-    <option value="brazil">Cộng Hoà Liên Bang Brazil</option>
-    <option value="united_kingdom">Vương Quốc Anh</option> 
-    <option value="canada">Vương Quốc Canada</option>
-    <option value="australia">Khối thịnh vượng chung Australia</option>
-    <option value="italy">Vương Quốc Ý (Italy)</option>
-    <option value="spain">Vương quốc Tây Ban Nha</option>
-    <option value="mexico">Hợp Chúng Quốc Mexico</option>
-    <option value="indonesia">Cộng hòa Indonesia</option>
-    <option value="thailand">Vương Quốc Thái Lan</option>
-    <option value="south_africa">Cộng Hoà Nam Phi</option>
-    <option value="turkey">Cộng hoà Thổ Nhĩ Kỳ</option>
-    <option value="saudi_arabia">Vương quốc Ả Rập Xê Út</option>
-    <option value="argentina">Cộng hòa Hợp bang Argentina</option>
-    <option value="egypt">Cộng hòa Ả Rập Ai Cập</option>
-    <option value="poland">Cộng Hoà Ba Lan</option>
-    <option value="ukraine">Cộng Hoà Ukraine</option>
-    <option value="iran">Cộng hòa Hồi giáo Iran</option>
+    <option value="vietnam">1. Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
+    <option value="germany">2. Cộng Hoà Liên Bang Đức</option>
+    <option value="china">3. Trung Quốc</option>
+    <option value="cuba">4. Cộng Hoà Cuba</option>
+    <option value="russia">5. Liên Bang Nga</option>
+    <option value="usa">6. Hợp Chúng Quốc Hoa Kỳ</option>
+    <option value="france">7. Cộng Hoà Pháp</option>
+    <option value="japan">8. Nhật Bản Quốc</option>
+    <option value="south_korea">9. Đại Hàn Dân Quốc</option>
+    <option value="india">10. Cộng Hoà Ấn Độ</option>
+    <option value="brazil">11. Cộng Hoà Liên Bang Brazil</option>
+    <option value="united_kingdom">12. Vương Quốc Anh</option> 
+    <option value="canada">13. Vương Quốc Canada</option>
+    <option value="australia">14. Khối thịnh vượng chung Australia</option>
+    <option value="italy">15. Vương Quốc Ý (Italy)</option>
+    <option value="spain">16. Vương quốc Tây Ban Nha</option>
+    <option value="mexico">17. Hợp Chúng Quốc Mexico</option>
+    <option value="indonesia">18. Cộng hòa Indonesia</option>
+    <option value="thailand">19. Vương Quốc Thái Lan</option>
+    <option value="south_africa">20. Cộng Hoà Nam Phi</option>
+    <option value="turkey">21. Cộng hoà Thổ Nhĩ Kỳ</option>
+    <option value="saudi_arabia">22. Vương quốc Ả Rập Xê Út</option>
+    <option value="argentina">23. Cộng hòa Hợp bang Argentina</option>
+    <option value="egypt">24. Cộng hòa Ả Rập Ai Cập</option>
+    <option value="poland">25. Cộng Hoà Ba Lan</option>
+    <option value="ukraine">26. Cộng Hoà Ukraine</option>
+    <option value="iran">27. Cộng hòa Hồi giáo Iran</option>
+    <option value="laos">28. Nước Cộng hòa Dân chủ Nhân dân Lào</option>
+    <option value="cambodia">29. Vương quốc Campuchia (sắp sụp đổ)</option>
+    <option value="myanmar">30. Cộng hòa Liên bang Myanmar</option>
+    <option value="philippines">31. Cộng hòa Philippines</option>
+    <option value="malaysia">32. Liên bang Malaysia</option>
+    <option value="brunei">33. Negara Brunei Darussalam</option>
+    <option value="singapore">34. Cộng hòa Singapore</option>
+    <option value="timor_leste">35. Cộng hòa Dân chủ Nhân dân Timor-Leste</option>
+    <option value="bangladesh">36. Cộng hòa Dân chủ Nhân dân Bangladesh</option>
+    <option value="nepal">37. Cộng hòa Dân chủ Nhân dân Nepal</option>
+    <option value="pakistan">38. Cộng hòa Dân chủ Nhân dân Pakistan</option>
+    <option value="afghanistan">39. Cộng hòa Dân chủ Nhân dân Afghanistan</option>
+    <option value="sri_lanka">40. Cộng hòa Dân chủ Nhân dân Sri Lanka</option>
+    <option value="kazakhstan">41. Cộng hòa Dân chủ Nhân dân Kazakhstan</option>
+    <option value="uzbekistan">42. Cộng hòa Dân chủ Nhân dân Uzbekistan</option>
+    <option value="turkmenistan">43. Cộng hòa Dân chủ Nhân dân Turkmenistan</option>
+    <option value="tajikistan">44. Cộng hòa Dân chủ Nhân dân Tajikistan</option>
+    <option value="kyrgyzstan">45. Cộng hòa Dân chủ Nhân dân Kyrgyzstan</option>
+    <option value="mongolia">46. Cộng hòa Dân chủ Nhân dân Mongolia</option>
+    <option value="bhutan">47. Cộng hòa Dân chủ Nhân dân Bhutan</option>
+    <option value="north_korea">48. Cộng hòa Dân chủ Nhân dân Triều Tiên</option>
+    <option value="south_sudan">49. Cộng hòa Nam Sudan</option>
+    <option value="ethiopia">50. Cộng hòa Liên bang Dân chủ Ethiopia</option>
+    <option value="nigeria">51. Cộng hòa Liên bang Nigeria</option>
+    <option value="kenya">52. Cộng hòa Kenya</option>
+    <option value="ghana">53. Cộng hòa Ghana</option>
+    <option value="ivory_coast">54. Cộng hòa Bờ Biển Ngà</option>
+    <option value="tanzania">55. Cộng hòa Liên bang Tanzania</option>
+    <option value="uganda">56. Cộng hòa Uganda</option>
+    <option value="rwanda">57. Cộng hòa Rwanda</option>
+    <option value="burundi">58. Cộng hòa Burundi</option>
+    <option value="zambia">59. Cộng hòa Zambia</option>
+    <option value="malawi">60. Cộng hòa Malawi</option>
+    <option value="mozambique">61. Cộng hòa Mozambique</option>
+    <option value="zimbabwe">62. Cộng hòa Zimbabwe</option>
+    <option value="botswana">63. Cộng hòa Botswana</option>
+    <option value="namibia">64. Cộng hòa Namibia</option>
+    <option value="lesotho">65. Cộng hòa Lesotho</option>
+    <option value="swaziland">66. Cộng hòa Eswatini (Swaziland)</option>
+    <option value="madagascar">67. Cộng hòa Madagascar</option>
+    <option value="comoros">68. Liên bang Comoros</option>
+    <option value="seychelles">69. Cộng hòa Seychelles</option>
+    <option value="mauritius">70. Cộng hòa Mauritius</option>
+    <option value="cape_verde">71. Cộng hòa Cabo Verde</option>
+    <option value="sao_tome_principe">72. Cộng hòa São Tomé và Príncipe</option>
+    <option value="gabon">73. Cộng hòa Gabon</option>
+    <option value="congo_brazzaville">74. Cộng hòa Congo</option>
+    <option value="democratic_republic_of_congo">75. Cộng hòa Dân chủ Congo</option>
+    <option value="angola">76. Cộng hòa Angola</option>
+    <option value="chad">77. Cộng hòa Chad</option>
+    <option value="central_african_republic">78. Cộng hòa Trung Phi</option>
+    <option value="cameroon">79. Cộng hòa Cameroon</option>
+    <option value="eritrea">80. Cộng hòa Eritrea</option>
+    <option value="djibouti">81. Cộng hòa Djibouti</option>
+    <option value="somalia">82. Cộng hòa Somalia</option>
+    <option value="sudan">83. Cộng hòa Sudan</option>
+    <option value="south_sudan">84. Cộng hòa Nam Sudan</option>
+    <option value="libya">85. Cộng hòa Libya</option>
+    <option value="egypt">86. Cộng hòa Ả Rập Ai Cập</option>
+    <option value="morocco">87. Cộng hòa Ma-rốc</option>
+    <option value="tunisia">88. Cộng hòa Tunisia</option>
+    <option value="algeria">89. Cộng hòa Algeria</option>
+    <option value="mali">90. Cộng hòa Mali</option>
+    <option value="burkina_faso">91. Cộng hòa Burkina Faso</option>
+    <option value="niger">92. Cộng hòa Niger</option>
+    <option value="central_african_republic">93. Cộng hòa Trung Phi</option>
+    <option value="cameroon">94. Cộng hòa Cameroon</option>
+    <option value="senegal">95. Cộng hòa Senegal</option>
+    <option value="gambia">96. Cộng hòa Gambia</option>
+    <option value="guinea">97. Cộng hòa Guinea</option>
+    <option value="sierra_leone">98. Cộng hòa Sierra Leone</option>
+    <option value="liberia">99. Cộng hòa Liberia</option>
 
 </datalist>
 
@@ -570,7 +643,112 @@ const specialEvents = {
     "egypt": { center: [26.8206, 30.8025], zoom: 6, adminName: "Egypt" },
     "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
     "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
-    "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" }
+    "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" },
+    "Laos": { center: [19.8563, 102.4955], zoom: 6, adminName: "Lao People's Democratic Republic" },
+    "Cambodia": { center: [12.5657, 104.991], zoom: 6, adminName: "Kingdom of Cambodia" },
+    "myanmar": { center: [21.9162, 95.956], zoom: 6, adminName: "Myanmar" },
+    "philippines": { center: [12.8797, 121.7740], zoom: 5, adminName: "Philippines" },
+    "malaysia": { center: [4.2105, 101.9758], zoom: 6, adminName: "Malaysia" },
+    "brunei": { center: [4.5353, 114.7277], zoom: 6, adminName: "Brunei" },
+    "singapore": { center: [1.3521, 103.8198], zoom: 6, adminName: "Singapore" },
+    "timor_leste": { center: [-8.8742, 125.7275], zoom: 7, adminName: "Democratic Republic of Timor-Leste" },
+    "bangladesh": { center: [23.685, 90.3563], zoom: 6, adminName: "People's Republic of Bangladesh" },
+    "nepal": { center: [28.3949, 84.1240], zoom: 6, adminName: "Nepal" },
+    "pakistan": { center: [30.3753, 69.3451], zoom: 5, adminName: "Pakistan" },
+    "afghanistan": { center: [33.9391, 67.7099], zoom: 5, adminName: "Afghanistan" },
+    "sri_lanka": { center: [7.8731, 80.7718], zoom: 6, adminName: "Sri Lanka" },
+    "kazakhstan": { center: [48.0196, 66.9237], zoom: 4, adminName: "Kazakhstan" },
+    "uzbekistan": { center: [41.3775, 64.5853], zoom: 5, adminName: "Uzbekistan" },
+    "turkmenistan": { center: [38.9697, 59.5563], zoom: 5, adminName: "Turkmenistan" },
+    "tajikistan": { center: [38.8610, 71.2761], zoom: 5, adminName: "Tajikistan" },
+    "kyrgyzstan": { center: [41.2044, 74.7661], zoom: 5, adminName: "Kyrgyzstan" },
+    "mongolia": { center: [46.8625, 103.8467], zoom: 4, adminName: "Mongolia" },
+    "bhutan": { center: [27.5000, 90.5000], zoom: 6, adminName: "Bhutan" },
+    "taiwan": { center: [23.6978, 120.9605], zoom: 7, adminName: "Taiwan" },
+    "ireland": { center: [53.1424, -7.6921], zoom: 6, adminName: "Ireland" },
+    "Denmark": { center: [56.2639, 9.5018], zoom: 6, adminName: "Denmark" },
+    "Norway": { center: [60.472, 8.4689], zoom: 6, adminName: "Norway" },
+    "Sweden": { center: [60.1282, 18.6435], zoom: 6, adminName: "Sweden" },
+    "Finland": { center: [61.9241, 25.7482], zoom: 6, adminName: "Finland" },
+    "Iceland": { center: [64.9631, -19.0208], zoom: 6, adminName: "Iceland" },
+    "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
+    "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
+    "Belgium": { center: [50.5039, 4.4699], zoom: 6, adminName: "Belgium" },
+    "bulgaria": { center: [42.7339, 25.4858], zoom: 6, adminName: "Bulgaria" },
+    "croatia": { center: [45.1, 15.2], zoom: 6, adminName: "Croatia" },
+    "greece": { center: [39.0742, 21.8243], zoom: 6, adminName: "Greece" },
+    "hungary": { center: [47.1625, 19.5033], zoom: 6, adminName: "Hungary" },
+    "portugal": { center: [39.3999, -8.2245], zoom: 6, adminName: "Portugal" },
+    "romania": { center: [45.9432, 24.9668], zoom: 6, adminName: "Romania" },
+    "serbia": { center: [44.0165, 21.0059], zoom: 6, adminName: "Serbia" },
+    "switzerland": { center: [46.8182, 8.2275], zoom: 6, adminName: "Switzerland" },
+    "austria": { center: [47.5162, 14.5501], zoom: 6, adminName: "Austria" },
+    "czech_republic": { center: [49.8175, 15.473], zoom: 6, adminName: "Czech Republic" },
+    "slovakia": { center: [48.669, 19.699], zoom: 6, adminName: "Slovakia" },
+    "slovenia": { center: [46.1512, 14.9955], zoom: 6, adminName: "Slovenia" },
+    "lithuania": { center: [55.1694, 23.8813], zoom: 6, adminName: "Lithuania" },
+    "latvia": { center: [56.8796, 24.6032], zoom: 6, adminName: "Latvia" },
+    "estonia": { center: [58.5953, 25.0136], zoom: 6, adminName: "Estonia" },
+    "croatia": { center: [45.1, 15.2], zoom: 6, adminName: "Croatia" },
+    "bosnia_herzegovina": { center: [43.9159, 17.6791], zoom: 6, adminName: "Bosnia and Herzegovina" },
+    "albania": { center: [41.1533, 20.1683], zoom: 6, adminName: "Albania" },
+    "macedonia": { center: [41.6086, 21.7453], zoom: 6, adminName: "North Macedonia" },
+    "montenegro": { center: [42.7087, 19.3744], zoom: 6, adminName: "Montenegro" },
+    "north_macedonia": { center: [41.6086, 21.7453], zoom: 6, adminName: "North Macedonia" },
+    "kosovo": { center: [42.6026, 20.903], zoom: 6, adminName: "Kosovo" },
+    "malta": { center: [35.9375, 14.3754], zoom: 8, adminName: "Malta" },
+    "cyprus": { center: [35.1264, 33.4299], zoom: 7, adminName: "Cyprus" },
+    "luxembourg": { center: [49.8153, 6.1296], zoom: 8, adminName: "Luxembourg" },
+    "monaco": { center: [43.7384, 7.4246], zoom: 10, adminName: "Monaco" },
+    "andorra": { center: [42.5063, 1.5218], zoom: 9, adminName: "Andorra" },
+    "san_marino": { center: [43.9333, 12.45], zoom: 10, adminName: "San Marino" },
+    "vatican_city": { center: [41.9029, 12.4534], zoom: 12, adminName: "Vatican City" },
+    "liechtenstein": { center: [47.166, 9.5554], zoom: 9, adminName: "Liechtenstein" },
+    "maldives": { center: [3.2028, 73.2207], zoom: 7, adminName: "Maldives" },
+    "seychelles": { center: [-4.6796, 55.492], zoom: 7, adminName: "Seychelles" },
+    "mauritius": { center: [-20.3484, 57.5522], zoom: 7, adminName: "Mauritius" },
+    "comoros": { center: [-11.6455, 43.3333], zoom: 7, adminName: "Comoros" },
+    "madagascar": { center: [-18.7669, 46.8691], zoom: 6, adminName: "Madagascar" },
+    "mozambique": { center: [-18.6657, 35.5296], zoom: 6, adminName: "Mozambique" },
+    "zimbabwe": { center: [-19.0154, 29.1549], zoom: 6, adminName: "Zimbabwe" },
+    "zambia": { center: [-13.1339, 27.8493], zoom: 6, adminName: "Zambia" },
+    "malawi": { center: [-13.2543, 34.3015], zoom: 6, adminName: "Malawi" },
+    "tanzania": { center: [-6.369, 34.8888], zoom: 6, adminName: "Tanzania" },
+    "kenya": { center: [-1.2921, 36.8219], zoom: 6, adminName: "Kenya" },
+    "uganda": { center: [1.3733, 32.2903], zoom: 6, adminName: "Uganda" },
+    "rwanda": { center: [-1.9403, 29.8739], zoom: 6, adminName: "Rwanda" },
+    "burundi": { center: [-3.3731, 29.9189], zoom: 6, adminName: "Burundi" },
+    "south_sudan": { center: [6.877, 31.307], zoom: 6, adminName: "South Sudan" },
+    "ethiopia": { center: [9.145, 40.4897], zoom: 6, adminName: "Ethiopia" },
+    "somalia": { center: [5.1521, 46.1996], zoom: 6, adminName: "Somalia"  },
+    "djibouti": { center: [11.8251, 42.5903], zoom: 7, adminName: "Djibouti"  },
+    "eritrea": { center: [15.1794, 39.7823], zoom: 6, adminName: "Eritrea"  },
+    "sudan": { center: [12.8628, 30.2176], zoom: 6, adminName: "Sudan"  },
+    "chad": { center: [15.4542, 18.7322], zoom: 6, adminName: "Chad"  },
+    "niger": { center: [17.6078, 8.0817], zoom: 6, adminName: "Niger"  },
+    "mali": { center: [17.5707, -3.9962], zoom: 6, adminName: "Mali"  },
+    "burkina_faso": { center: [12.2383, -1.5616], zoom: 6, adminName: "Burkina Faso"  },
+    "ghana": { center: [7.9465, -1.0232], zoom: 6, adminName: "Ghana"  },
+    "ivory_coast": { center: [7.539989, -5.54708], zoom: 6, adminName: "Ivory Coast"  },
+    "senegal": { center: [14.4974, -14.4524], zoom: 6, adminName: "Senegal" },
+    "gambia": { center: [13.4432, -15.3101], zoom: 7, adminName: "Gambia"  },
+    "guinea": { center: [9.9456, -9.6966], zoom: 6, adminName: "Guinea"  },
+    "sierra_leone": { center: [8.4606, -11.7799], zoom: 6, adminName: "Sierra Leone"  },
+    "liberia": { center: [6.4281, -9.4295], zoom: 6, adminName: "Liberia"  },
+    "ghana": { center: [7.9465, -1.0232], zoom: 6, adminName: "Ghana" },
+    "togo": { center: [8.6195, 0.8248], zoom: 6, adminName: "Togo"  },
+    "benin": { center: [9.3077, 2.3158], zoom: 6, adminName: "Benin" },
+    "nigeria": { center: [9.082, 8.6753], zoom: 6, adminName: "Nigeria" },
+    "cameroon": { center: [7.3697, 12.3547], zoom: 6, adminName: "Cameroon" },
+    "central_african_republic": { center: [6.6111, 20.9394], zoom: 6, adminName: "Central African Republic"  },
+    "congo_brazzaville": { center: [-0.228, 15.8277], zoom: 6, adminName: "Congo-Brazzaville"  },
+    "congo_kinshasa": { center: [-4.0383, 21.7587], zoom: 6, adminName: "Congo-Kinshasa"  },
+    "angola": { center: [-11.2027, 17.8739], zoom: 6, adminName: "Angola"  },
+    "namibia": { center: [-22.9576, 18.4904], zoom: 6, adminName: "Namibia"  },
+    "botswana": { center: [-22.3285, 24.6849], zoom: 6, adminName: "Botswana" },
+    "lesotho": { center: [-29.6099, 28.2336], zoom: 7, adminName: "Lesotho"  },
+    "swaziland": { center: [-26.5225, 31.4659], zoom: 7, adminName: "Eswatini"  },
+    "south_africa": { center: [-30.5595, 22.9375], zoom: 6, adminName: "South Africa" },
 };
 
         // --- 1. KHỞI TẠO BẢN ĐỒ ---
@@ -599,6 +777,23 @@ function toggleClimateLayer(mode) {
         dashArray: "5, 10",
         interactive: false
     };
+// Thêm vào trong hàm toggleClimateLayer, chỗ mode === "zones" hoặc "all"
+const africaPhysical = [
+    { lat: 23.5, lng: 15, name: "Sahara Desert - Hoang mạc Sahara" },
+    { lat: -23.0, lng: 20, name: "Kalahari Desert - Hoang mạc Kalahari" },
+    { lat: 0, lng: 20, name: "Congo Basin - Lưu vực sông Congo" },
+    { lat: 15, lng: 38, name: "Ethiopian Highlands - Cao nguyên Ethiopia" }
+];
+
+africaPhysical.forEach(loc => {
+    L.marker([loc.lat, loc.lng], {
+        icon: L.divIcon({
+            className: 'africa-physical-label',
+            html: loc.name,
+            iconSize: [250, 20]
+        })
+    }).addTo(climateLayerGroup);
+});
 
     // A. Vẽ các đường Vĩ độ (Nếu chọn 'lines' hoặc 'all')
     if (mode === "lines" || mode === "all") {
@@ -791,6 +986,7 @@ if(mainSlider) {
         // --- CÁC TIỂU VÙNG CHÂU MỸ ---
             'north_america': { center: [45.0, -100.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Greenland"] },
             'central_america': { center: [15.0, -85.0], zoom: 5, countries: ["Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panama"] },
+            'caribbean': { center: [15.0, -75.0], zoom: 5, countries: ["Cuba", "Haiti", "Dominican Republic", "Jamaica", "Bahamas", "Barbados", "Saint Lucia", "Grenada", "Trinidad and Tobago", "Saint Vincent and the Grenadines", "Antigua and Barbuda", "Dominica"] },
             'south_america': { center: [-20.0, -60.0], zoom: 3, countries: ["Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname"] },
         // --- CÁC TIỂU VÙNG CHÂU PHI ---
             'north_africa': { center: [25.0, 15.0], zoom: 4, countries: ["Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Western Sahara", "Sudan"] },
