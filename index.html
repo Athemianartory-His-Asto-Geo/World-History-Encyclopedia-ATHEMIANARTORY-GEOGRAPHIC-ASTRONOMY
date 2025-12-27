@@ -379,6 +379,13 @@ left-group {
                 <option value="zones">🌤️ Hiện các Đai khí hậu</option>
                 <option value="all">✨ Hiện tất cả</option>
             </select>
+            <select id="climate-subtype" style="display: none; background: #1a1a1a; color: #fff; border: 1px solid #9933ff; padding: 5px; border-radius: 5px; margin-left: 5px;" onchange="renderClimateSubtype(this.value)">
+    <option value="none">-- Chọn kiểu chi tiết --</option>
+    <option value="monsoon">Tím - Gió mùa (Monsoon)</option>
+    <option value="oceanic">Xanh nhạt - Hải dương (Oceanic)</option>
+    <option value="desert">Vàng - Khô hạn (Arid)</option>
+    <option value="mediterranean">Cam - Địa Trung Hải</option>
+</select>
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
                 <datalist id="country-list">
@@ -765,25 +772,41 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}
 let climateLayerGroup = L.layerGroup().addTo(map);
 
 function toggleClimateLayer(mode) {
-    // Xóa sạch mọi thứ trong khay trước khi vẽ cái mới (Hoặc để trống nếu chọn "none")
+    const subMenu = document.getElementById('climate-subtype');
     climateLayerGroup.clearLayers();
-    
-    if (mode === "none") return;
+    activeClimateGroup = null; 
 
-    const climateLineStyle = {
-        color: "#ffffff",
-        weight: 1,
-        opacity: 0.2,
-        dashArray: "5, 10",
-        interactive: false
-    };
-// Thêm vào trong hàm toggleClimateLayer, chỗ mode === "zones" hoặc "all"
-const africaPhysical = [
-    { lat: 23.5, lng: 15, name: "Sahara Desert - Hoang mạc Sahara" },
-    { lat: -23.0, lng: 20, name: "Kalahari Desert - Hoang mạc Kalahari" },
-    { lat: 0, lng: 20, name: "Congo Basin - Lưu vực sông Congo" },
-    { lat: 15, lng: 38, name: "Ethiopian Highlands - Cao nguyên Ethiopia" }
-];
+    // Hiện menu phụ khi chọn Đới khí hậu
+    if (mode === "zones" || mode === "all") {
+        subMenu.style.display = "inline-block";
+    } else {
+        subMenu.style.display = "none";
+        subMenu.value = "none";
+    }
+
+    if (mode === "lines" || mode === "all") {
+        const latitudes = [
+            { lat: 66.5,  name: "Arctic Circle - VÒNG CỰC BẮC" },
+            { lat: 23.5,  name: "Tropic of Cancer - CHÍ TUYẾN BẮC" },
+            { lat: 0,     name: "EQUADOR - ĐƯỜNG XÍCH ĐẠO", isEquator: true },
+            { lat: -23.5, name: "Tropic of Capricorn - CHÍ TUYẾN NAM" },
+            { lat: -66.5, name: "Antarctic Circle - VÒNG CỰC NAM" }
+        ];
+        latitudes.forEach(item => {
+            const style = item.isEquator ? 
+                { color: "#00f2ff", weight: 2, opacity: 0.8, dashArray: "15, 10" } : 
+                { color: "#ffffff", weight: 1, opacity: 0.4, dashArray: "8, 8" };
+            L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(climateLayerGroup);
+        });
+    }
+    renderBorders(document.getElementById('year-input').value);
+}
+
+// Hàm mới để xử lý chọn chi tiết
+function renderClimateSubtype(type) {
+    activeClimateGroup = (type === "none") ? null : climateGroups[type];
+    renderBorders(document.getElementById('year-input').value);
+
 
 africaPhysical.forEach(loc => {
     L.marker([loc.lat, loc.lng], {
@@ -900,6 +923,16 @@ if(mainSlider) {
             geojsonLayer = L.geoJSON(worldDataCache, {
                 style: (feature) => {
                     const name = feature.properties.ADMIN || feature.properties.name || "";
+                    // 1. ƯU TIÊN NHUỘM MÀU KHÍ HẬU
+if (activeClimateGroup && activeClimateGroup.countries.includes(name)) {
+    return {
+        fillColor: activeClimateGroup.color,
+        fillOpacity: 0.7,
+        color: "#ffffff",
+        weight: 1.5,
+        dashArray: ""
+    };
+}
                     let isHighlighted = false;
                     let isCustom = customColoredCountries[name];
 
