@@ -13,6 +13,15 @@
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
         #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
         
+path.leaflet-interactive {
+    filter: drop-shadow(0 0 2px #00FF00);
+    transition: all 0.3s;
+}
+path.leaflet-interactive:hover {
+    stroke-width: 4;
+    stroke: #fff; /* Di chuột vào sẽ sáng trắng lên */
+}
+
     /* Chỉnh màu cho ô Select2 giống giao diện của bạn */
 .select2-container--default .select2-selection--single {
     background-color: rgba(30, 30, 30, 0.9) !important;
@@ -20,6 +29,27 @@
     border-radius: 8px !important;
     height: 38px !important;
     color: white !important;
+}
+
+.equator-label {
+    color: #00f2ff;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 3px #000;
+    pointer-events: none; /* Không cản trở việc click bản đồ */
+}
+
+/* Nhãn tên các đới khí hậu */
+.climate-label {
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.5); /* Màu trắng mờ cho tinh tế */
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 5px; /* Giãn chữ ra cho giống bản đồ chuyên nghiệp */
+    text-transform: uppercase;
+    pointer-events: none;
 }
 
 #country-select {
@@ -75,15 +105,23 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-family: 'Courier New', monospace; font-size: 14px; pointer-events: none;
         }
+#ui-panel {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    width: 85%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
+    padding: 10px 30px; border-radius: 15px; 
+    z-index: 1000; 
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    text-align: center; 
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Thêm 2 dòng này */
+    pointer-events: none; 
+}
 
-        #ui-panel {
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-            width: 85%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
-            padding: 10px 30px; border-radius: 15px; z-index: 1000; 
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+/* Đảm bảo tất cả các nút, ô chọn và slider bên trong panel vẫn bấm được */
+#ui-panel > *, #ui-panel .header-row *, #slider {
+    pointer-events: auto;
+}
 
         #toggle-ui {
             position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
@@ -103,7 +141,16 @@
 .system-credit { color: #ffffff !important; opacity: 1 !important; }
 
         .event-detail { font-size: 20px; color: #ffffff; margin: 5px 0 20px 0; font-style: italic; font-weight: 500; }
-        #slider { width: 100%; cursor: pointer; accent-color: #ffcc00; height: 10px; }
+       #slider { 
+    width: 100%; 
+    cursor: pointer; 
+    accent-color: #ffcc00; 
+    height: 25px; /* Tăng độ dày để dễ chạm trúng */
+    position: relative;
+    z-index: 9999; /* Đảm bảo nổi lên trên cùng */
+    pointer-events: auto !important; 
+    margin: 15px 0;
+}
 
         .island-label {
             background: transparent !important; border: none !important;
@@ -159,7 +206,8 @@
         #wiki-content img { width: 100%; border-radius: 10px; margin: 15px 0; border: 1px solid #555; }
         #wiki-content p { font-size: 14px; line-height: 1.6; color: #ddd; text-align: justify; }
 
-        .alliance-btn-small {
+/* Thành thế này: */
+.alliance-btn-small {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -169,7 +217,8 @@
     font-size: 11px;
     font-weight: bold;
     transition: all 0.3s;
-};
+} /* KHÔNG có dấu ; ở đây */
+
 
 .alliance-btn-small:hover {
     background: #ffcc00;
@@ -236,6 +285,25 @@ left-group {
     transition: all 0.3s;
     white-space: nowrap;
 }
+
+.climate-label {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            font-style: italic;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        /* Chữ hiển thị tên Đới khí hậu (mờ ảo ở giữa bản đồ) */
+        .climate-zone-text {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+            pointer-events: none;
+        }
 
 .alliance-btn-modern:hover, .alliance-btn-modern.active {
     background: #ffcc00;
@@ -314,7 +382,7 @@ left-group {
 </datalist>
 
                 <select id="alliance-select" onchange="flyToRegion(this.value)">
-                    <option value="" selected">🌐 Chọn Liên minh</option>
+                    <option value="" selected">🌐 CHỌN CÁC KHU VỰC-LIÊN MINH</option>
                     <option value="asean">ASEAN</option>
                     <option value="eu">EUROPEAN UNION (EU)</option>
                     <option value="nato">NATO-OTAN</option>
@@ -469,7 +537,74 @@ const specialEvents = {
 
         var map = L.map('map', { zoomControl: false, attributionControl: false, preferCanvas: true }).setView([16.0, 108.0], 5); 
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+        // --- CÁC ĐƯỜNG VĨ ĐỘ & ĐỚI KHÍ HẬU (English - Tiếng Việt) ---
+        const climateLineStyle = {
+            color: "#ffffff",
+            weight: 1,
+            opacity: 0.2,
+            dashArray: "5, 10",
+            interactive: false
+        };
+
+        // Danh sách các đường vĩ độ quan trọng
+        const latitudes = [
+            { lat: 66.5, name: "Arctic Circle - Vòng Cực Bắc" },
+            { lat: 23.5, name: "Tropic of Cancer - Chí Tuyến Bắc" },
+            { lat: 0, name: "Equator - Xích Đạo", isEquator: true },
+            { lat: -23.5, name: "Tropic of Capricorn - Chí Tuyến Nam" },
+            { lat: -66.5, name: "Antarctic Circle - Vòng Cực Nam" }
+        ];
+
+        latitudes.forEach(item => {
+            // Nếu là Xích đạo thì cho nét đậm và màu xanh neon như bạn muốn
+            const style = item.isEquator ? {
+                color: "#00f2ff",
+                weight: 2,
+                opacity: 0.6,
+                dashArray: "10, 10",
+                interactive: false
+            } : climateLineStyle;
+
+            // Vẽ đường ngang qua bản đồ
+            L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(map);
+
+            // Thêm nhãn tên (Đặt ở kinh độ 160 để tránh đè lên các lục địa chính)
+            L.marker([item.lat, 160], {
+                icon: L.divIcon({
+                    className: item.isEquator ? 'equator-label' : 'climate-label',
+                    html: item.name,
+                    iconSize: [250, 20]
+                })
+            }).addTo(map);
+        });
+
+        // Thêm tên các Đới Khí Hậu (Nằm giữa các đường vĩ độ)
+        const climateZones = [
+            { lat: 75, name: "North Frigid Zone - Hàn Đới Bắc" },
+            { lat: 45, name: "North Temperate Zone - Ôn Đới Bắc" },
+            { lat: 12, name: "Torrid Zone - Nhiệt Đới" }, // Hơi lệch lên trên Xích đạo một chút
+            { lat: -45, name: "South Temperate Zone - Ôn Đới Nam" },
+            { lat: -75, name: "South Frigid Zone - Hàn Đới Nam" }
+        ];
+
+        climateZones.forEach(zone => {
+            L.marker([zone.lat, 0], { // Đặt ở giữa bản đồ (Kinh độ 0)
+                icon: L.divIcon({
+                    className: 'climate-zone-text',
+                    html: zone.name,
+                    iconSize: [300, 20]
+                })
+            }).addTo(map);
+        });
+
+        // --- KHAI BÁO BIẾN TOÀN CỤC ---
+        let geojsonLayer;
+        let worldDataCache = null;
+        let customColoredCountries = {}; 
+        let activeAlliance = null;
+        let flyTimer;
 
         map.on('mousemove', function(e) {
             document.getElementById('coords-box').innerHTML = `LAT: ${e.latlng.lat.toFixed(4)} | LNG: ${e.latlng.lng.toFixed(4)}`;
@@ -489,87 +624,132 @@ const specialEvents = {
             });
         }
 
-        let geojsonLayer;
-        let activeEventMarker;
-        let worldDataCache = null;
-
-        // Tải dữ liệu biên giới từ nguồn tin cậy
         async function fetchBorders() {
             try {
                 const response = await fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson');
                 worldDataCache = await response.json();
                 renderBorders(document.getElementById('year-input').value);
             } catch (err) {
-                console.warn("Lỗi fetch biên giới. Hãy kiểm tra kết nối internet.");
+                console.warn("Lỗi tải biên giới.");
             }
         }
 
         function renderBorders(year) {
-    if (!worldDataCache) return;
-    if (geojsonLayer) map.removeLayer(geojsonLayer);
+            if (!worldDataCache) return;
+            if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-    const countryInput = document.getElementById('country-select');
-    const selectedCountry = countryInput ? countryInput.value.toLowerCase() : "";
-    
-    geojsonLayer = L.geoJSON(worldDataCache, {
-    style: (feature) => {
-        const name = feature.properties.ADMIN || feature.properties.name || "";
-        let isHighlighted = false;
+            const selectedCountry = document.getElementById('country-select').value.toLowerCase();
+            
+            geojsonLayer = L.geoJSON(worldDataCache, {
+                style: (feature) => {
+                    const name = feature.properties.ADMIN || feature.properties.name || "";
+                    let isHighlighted = false;
+                    let isCustom = customColoredCountries[name];
 
-        // Giữ nguyên logic bôi đỏ cũ của bạn
-        if (activeAlliance && activeAlliance.includes(name)) {
-            isHighlighted = true;
-        } 
-        else if (selectedCountry && countryCoords[selectedCountry]) {
-            const targetAdmin = countryCoords[selectedCountry].adminName;
-            if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
-                isHighlighted = true;
+                    if (activeAlliance && activeAlliance.includes(name)) {
+                        isHighlighted = true;
+                    } 
+                    else if (selectedCountry && countryCoords[selectedCountry]) {
+                        const targetAdmin = countryCoords[selectedCountry].adminName;
+                        if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
+                            isHighlighted = true;
+                        }
+                    }
+
+                    return {
+                        color: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "#00FF00"),
+                        weight: (isHighlighted || isCustom) ? 3 : 1,
+                        fillColor: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "transparent"),
+                        fillOpacity: (isHighlighted || isCustom) ? 0.4 : 0.05,
+                        dashArray: (isHighlighted || isCustom) ? "" : "3, 3",
+                        interactive: true 
+                    };
+                },
+                onEachFeature: (feature, layer) => {
+                    layer.on('click', function (e) {
+                        const countryName = feature.properties.ADMIN || feature.properties.name;
+                        L.popup().setLatLng(e.latlng).setContent(`
+                            <div style="color:black; font-family:Arial; padding:5px;">
+                                <b style="font-size:14px;">${countryName}</b><br>
+                                <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
+                            </div>
+                        `).openOn(map);
+                        fetchWiki(countryName); 
+                    });
+                    layer.on('dblclick', function (e) {
+                        const countryName = feature.properties.ADMIN || feature.properties.name;
+                        customColoredCountries[countryName] = !customColoredCountries[countryName];
+                        renderBorders(document.getElementById('year-input').value);
+                        L.DomEvent.stopPropagation(e);
+                    });
+                }
+            }).addTo(map);
+            geojsonLayer.bringToBack();
+        }
+
+        // --- DANH SÁCH TỌA ĐỘ KHU VỰC (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) ---
+        const regionCoords = {
+        // --- CÁC LIÊN MINH QUỐC TẾ ---
+            'asean': { center: [10.8, 110.0], zoom: 4, countries: ["East Timor", "Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"] },
+            'eu': { center: [50.0, 10.0], zoom: 4, countries: ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain" ,	"Sweden"] },
+            'nato': { center: [45.0, -20.0], zoom: 3, countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"] },
+            'brics': { center: [0.0, 20.0], zoom: 2, countries: ["Brazil", "Russia", "India", "China", "South Africa", "Egypt", "Ethiopia", "Iran", "United Arab Emirates"] },
+            'un': { center: [20.0, 0.0], zoom: 2, countries: ["United States of America", "Russia", "China", "France", "United Kingdom", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Príncipe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"] },
+            'commonwealth': { center: [10.0, 20.0], zoom: 2, countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"] },
+            'warsaw': { center: [52.0, 20.0], zoom: 4, countries: ["Russia", "Poland", "Germany", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Albania"] },
+         
+         
+         // --- CÁC KHU VỰC TOÀN CHÂU ---
+            'asia': { center: [30.0, 90.0], zoom: 3, countries: ["Taiwan", "Russia", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei Darussalam", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"] },
+            'europe': { center: [52.0, 15.0], zoom: 4, countries: ["Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czechia", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Republic of Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom", "Vatican City", "Liechtenstein"] },
+            'africa': { center: [0.0, 20.0], zoom: 3, countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Republic of the Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles", "Sierra Leone", "Somaliland", "South Africa", "South Sudan", "Sudan", "United Republic of Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe", "Somalia"] },
+            'americas': { center: [15.0, -85.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname", "Guatemala", "Belize", "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", "Cuba", "Jamaica", "Haiti", "Dominican Republic"] },
+            'oceania': { center: [-25.0, 140.0], zoom: 4, countries: ["Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] },
+            'antarctica': { center: [-80.0, 0.0], zoom: 3, countries: ["Antarctica"] },
+            'zealandia': { center: [-40.0, 170.0], zoom: 4, countries: ["New Zealand", "New Caledonia"] },
+        // --- CÁC TIỂU VÙNG CHÂU Á ---
+            'east_asia': { center: [35.0, 110.0], zoom: 4, countries: ["China", "Japan", "South Korea", "North Korea", "Mongolia", "Taiwan"] },
+            'south_asia': { center: [22.0, 78.0], zoom: 4, countries: ["India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Bhutan", "Afghanistan"] },
+            'west_asia': { center: [25.0, 45.0], zoom: 4, countries: ["Saudi Arabia", "Iran", "Iraq", "Turkey", "United Arab Emirates", "Israel", "Jordan", "Kuwait", "Oman", "Qatar", "Syria", "Yemen"] },
+            'central_asia': { center: [45.0, 65.0], zoom: 4, countries: ["Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"] },
+        // --- CÁC TIỂU VÙNG CHÂU ÂU ---
+            'northern_europe': { center: [62.0, 15.0], zoom: 4, countries: ["Norway", "Sweden", "Finland", "Denmark", "Iceland", "Estonia", "Latvia", "Lithuania"] },
+            'southern_europe': { center: [40.0, 15.0], zoom: 5, countries: ["Italy", "Spain", "Portugal", "Greece", "Albania", "Croatia", "Serbia", "Slovenia", "Montenegro"] },
+            'western_europe': { center: [48.0, 2.0], zoom: 5, countries: ["France", "Belgium", "Netherlands", "Luxembourg", "Switzerland", "Austria", "Germany", "United Kingdom", "Ireland"] },
+            'eastern_europe': { center: [50.0, 30.0], zoom: 4, countries: ["Russia", "Ukraine", "Poland", "Romania", "Bulgaria", "Hungary", "Czech Republic", "Slovakia", "Belarus", "Moldova"] },
+        // --- CÁC TIỂU VÙNG CHÂU MỸ ---
+            'north_america': { center: [45.0, -100.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Greenland"] },
+            'central_america': { center: [15.0, -85.0], zoom: 5, countries: ["Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panama"] },
+            'south_america': { center: [-20.0, -60.0], zoom: 3, countries: ["Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname"] },
+        // --- CÁC TIỂU VÙNG CHÂU PHI ---
+            'north_africa': { center: [25.0, 15.0], zoom: 4, countries: ["Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Western Sahara", "Sudan"] },
+            'west_africa': { center: [15.0, 0.0], zoom: 4, countries: ["Nigeria", "Ghana", "Senegal", "Mali", "Ivory Coast", "Niger", "Burkina Faso", "Guinea", "Benin", "Togo", "Sierra Leone", "Liberia", "Mauritania", "Gambia", "Guinea-Bissau"] },
+            'southern_africa': { center: [-25.0, 25.0], zoom: 4, countries: ["South Africa", "Namibia", "Botswana", "Zimbabwe", "Mozambique", "Lesotho", "Swaziland"] },
+        // --- ĐẠI DƯƠNG & KHÁC ---
+            'australasia': { center: [-25.0, 135.0], zoom: 4, countries: ["Australia", "New Zealand"] },
+            'melanesia': { center: [-8.0, 150.0], zoom: 4, countries: ["Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] },
+            'micronesia': { center: [7.0, 150.0], zoom: 4, countries: ["Palau", "Kiribati", "Marshall Islands", "Nauru"] },
+            'polynesia': { center: [-15.0, -160.0], zoom: 3, countries: ["Samoa", "Tonga", "Tuvalu", "Cook Islands", "French Polynesia"] }
+        };
+
+        function flyToRegion(region) {
+            if (!region) {
+                activeAlliance = null;
+                renderBorders(document.getElementById('year-input').value);
+                return;
+            }
+            const data = regionCoords[region];
+            if (data) {
+                activeAlliance = data.countries;
+                renderBorders(document.getElementById('year-input').value);
+                map.flyTo(data.center, data.zoom);
             }
         }
 
-        return {
-            color: isHighlighted ? "#ff0000" : "rgba(255, 255, 255, 0.1)",
-            weight: isHighlighted ? 3 : 1,
-            fillColor: isHighlighted ? "#ff0000" : "transparent",
-            fillOpacity: isHighlighted ? 0.3 : 0,
-            interactive: true // Chỉnh thành true để click được mọi nước
-        };
-    },
-    // THÊM ĐOẠN NÀY: Khi click hiện Popup và gọi Wiki
-    onEachFeature: (feature, layer) => {
-        layer.on('click', function (e) {
-            const countryName = feature.properties.ADMIN || feature.properties.name;
-            
-            L.popup()
-                .setLatLng(e.latlng)
-                .setContent(`
-                    <div style="color:black; font-family:Arial; padding:5px;">
-                        <b style="font-size:14px;">${countryName}</b><br>
-                        <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#ffcc00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
-                    </div>
-                `)
-                .openOn(map);
-            
-            fetchWiki(countryName); // Mở luôn bảng Wikipedia bên phải
-        });
-    }
-}).addTo(map);
-
-    geojsonLayer.bringToBack();
-    
-    // Giữ nguyên logic vẽ Vĩ tuyến 17 nếu là Việt Nam
-    if (year >= 1954 && year < 1975 && selectedCountry === "vietnam") {
-        // ... (giữ nguyên code vẽ polyline cũ của bạn ở đây)
-    }
-}
-
-        // 1. Hàm lấy dữ liệu tự động từ Wikipedia
         async function fetchWiki(eventName) {
             const panel = document.getElementById('wiki-panel');
             const body = document.getElementById('wiki-body');
             const title = document.getElementById('wiki-title');
-            
-            // Danh sách ánh xạ tên sự kiện sang tiêu đề Wikipedia chuẩn
             const wikiMap = {
                 "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9": "Tuyên ngôn độc lập Việt Nam Dân chủ Cộng hòa",
                 "Chiến thắng Rạch Gầm - Xoài Mút": "Trận Rạch Gầm – Xoài Mút",
@@ -578,280 +758,72 @@ const specialEvents = {
                 "Trận chiến Gạc Ma": "Hải chiến Gạc Ma 1988",
                 "Chiến tranh biên giới Việt - Trung": "Chiến tranh biên giới Việt–Trung, 1979"
             };
-            
             const searchName = wikiMap[eventName] || eventName;
             title.innerText = eventName;
-            panel.classList.add('active'); // Trượt bảng ra
-            body.innerHTML = "<div style='color:#ffcc00'>Đang kết nối thư viện Wikipedia...</div>";
-
+            panel.classList.add('active');
+            body.innerHTML = "Đang tải...";
             try {
                 const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchName)}`);
                 const data = await response.json();
-                
-                if (data.extract) {
-                    body.innerHTML = `
-                        ${data.originalimage ? `<img src="${data.originalimage.source}" alt="Event Image">` : ''}
-                        <p>${data.extract}</p>
-                        <hr style="border:0; border-top:1px solid #444; margin:15px 0;">
-                        <a href="${data.content_urls.desktop.page}" target="_blank" style="color:#ffcc00; text-decoration:none; font-weight:bold; font-size:13px;">ĐỌC BÀI CHI TIẾT TRÊN WIKIPEDIA →</a>
-                    `;
-                } else {
-                    body.innerHTML = "<p>Không tìm thấy tóm tắt sự kiện. Vui lòng kiểm tra kết nối hoặc tên sự kiện.</p>";
-                }
-            } catch (error) {
-                body.innerHTML = "<p style='color:red'>Lỗi tải dữ liệu từ Wikipedia.</p>";
-            }
+                body.innerHTML = data.extract ? `<p>${data.extract}</p><a href="${data.content_urls.desktop.page}" target="_blank">Xem thêm</a>` : "Không tìm thấy bài viết.";
+            } catch { body.innerHTML = "Lỗi tải dữ liệu."; }
         }
 
-        // 2. Nút đóng bảng thủ công
-        document.getElementById('wiki-close').onclick = () => {
-            document.getElementById('wiki-panel').classList.remove('active');
-        };
-
-        // 3. Hàm cập nhật hệ thống (Đã tích hợp Wiki)
-        let flyTimer;
-        
         function updateSystem(val, manualMode = false) {
-            if (manualMode) {
-                activeAlliance = null; 
-            }
+            if (manualMode) activeAlliance = null; 
             let year = parseInt(val);
-            if (isNaN(year)) year = 1784;
-            
-            const countrySelect = document.getElementById('country-select');
-            const mode = countrySelect ? countrySelect.value : "";
-            
-            // --- ĐOẠN SỬA ĐỂ LỌC THEO NƯỚC ---
+            document.getElementById('year-input').value = year; 
+            document.getElementById('slider').value = year;
             const selectedCountry = document.getElementById('country-select').value;
             const dataYear = historyData[year];
-            
-            let eventName = "...";
-            
-            // Kiểm tra: Nếu có dữ liệu năm đó VÀ nước của sự kiện trùng với nước đang chọn trên bảng điều khiển
-            if (dataYear && dataYear.country === selectedCountry) {
-                eventName = dataYear.text;
-            }
-            // --------------------------------
-
+            let eventName = (dataYear && dataYear.country === selectedCountry) ? dataYear.text : "...";
             document.getElementById('event-val').innerHTML = eventName;
-
             renderBorders(year);
+            if (eventName !== "...") fetchWiki(eventName);
+            else document.getElementById('wiki-panel').classList.remove('active');
 
-            // Chỉ mở Wiki nếu sự kiện đó thuộc về nước đang chọn
-            if (eventName !== "...") {
-                fetchWiki(eventName);
-            } else {
-                document.getElementById('wiki-panel').classList.remove('active');
-            }
-
-            // Logic di chuyển camera
             clearTimeout(flyTimer);
             flyTimer = setTimeout(() => {
-                const mode = document.getElementById('country-select').value;
-                if (manualMode) {
-                    map.flyTo(countryCoords[mode].center, countryCoords[mode].zoom);
-                } else if (mode === "vietnam") {
-                    if (year === 1785) map.flyTo([10.342, 106.250], 12);
-                    else if (year >= 1887 && year < 1975) map.flyTo([15.5, 107.0], 5);
-                    else if (year === 1979) map.flyTo([22.5, 106.0], 7);
-                    else if (year === 1988) map.flyTo([8.814, 114.28], 10);
-                }
+                if (manualMode && countryCoords[selectedCountry]) map.flyTo(countryCoords[selectedCountry].center, countryCoords[selectedCountry].zoom);
             }, 250);
-        renderBorders(parseInt(val));
         }
 
-        map.on('zoomend', () => {
-            updateLabels();
-            renderBorders(document.getElementById('year-input').value);
-        });
-
+        // --- CÁC SỰ KIỆN ĐIỀU KHIỂN ---
+        fetchBorders();
         document.getElementById('slider').oninput = (e) => updateSystem(e.target.value);
         document.getElementById('year-input').oninput = (e) => updateSystem(e.target.value);
         document.getElementById('country-select').onchange = () => updateSystem(document.getElementById('year-input').value, true);
-
-        let isPanelHidden = false;
-        document.getElementById('toggle-ui').onclick = function() {
-            isPanelHidden = !isPanelHidden;
-            document.getElementById('ui-panel').style.transform = isPanelHidden ? 'translateX(-50%) translateY(85%)' : 'translateX(-50%) translateY(0)';
-            this.innerHTML = isPanelHidden ? '▲' : '▼';
+        document.getElementById('wiki-close').onclick = () => document.getElementById('wiki-panel').classList.remove('active');
+        
+        document.getElementById('screenshot-btn').onclick = function() {
+            this.style.display = 'none';
+            html2canvas(document.body, { useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Map_${document.getElementById('year-input').value}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                this.style.display = 'block';
+            });
         };
 
-        document.addEventListener('keydown', e => {
-            if (e.key.toLowerCase() === 'h') {
-                document.getElementById('ui-panel').classList.toggle('full-hidden');
-                document.getElementById('coords-box').classList.toggle('full-hidden');
-            }
-        });
+        map.on('zoomend', updateLabels);
+        // --- LOGIC ẨN/HIỆN PANEL ĐIỀU KHIỂN ---
+const uiPanel = document.getElementById('ui-panel');
+const toggleBtn = document.getElementById('toggle-ui');
+let isHidden = false;
 
-
-        document.getElementById('screenshot-btn').onclick = function() {
-    const btn = this;
-    const panel = document.getElementById('ui-panel');
-    const coords = document.getElementById('coords-box');
-
-    // 1. Tạm ẩn nút bấm và tọa độ để ảnh chụp sạch sẽ, chuyên nghiệp
-    btn.style.display = 'none';
-    coords.style.opacity = '0'; 
-
-    // 2. Thực hiện chụp màn hình
-    html2canvas(document.body, {
-        useCORS: true, 
-        backgroundColor: "#000",
-        scale: 2 
-    }).then(canvas => {
-        // 3. Tạo link tải ảnh tự động
-        const link = document.createElement('a');
-        const year = document.getElementById('year-input').value;
-        link.download = `BanDo_LichSu_${year}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-        
-        // 4. Hiện lại nút bấm và tọa độ sau khi chụp xong
-        btn.style.display = 'block';
-        coords.style.opacity = '1';
-    });
-};// Danh sách tọa độ các khu vực
-        // THAY THẾ TOÀN BỘ ĐOẠN TỪ DÒNG 548 ĐẾN 650 BẰNG ĐOẠN NÀY
-const regionCoords = {
-    // --- CÁC LIÊN MINH ---
-    
-    
-    'asean': {
-        center: [10.8, 110.0], zoom: 4,
-        countries: ["East Timor", "Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"]
-    },
-    'eu': {
-        center: [50.0, 10.0], zoom: 4,
-        countries: ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden"]
-    },
-    'nato': { 
-        center: [45.0, -20.0], zoom: 3, 
-        countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"]
-    },
-    'brics': {
-        center: [0.0, 20.0], zoom: 2,
-        countries: ["Brazil", "Russia", "India", "China", "South Africa", "Egypt", "Ethiopia", "Iran", "United Arab Emirates"]
-    },
-    'un': {
-        center: [20.0, 0.0], zoom: 2,
-        countries: ["United States of America", "Russia", "China", "France", "United Kingdom"]
-    },
-    'commonwealth': {
-        center: [10.0, 20.0], zoom: 2,
-        countries: ["United Kingdom", "Canada", "Australia", "New Zealand", "India", "South Africa", "Pakistan", "Bangladesh", "Nigeria", "Malaysia", "Singapore"]
-    },
-    'warsaw': {
-        center: [52.0, 20.0], zoom: 4,
-        countries: ["Russia", "Poland", "Germany", "Czech Republic", "Slovakia", "Hungary", "Romania", "Bulgaria", "Albania"]
-    },
-
-    // --- CÁC LỤC ĐỊA ---
-    'asia': { 
-        center: [30.0, 90.0], zoom: 3, 
-        countries: ["Taiwan", "Russia", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei Darussalam", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"]
-
-    },
-    'europe': { 
-        center: [52.0, 15.0], 
-        zoom: 4, 
-        countries: [
-            "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", 
-            "Bulgaria", "Croatia", "Czechia", "Denmark", "Estonia", "Finland", 
-            "France", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", 
-            "Latvia", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", 
-            "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", 
-            "Portugal", "Romania", "Russia", "San Marino", "Republic of Serbia", "Slovakia", 
-            "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom",
-            "Vatican City", "Liechtenstein"
-        ] 
-    },
-    'africa': { 
-        center: [0.0, 20.0], zoom: 3, 
-        countries: ["Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Republic of the Congo", "Democratic Republic of the Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "São Tomé and Príncipe", "Senegal", "Seychelles", "Sierra Leone", "Somaliland", "South Africa", "South Sudan", "Sudan", "United Republic of Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe", "Somalia"]
-
-    },
-    'americas': { 
-        center: [15.0, -85.0], zoom: 3, 
-        countries: [
-            "United States of America", "Canada", "Mexico", "Brazil", "Argentina", 
-            "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", 
-            "Paraguay", "Uruguay", "Guyana", "Suriname", "Guatemala", "Belize", 
-            "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", 
-            "Cuba", "Jamaica", "Haiti", "Dominican Republic"
-        ] 
-    },
-    'oceania': { 
-        center: [-25.0, 140.0], zoom: 4, 
-        countries: ["Australia", "New Zealand", "Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] 
-    },
-    'antarctica': { 
-        center: [-80.0, 0.0], zoom: 3, 
-        countries: ["Antarctica"] 
-    },
-    'zealandia': { 
-        center: [-40.0, 170.0], zoom: 4, 
-        countries: ["New Zealand", "New Caledonia"] 
-    },
-
-    // --- CÁC TIỂU VÙNG ---
-    'east_asia': { center: [35.0, 115.0], zoom: 4, countries: ["China", "Japan", "South Korea", "North Korea", "Mongolia", "Taiwan"] },
-    'south_asia': { center: [22.0, 78.0], zoom: 4, countries: ["India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Bhutan", "Afghanistan"] },
-    'west_asia': { center: [25.0, 45.0], zoom: 4, countries: ["Saudi Arabia", "Iran", "Iraq", "Turkey", "United Arab Emirates", "Israel", "Jordan", "Kuwait", "Oman", "Qatar", "Syria", "Yemen"] },
-    'central_asia': { center: [45.0, 65.0], zoom: 4, countries: ["Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"] },
-    'northern_europe': { center: [62.0, 15.0], zoom: 4, countries: ["Norway", "Sweden", "Finland", "Denmark", "Iceland", "Estonia", "Latvia", "Lithuania"] },
-    'southern_europe': { center: [40.0, 15.0], zoom: 5, countries: ["Italy", "Spain", "Portugal", "Greece", "Albania", "Croatia", "Serbia", "Slovenia", "Montenegro"] },
-    'western_europe': { center: [48.0, 2.0], zoom: 5, countries: ["France", "Belgium", "Netherlands", "Luxembourg", "Switzerland", "Austria", "Germany", "United Kingdom", "Ireland"] },
-    'eastern_europe': { center: [50.0, 30.0], zoom: 4, countries: ["Russia", "Ukraine", "Poland", "Romania", "Bulgaria", "Hungary", "Czech Republic", "Slovakia", "Belarus", "Moldova"] },
-    'north_america': { center: [45.0, -100.0], zoom: 3, countries: ["United States of America", "Canada", "Mexico", "Greenland"] },
-    'central_america': { center: [15.0, -85.0], zoom: 5, countries: ["Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panama"] },
-    'south_america': { center: [-20.0, -60.0], zoom: 3, countries: ["Brazil", "Argentina", "Chile", "Colombia", "Peru", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Guyana", "Suriname"] },
-    'north_africa': { center: [25.0, 15.0], zoom: 4, countries: ["Egypt", "Libya", "Tunisia", "Algeria", "Morocco", "Western Sahara", "Sudan"] },
-    'west_africa': { center: [15.0, 0.0], zoom: 4, countries: ["Nigeria", "Ghana", "Senegal", "Mali", "Ivory Coast", "Niger", "Burkina Faso", "Guinea", "Benin", "Togo", "Sierra Leone", "Liberia", "Mauritania", "Gambia", "Guinea-Bissau"] },
-    'southern_africa': { center: [-25.0, 25.0], zoom: 4, countries: ["South Africa", "Namibia", "Botswana", "Zimbabwe", "Mozambique", "Lesotho", "Swaziland"] },
-    'melanesia': { center: [-8.0, 150.0], zoom: 4, countries: ["Papua New Guinea", "Fiji", "Solomon Islands", "Vanuatu"] },
-    'micronesia': { center: [7.0, 150.0], zoom: 4, countries: ["Palau", "Kiribati", "Marshall Islands", "Nauru"] },
-    'polynesia': { center: [-15.0, -160.0], zoom: 3, countries: ["Samoa", "Tonga", "Tuvalu", "Cook Islands", "French Polynesia"] }
-};
-    
-
-
-            
-        
-
-        let activeAlliance = null; // Biến lưu khối đang được chọn
-
-        // Hàm thực hiện hiệu ứng bay
-        function flyToRegion(region) {
-    if (!region) return;
-
-    // Xóa quốc gia đang chọn để ưu tiên hiển thị Liên minh
-    document.getElementById('country-select').value = ""; 
-
-    const data = regionCoords[region];
-    if (data) {
-        activeAlliance = data.countries; 
-        renderBorders(document.getElementById('year-input').value);
-        map.flyTo(data.center, data.zoom, { animate: true, duration: 2 });
+toggleBtn.onclick = function() {
+    if (!isHidden) {
+        // Ẩn xuống: dịch chuyển xuống 85% chiều cao của nó, chỉ để lại cái nút
+        uiPanel.style.transform = 'translateX(-50%) translateY(85%)';
+        toggleBtn.innerHTML = '▲'; // Đổi mũi tên chỉ lên
+    } else {
+        // Hiện lên: quay về vị trí cũ
+        uiPanel.style.transform = 'translateX(-50%) translateY(0)';
+        toggleBtn.innerHTML = '▼'; // Đổi mũi tên chỉ xuống
     }
-}
-        fetchBorders(); 
-// Xử lý sự kiện khi chọn quốc gia từ danh sách
-document.getElementById('country-select').addEventListener('change', function(e) {
-    const val = e.target.value.toLowerCase();
-    const currentYear = document.getElementById('year-input').value;
-
-    // 1. Tắt chế độ liên minh để ưu tiên hiển thị quốc gia lẻ
-    activeAlliance = null; 
-    
-    // 2. Cập nhật hệ thống (bay đến quốc gia, kiểm tra sự kiện lịch sử)
-    updateSystem(currentYear, true);
-    
-    // 3. ÉP BẢN ĐỒ VẼ LẠI BIÊN GIỚI NGAY LẬP TỨC
-    renderBorders(currentYear);
-});    
-
+    isHidden = !isHidden;
+};
     </script>
-
-
 </body>
 </html>
