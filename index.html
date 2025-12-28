@@ -385,6 +385,10 @@ left-group {
     <option value="oceanic">Xanh nhạt - Hải dương (Oceanic)</option>
     <option value="desert">Vàng - Khô hạn (Arid)</option>
     <option value="mediterranean">Cam - Địa Trung Hải</option>
+    <option value="continental">Nâu nhạt - Lục địa (Continental)</option>
+    <option value="subtropical">Xanh lá - Cận nhiệt đới (Subtropical)</option>
+    <option value="tundra">Trắng - Cận cực (Tundra/Polar)</option>
+    <option value="tropical_savanna">Hồng - Xavan (Tropical Savanna)</option>
 </select>
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
@@ -766,27 +770,46 @@ var map = L.map('map', {
 }).setView([16.0, 108.0], 5); 
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
-// --- DỮ LIỆU ĐỊA LÝ KHÍ HẬU ---
 const climateGroups = {
     monsoon: {
-        name: "Monsoon - Gió mùa",
-        color: "#9933ff", // Màu tím
-        countries: ["Vietnam", "Thailand", "India", "Indonesia", "Philippines", "Myanmar", "Cambodia", "Laos", "Bangladesh", "China"]
+        name: "Monsoon - Nhiệt đới gió mùa",
+        color: "#9933ff", // Tím
+        countries: ["Vietnam", "Thailand", "India", "Indonesia", "Philippines", "Myanmar", "Cambodia", "Laos", "Bangladesh", "Malaysia", "Sri Lanka"]
     },
     oceanic: {
         name: "Oceanic - Ôn đới hải dương",
         color: "#add8e6", // Xanh biển nhạt
-        countries: ["United Kingdom", "France", "New Zealand", "Netherlands", "Belgium", "Norway", "Ireland", "Denmark"]
+        countries: ["United Kingdom", "France", "New Zealand", "Netherlands", "Belgium", "Norway", "Ireland", "Denmark", "Germany", "Luxembourg"]
     },
     desert: {
-        name: "Arid - Khô hạn",
-        color: "#ffff00", // Màu vàng
-        countries: ["Saudi Arabia", "Egypt", "Algeria", "Libya", "Australia", "Iraq", "Iran", "Mali", "Namibia", "Chad", "Niger"]
+        name: "Arid - Khô hạn / Hoang mạc",
+        color: "#ffff00", // Vàng
+        countries: ["Saudi Arabia", "Egypt", "Algeria", "Libya", "Australia", "Iraq", "Iran", "Mali", "Namibia", "Chad", "Niger", "Sudan", "Oman", "Yemen", "Jordan", "Mongolia"]
     },
     mediterranean: {
         name: "Mediterranean - Địa Trung Hải",
-        color: "#ff8c00", // Màu cam
-        countries: ["Italy", "Spain", "Greece", "Turkey", "Morocco", "Portugal", "Tunisia", "Albania", "Croatia"]
+        color: "#ff8c00", // Cam
+        countries: ["Italy", "Spain", "Greece", "Turkey", "Morocco", "Portugal", "Tunisia", "Albania", "Croatia", "Lebanon", "Israel", "Cyprus"]
+    },
+    continental: {
+        name: "Continental - Ôn đới lục địa",
+        color: "#d2b48c", // Màu nâu đất nhạt
+        countries: ["Russia", "Ukraine", "Poland", "Belarus", "Kazakhstan", "Romania", "Hungary", "Slovakia", "Czech Republic", "Bulgaria"]
+    },
+    subtropical: {
+        name: "Humid Subtropical - Cận nhiệt đới ẩm",
+        color: "#00ff7f", // Xanh lá mùa xuân
+        countries: ["China", "Japan", "South Korea", "United States", "Argentina", "Uruguay", "Paraguay", "Georgia"]
+    },
+    tundra: {
+        name: "Tundra/Polar - Cận cực / Hàn đới",
+        color: "#ffffff", // Trắng (Băng tuyết)
+        countries: ["Canada", "Greenland", "Iceland", "Finland", "Sweden", "Antarctica"]
+    },
+    tropical_savanna: {
+        name: "Tropical Savanna - Nhiệt đới xavan",
+        color: "#ff69b4", // Hồng đậm
+        countries: ["Brazil", "Nigeria", "Kenya", "Tanzania", "Angola", "Zambia", "Venezuela", "Colombia", "Ethiopia"]
     }
 };
 
