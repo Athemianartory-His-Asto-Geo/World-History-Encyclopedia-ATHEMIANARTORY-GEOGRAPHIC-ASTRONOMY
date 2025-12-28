@@ -492,6 +492,10 @@ left-group {
     <option value="guinea">97. Cộng hòa Guinea</option>
     <option value="sierra_leone">98. Cộng hòa Sierra Leone</option>
     <option value="liberia">99. Cộng hòa Liberia</option>
+    <option value="ecuador"> 100. Cộng hòa Ecuador</option>
+    <option value="colombia">101. Cộng hòa Colombia</option>
+    <option value="peru">102. Cộng hòa Peru</option>
+
 
 </datalist>
 
@@ -763,11 +767,15 @@ const specialEvents = {
 };
 
         // --- 1. KHỞI TẠO BẢN ĐỒ ---
-var map = L.map('map', { 
-    zoomControl: false, 
-    attributionControl: false, 
-    preferCanvas: true 
-}).setView([16.0, 108.0], 5); 
+var map = L.map('map', {
+    center: [30, 0],
+    zoom: 2,
+    minZoom: 1.4,
+    maxZoom: 17,
+    worldCopyJump: false, // Không nhảy sang bản sao
+    continuousWorld: false, // Không kéo vô tận
+    noWrap: true // QUAN TRỌNG: Khóa không cho lặp lại bản đồ
+});
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
 const climateGroups = {
@@ -937,9 +945,12 @@ if(mainSlider) {
         });
 
         const islandMarkers = [
-            L.marker([16.5, 112.0], { icon: L.divIcon({ className: 'island-label', html: 'Hoàng Sa (VN)' }) }),
-            L.marker([10.0, 114.5], { icon: L.divIcon({ className: 'island-label', html: 'Trường Sa (VN)' }) }),
-            L.marker([10.2, 103.9], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quốc (VN)' }) })
+            L.marker([16.5, 112.0], { icon: L.divIcon({ className: 'island-label', html: 'Hoàng Sa (VN bị mất kiểm soát thực tế)' }) }),
+            L.marker([10.0, 114.5], { icon: L.divIcon({ className: 'island-label', html: 'Trường Sa (VN kiểm soát 1 phần)' }) }),
+            L.marker([10.2, 103.9], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quốc (VN)' }) }),
+            L.marker([10.5, 108.9463], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quý' }) }),
+            L.marker([20.8030, 106.9986], { icon: L.divIcon({ className: 'island-label', html: 'Quần đảo Cát Bà' }) })
+
         ];
 
         function updateLabels() {
@@ -1103,7 +1114,7 @@ if(mainSlider) {
                 renderBorders(document.getElementById('year-input').value);
                 map.flyTo(data.center, data.zoom);
             }
-        }
+        }   
 
         async function fetchWiki(eventName) {
             const panel = document.getElementById('wiki-panel');
@@ -1279,7 +1290,6 @@ function toggleClimateLayer(mode) {
             }).addTo(climateLayerGroup);
         });
     }
-    
     renderBorders(document.getElementById('year-input').value);
 }
 };
