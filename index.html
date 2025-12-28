@@ -500,11 +500,11 @@ left-group {
                     <option value="african_union">Liên minh Châu Phi (AU)</option>
                     <option value="arab_league">Liên minh Ả Rập (Arab League)</option>
                     <option value="opec">Khối OPEC (Dầu mỏ)</option>
-                    <option value="mercosur">Khối Thị trường chung Nam Mỹ</option>
+                    <option value="mercosur">Khối Thị trường chung Nam Mỹ (MERCORSUR)</option>
                     <option value="commonwealth">Khối Thịnh vượng chung Anh</option>
-                    <option value="un">Liên Hợp Quốc (P5)</option>
+                    <option value="un">Liên Hợp Quốc (UN)</option>
                     <option value="g7">Khối G7</option>
-                    <option value="warsaw">Hiệp ước Warsaw (Lịch sử)</option>
+                    <option value="warsaw">Hiệp ước Warsaw (HISTORY)</option>
                     <option value="mena">Liên minh Trung Đông - Bắc Phi (MENA)</option>
                     <option value="asia">Châu Á</option>
         <option value="europe">Châu Âu</option>
@@ -766,6 +766,29 @@ var map = L.map('map', {
 }).setView([16.0, 108.0], 5); 
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
+// --- DỮ LIỆU ĐỊA LÝ KHÍ HẬU ---
+const climateGroups = {
+    monsoon: {
+        name: "Monsoon - Gió mùa",
+        color: "#9933ff", // Màu tím
+        countries: ["Vietnam", "Thailand", "India", "Indonesia", "Philippines", "Myanmar", "Cambodia", "Laos", "Bangladesh", "China"]
+    },
+    oceanic: {
+        name: "Oceanic - Ôn đới hải dương",
+        color: "#add8e6", // Xanh biển nhạt
+        countries: ["United Kingdom", "France", "New Zealand", "Netherlands", "Belgium", "Norway", "Ireland", "Denmark"]
+    },
+    desert: {
+        name: "Arid - Khô hạn",
+        color: "#ffff00", // Màu vàng
+        countries: ["Saudi Arabia", "Egypt", "Algeria", "Libya", "Australia", "Iraq", "Iran", "Mali", "Namibia", "Chad", "Niger"]
+    },
+    mediterranean: {
+        name: "Mediterranean - Địa Trung Hải",
+        color: "#ff8c00", // Màu cam
+        countries: ["Italy", "Spain", "Greece", "Turkey", "Morocco", "Portugal", "Tunisia", "Albania", "Croatia"]
+    }
+};
 
 // --- 2. CẤU TRÌNH QUẢN LÝ KHÍ HẬU (QUAN TRỌNG) ---
 // Tạo "khay" chứa để có thể bật/tắt dễ dàng
@@ -915,67 +938,71 @@ if(mainSlider) {
         }
 
         function renderBorders(year) {
-            if (!worldDataCache) return;
-            if (geojsonLayer) map.removeLayer(geojsonLayer);
+    if (!worldDataCache) return;
+    if (geojsonLayer) map.removeLayer(geojsonLayer);
 
-            const selectedCountry = document.getElementById('country-select').value.toLowerCase();
-            
-            geojsonLayer = L.geoJSON(worldDataCache, {
-                style: (feature) => {
-                    const name = feature.properties.ADMIN || feature.properties.name || "";
-                    // 1. ƯU TIÊN NHUỘM MÀU KHÍ HẬU
-if (activeClimateGroup && activeClimateGroup.countries.includes(name)) {
-    return {
-        fillColor: activeClimateGroup.color,
-        fillOpacity: 0.7,
-        color: "#ffffff",
-        weight: 1.5,
-        dashArray: ""
-    };
-}
-                    let isHighlighted = false;
-                    let isCustom = customColoredCountries[name];
+    const selectedCountry = document.getElementById('country-select').value.toLowerCase();
 
-                    if (activeAlliance && activeAlliance.includes(name)) {
-                        isHighlighted = true;
-                    } 
-                    else if (selectedCountry && countryCoords[selectedCountry]) {
-                        const targetAdmin = countryCoords[selectedCountry].adminName;
-                        if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
-                            isHighlighted = true;
-                        }
-                    }
+    geojsonLayer = L.geoJSON(worldDataCache, {
+        style: (feature) => {
+            const name = feature.properties.ADMIN || feature.properties.name || "";
 
-                    return {
-                        color: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "#00FF00"),
-                        weight: (isHighlighted || isCustom) ? 3 : 1,
-                        fillColor: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "transparent"),
-                        fillOpacity: (isHighlighted || isCustom) ? 0.4 : 0.05,
-                        dashArray: (isHighlighted || isCustom) ? "" : "3, 3",
-                        interactive: true 
-                    };
-                },
-                onEachFeature: (feature, layer) => {
-                    layer.on('click', function (e) {
-                        const countryName = feature.properties.ADMIN || feature.properties.name;
-                        L.popup().setLatLng(e.latlng).setContent(`
-                            <div style="color:black; font-family:Arial; padding:5px;">
-                                <b style="font-size:14px;">${countryName}</b><br>
-                                <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
-                            </div>
-                        `).openOn(map);
-                        fetchWiki(countryName); 
-                    });
-                    layer.on('dblclick', function (e) {
-                        const countryName = feature.properties.ADMIN || feature.properties.name;
-                        customColoredCountries[countryName] = !customColoredCountries[countryName];
-                        renderBorders(document.getElementById('year-input').value);
-                        L.DomEvent.stopPropagation(e);
-                    });
+            // --- 1. ƯU TIÊN NHUỘM MÀU KHÍ HẬU (Hải dương, Gió mùa...) ---
+            if (activeClimateGroup && activeClimateGroup.countries.includes(name)) {
+                return {
+                    fillColor: activeClimateGroup.color,
+                    fillOpacity: 0.7,
+                    color: "#ffffff",
+                    weight: 1.5,
+                    dashArray: "",
+                    interactive: true
+                };
+            }
+
+            // --- 2. LOGIC CŨ CỦA BẠN ---
+            let isHighlighted = false;
+            let isCustom = customColoredCountries[name];
+
+            if (activeAlliance && activeAlliance.includes(name)) {
+                isHighlighted = true;
+            } else if (selectedCountry && countryCoords[selectedCountry]) {
+                const targetAdmin = countryCoords[selectedCountry].adminName;
+                if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
+                    isHighlighted = true;
                 }
-            }).addTo(map);
-            geojsonLayer.bringToBack();
+            }
+
+            return {
+                color: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "#00FF00"),
+                weight: (isHighlighted || isCustom) ? 3 : 1,
+                fillColor: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "transparent"),
+                fillOpacity: (isHighlighted || isCustom) ? 0.4 : 0.05,
+                dashArray: (isHighlighted || isCustom) ? "" : "3, 3",
+                interactive: true 
+            };
+        },
+        onEachFeature: (feature, layer) => {
+            layer.on('click', function (e) {
+                const countryName = feature.properties.ADMIN || feature.properties.name;
+                L.popup().setLatLng(e.latlng).setContent(`
+                    <div style="color:black; font-family:Arial; padding:5px;">
+                        <b style="font-size:14px;">${countryName}</b><br>
+                        <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
+                    </div>
+                `).openOn(map);
+                fetchWiki(countryName); 
+            });
+            layer.on('dblclick', function (e) {
+                const countryName = feature.properties.ADMIN || feature.properties.name;
+                customColoredCountries[countryName] = !customColoredCountries[countryName];
+                renderBorders(document.getElementById('year-input').value);
+                L.DomEvent.stopPropagation(e);
+            });
         }
+    }).addTo(map);
+    
+    if (geojsonLayer) geojsonLayer.bringToBack();
+}
 
         // --- DANH SÁCH TỌA ĐỘ KHU VỰC (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) ---
         const regionCoords = {
@@ -1039,6 +1066,7 @@ if (activeClimateGroup && activeClimateGroup.countries.includes(name)) {
             'micronesia': { center: [7.0, 150.0], zoom: 4, countries: ["Palau", "Kiribati", "Marshall Islands", "Nauru"] },
             'polynesia': { center: [-15.0, -160.0], zoom: 3, countries: ["Samoa", "Tonga", "Tuvalu", "Cook Islands", "French Polynesia"] }
         };
+        
 
         function flyToRegion(region) {
             if (!region) {
@@ -1164,19 +1192,28 @@ toggleBtn.onclick = function() {
 let climateLayerGroup = L.layerGroup().addTo(map); 
 
 function toggleClimateLayer(mode) {
-    // Xóa sạch mọi thứ trong khay (làm chúng biến mất hoàn toàn khỏi map)
-    climateLayerGroup.clearLayers();
+    const subMenu = document.getElementById('climate-subtype');
+    if (climateLayerGroup) climateLayerGroup.clearLayers();
+    activeClimateGroup = null; 
 
-    if (mode === "none") return; // Nếu chọn Tắt thì dừng lại ở đây
+    // Hiện menu phụ
+    if (mode === "zones" || mode === "all") {
+        if(subMenu) subMenu.style.display = "inline-block";
+    } else {
+        if(subMenu) {
+            subMenu.style.display = "none";
+            subMenu.value = "none";
+        }
+    }
 
-    // A. Vẽ các đường Vĩ độ
+    // A. Vẽ các đường vĩ độ và NHÃN CHỮ
     if (mode === "lines" || mode === "all") {
         const latitudes = [
-            { lat: 66.5, name: "Arctic Circle - Vòng Cực Bắc" },
-            { lat: 23.5, name: "Tropic of Cancer - Chí Tuyến Bắc" },
-            { lat: 0, name: "Equator - Xích Đạo", isEquator: true },
-            { lat: -23.5, name: "Tropic of Capricorn - Chí Tuyến Nam" },
-            { lat: -66.5, name: "Antarctic Circle - Vòng Cực Nam" }
+            { lat: 66.5,  name: "Arctic Circle - VÒNG CỰC BẮC" },
+            { lat: 23.5,  name: "Tropic of Cancer - CHÍ TUYẾN BẮC" },
+            { lat: 0,     name: "EQUATOR - ĐƯỜNG XÍCH ĐẠO", isEquator: true },
+            { lat: -23.5, name: "Tropic of Capricorn - CHÍ TUYẾN NAM" },
+            { lat: -66.5, name: "Antarctic Circle - VÒNG CỰC NAM" }
         ];
 
         latitudes.forEach(item => {
@@ -1184,40 +1221,56 @@ function toggleClimateLayer(mode) {
                 { color: "#00f2ff", weight: 2, opacity: 0.8, dashArray: "15, 10" } : 
                 { color: "#ffffff", weight: 1, opacity: 0.4, dashArray: "8, 8" };
 
+            // Vẽ đường kẻ
             L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(climateLayerGroup);
             
+            // Vẽ nhãn chữ
             L.marker([item.lat, 160], {
                 icon: L.divIcon({
                     className: item.isEquator ? 'equator-label' : 'climate-label',
-                    html: item.name,
+                    html: `<span style="color: ${item.isEquator ? '#00f2ff' : '#fff'}; white-space: nowrap; font-weight: bold; text-shadow: 1px 1px 2px #000;">${item.name}</span>`,
                     iconSize: [250, 20]
                 })
             }).addTo(climateLayerGroup);
         });
     }
 
-    // B. Vẽ các Đai khí hậu
+    // B. Vẽ các Đai khí hậu (Nhãn chữ to giữa bản đồ)
     if (mode === "zones" || mode === "all") {
         const zones = [
-            { lat: 75, name: "North Frigid Zone - Hàn Đới Bắc" },
-            { lat: 45, name: "North Temperate Zone - Ôn Đới Bắc" },
-            { lat: 10, name: "Torrid Zone - Nhiệt Đới" },
-            { lat: -45, name: "South Temperate Zone - Ôn Đới Nam" },
-            { lat: -75, name: "South Frigid Zone - Hàn Đới Nam" }
+            { lat: 75, name: "North Frigid Zone - HÀN ĐỚI BẮC" },
+            { lat: 45, name: "North Temperate Zone - ÔN ĐỚI BẮC" },
+            { lat: 10, name: "Torrid Zone - NHIỆT ĐỚI" },
+            { lat: -10, name: "Torrid Zone - NHIỆT ĐỚI" },
+            { lat: -45, name: "South Temperate Zone - ÔN ĐỚI NAM" },
+            { lat: -75, name: "South Frigid Zone - HÀN ĐỚI NAM" }
         ];
 
         zones.forEach(zone => {
             L.marker([zone.lat, 0], {
                 icon: L.divIcon({
                     className: 'climate-zone-text',
-                    html: zone.name,
+                    html: `<div style="color: #ffffff; opacity: 0.6; font-size: 14px; font-weight: bold; text-align: center;">${zone.name}</div>`,
                     iconSize: [300, 20]
                 })
             }).addTo(climateLayerGroup);
         });
     }
+    
+    renderBorders(document.getElementById('year-input').value);
 }
 };
+// Hàm này giúp bản đồ nhận diện đới khí hậu bạn vừa chọn từ menu phụ
+function renderClimateSubtype(type) {
+    if (type === "none") {
+        activeClimateGroup = null;
+    } else {
+        // Lấy dữ liệu (màu sắc, danh sách nước) từ biến climateGroups đã có sẵn
+        activeClimateGroup = climateGroups[type];
+    }
+    // Lệnh này quan trọng nhất: Yêu cầu hàm renderBorders chạy lại để cập nhật màu mới
+    renderBorders(document.getElementById('year-input').value);
+}
     </script>
 </body>
 </html>
