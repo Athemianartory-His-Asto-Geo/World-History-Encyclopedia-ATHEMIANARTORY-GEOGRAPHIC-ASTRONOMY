@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
         #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
@@ -30,6 +31,28 @@ path.leaflet-interactive:hover {
     height: 38px !important;
     color: white !important;
 }
+
+.res-icon {
+    opacity: 0.8;
+    filter: grayscale(20%);
+}
+.res-icon:hover {
+    opacity: 1;
+    filter: grayscale(0%) drop-shadow(0 0 8px white);
+    z-index: 1000 !important;
+}
+
+.res-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+    transition: all 0.3s ease;
+}
+.res-icon:hover {
+    z-index: 9999 !important;
+}
+
 
 #climate-select {
     background: rgba(30, 30, 30, 0.8);
@@ -352,10 +375,51 @@ left-group {
     <div id="coords-box">LAT: 0.0000 | LNG: 0.0000</div>
 
     <div id="custom-panel" style="position: absolute; top: 50%; left: -260px; transform: translateY(-50%); width: 250px; background: rgba(0,0,0,0.9); color: white; padding: 15px; border-radius: 0 15px 15px 0; border: 1px solid #ffcc00; z-index: 2000; transition: 0.4s;">
-        <button id="toggle-custom" style="position: absolute; right: -35px; top: 50%; transform: translateY(-50%); background: #ffcc00; border: none; padding: 10px 5px; cursor: pointer; font-weight: bold; border-radius: 0 5px 5px 0;">🖌️<br>T<br>Ù<br>Y<br><br>C<br>H<br>Ỉ<br>N<br>H</button>
-        <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 16px;">CHẾ ĐỘ TÔ MÀU</h3>
-        <p style="font-size: 12px; color: #ccc;">• <b>Ấn đúp chuột (Double Click)</b> vào một nước để tô/xóa màu vàng.</p>
-        <button onclick="clearCustomColors()" style="width:100%; background:#cc0000; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px; font-weight:bold; margin-top:10px;">XÓA TẤT CẢ MÀU</button>
+        <button id="toggle-custom" onclick="toggleCustomPanel()" style="position: absolute; right: -35px; top: 50%; transform: translateY(-50%); background: #ffcc00; border: none; padding: 10px 5px; cursor: pointer; font-weight: bold; border-radius: 0 5px 5px 0;">🖌️<br>T<br>Ù<br>Y<br><br>C<br>H<br>Ỉ<br>N<br>H</button>
+        
+        <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 16px; text-align: center;">HỆ THỐNG TÀI NGUYÊN</h3>
+        <div id="filter-container" style="background:#222; border:1px solid #ffcc00; padding:10px; border-radius:5px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+            <h4 style="color:#ffcc00; margin: 5px 0;">⛏️ Khoáng sản & Lâm sản</h4>
+            <label class="check-item"><input type="checkbox" class="res-check" value="wood" onchange="updateFilters()"> 🌲 Gỗ rừng</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="oil" onchange="updateFilters()"> 🛢️ Dầu mỏ</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gas" onchange="updateFilters()"> 💨 Khí tự nhiên</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gold" onchange="updateFilters()"> 🟡 Vàng & Bạch kim</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="diamond" onchange="updateFilters()"> 💎 Kim cương</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()"> ⬛ Than đá</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()"> ⛓️ Sắt & Đồng</label><br>
+            
+            <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
+            <label class="check-item"><input type="checkbox" class="res-check" value="wolf" onchange="updateFilters()"> 🐺 Loài Sói</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="bear" onchange="updateFilters()"> 🐻 Gấu</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="tiger" onchange="updateFilters()"> 🐅 Hổ</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="animal" onchange="updateFilters()"> 🐟 Cá & Thủy sản</label><br>
+        </div>
+
+        <h3 style="color: #00fbff; margin: 10px 0 10px 0; font-size: 16px; text-align: center;">HỆ THỐNG KINH TẾ</h3>
+        <div id="economy-container" style="background:#222; border:1px solid #00fbff; padding:10px; border-radius:5px; max-height: 250px; overflow-y: auto;">
+            <h4 style="color:#00fbff; margin: 5px 0;">🏭 Công nghiệp & Dịch vụ</h4>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ & Hàng không</label><br>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="auto" onchange="updateFilters()"> 🚗 Công nghiệp Ô tô</label><br>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="heavy" onchange="updateFilters()"> 🛡️ Công nghiệp nặng</label><br>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="crop" onchange="updateFilters()"> 🌾 Nông nghiệp</label><br>
+        </div>
+    </div>
+
+
+
+
+<style>
+    .check-item { display: block; padding: 3px 0; cursor: pointer; font-size: 14px; }
+    .check-item:hover { color: #ffcc00; }
+    .res-check { cursor: pointer; margin-right: 8px; }
+</style>
+
+    <button onclick="clearCustomColors()" style="width:100%; background:#cc0000; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px; font-weight:bold;">XÓA TẤT CẢ MÀU TÔ</button>
+</div>
+
+    <div id="bottom-ui" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 80%; pointer-events: auto;">
+        <div id="year-display" style="color: #ffcc00; text-align: center; font-size: 30px; font-weight: bold; text-shadow: 2px 2px 5px #000; margin-bottom: 10px;">1900</div>
+        <input type="range" id="year-input" min="1500" max="2024" value="1900" style="width: 100%; cursor: pointer;">
     </div>
 
     <div id="wiki-panel">
@@ -365,7 +429,6 @@ left-group {
             <div id="wiki-body">Đang lấy dữ liệu...</div>
         </div>
     </div>
-
 
 
     <div id="ui-panel">
@@ -586,22 +649,35 @@ left-group {
     </div>
 
     <script>
-        function showHistoryByCountry(countryName) {
-    // 1. Xóa tất cả các Marker (dấu mốc) cũ trên bản đồ
-    clearAllMarkers(); 
 
-    // 2. Lọc dữ liệu lịch sử chỉ lấy các sự kiện của countryName
-    const countryHistory = allEvents.filter(event => event.country === countryName);
 
-    // 3. Hiển thị các sự kiện đã lọc lên bản đồ
-    countryHistory.forEach(event => {
-        addMarker(event.coords, event.description);
+
+function updateFilters() {
+    // 1. Xóa hết các icon đang hiện trên map
+    resourceLayerGroup.clearLayers();
+
+    // 2. Lấy danh sách các loại tài nguyên đang được tích chọn
+    const checkedValues = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
+
+    // 3. Duyệt qua kho dữ liệu và hiển thị
+    resourceData.forEach(r => {
+        if (checkedValues.includes(r.cat)) {
+            const isAnimal = ["wolf", "bear", "tiger", "sheep", "cow", "chicken"].includes(r.cat);
+            const size = isAnimal ? 30 : 22;
+            const shadow = isAnimal ? "white" : "gold";
+
+            L.marker([r.lat, r.lng], {
+                icon: L.divIcon({
+                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 5px ${shadow}); transition: 0.2s;" 
+                          onmouseover="this.style.transform='scale(2)'" 
+                          onmouseout="this.style.transform='scale(1)'">${r.icon}</div>`,
+                    className: 'res-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
+                })
+            }).bindTooltip(r.name).addTo(resourceLayerGroup);
+        }
     });
-
-    // 4. (Tùy chọn) Tự động phóng to vào quốc gia đó
-    const coords = countryCoords[countryName];
-    map.flyTo(coords, 5); 
 }
+
         const historyData = {
     1784: { text: "Chuẩn bị lực lượng Tây Sơn", country: "vietnam" },
     1785: { text: "Chiến thắng Rạch Gầm - Xoài Mút", country: "vietnam" },
@@ -767,14 +843,11 @@ const specialEvents = {
 };
 
         // --- 1. KHỞI TẠO BẢN ĐỒ ---
-var map = L.map('map', {
-    center: [30, 0],
-    zoom: 2,
-    minZoom: 1.4,
-    maxZoom: 17,
-    worldCopyJump: false, // Không nhảy sang bản sao
-    continuousWorld: false, // Không kéo vô tận
-    noWrap: true // QUAN TRỌNG: Khóa không cho lặp lại bản đồ
+const map = L.map('map', {
+    center: [20, 0],
+    zoom: 3,
+    minZoom: 2,
+    preferCanvas: true // THÊM DÒNG NÀY VÀO ĐÂY
 });
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
@@ -945,12 +1018,8 @@ if(mainSlider) {
         });
 
         const islandMarkers = [
-            L.marker([16.5, 112.0], { icon: L.divIcon({ className: 'island-label', html: 'Hoàng Sa (VN bị mất kiểm soát thực tế)' }) }),
-            L.marker([10.0, 114.5], { icon: L.divIcon({ className: 'island-label', html: 'Trường Sa (VN kiểm soát 1 phần)' }) }),
-            L.marker([10.2, 103.9], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quốc (VN)' }) }),
-            L.marker([10.5, 108.9463], { icon: L.divIcon({ className: 'island-label', html: 'Đảo Phú Quý' }) }),
-            L.marker([20.8030, 106.9986], { icon: L.divIcon({ className: 'island-label', html: 'Quần đảo Cát Bà' }) })
-
+            L.marker([16.5, 112.0], { icon: L.divIcon({ className: 'island-label', html: 'Hoàng Sa (VN)' }) }),
+            L.marker([10.0, 114.5], { icon: L.divIcon({ className: 'island-label', html: 'Trường Sa (VN)' }) }),
         ];
 
         function updateLabels() {
@@ -1016,16 +1085,23 @@ if(mainSlider) {
             };
         },
         onEachFeature: (feature, layer) => {
-            layer.on('click', function (e) {
-                const countryName = feature.properties.ADMIN || feature.properties.name;
-                L.popup().setLatLng(e.latlng).setContent(`
-                    <div style="color:black; font-family:Arial; padding:5px;">
-                        <b style="font-size:14px;">${countryName}</b><br>
-                        <button onclick="fetchWiki('${countryName}')" style="margin-top:8px; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:4px 8px; font-weight:bold;">TRA CỨU WIKI</button>
-                    </div>
-                `).openOn(map);
-                fetchWiki(countryName); 
-            });
+    layer.on('click', function (e) {
+        const countryName = feature.properties.ADMIN || feature.properties.name;
+        
+        // Tạo nội dung Popup mới có thêm nút thông tin
+        const popupContent = `
+            <div style="color:black; font-family:Arial; padding:5px; min-width:150px;">
+                <b style="font-size:16px; color:#d32f2f;">${countryName}</b><br>
+                <div style="margin-top:10px;">
+                    <button onclick="fetchWiki('${countryName}')" style="width:100%; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:5px; font-weight:bold; margin-bottom:5px;">🌐 WIKIPEDIA</button>
+                    <button onclick="showCountryDetails('${countryName}')" style="width:100%; cursor:pointer; background:#ffcc00; border:none; border-radius:4px; padding:5px; font-weight:bold;">🏛️ THỦ ĐÔ & BANG</button>
+                </div>
+            </div>
+        `;
+        
+        L.popup().setLatLng(e.latlng).setContent(popupContent).openOn(map);
+    });
+
             layer.on('dblclick', function (e) {
                 const countryName = feature.properties.ADMIN || feature.properties.name;
                 customColoredCountries[countryName] = !customColoredCountries[countryName];
@@ -1258,7 +1334,7 @@ function toggleClimateLayer(mode) {
             // Vẽ đường kẻ
             L.polyline([[item.lat, -180], [item.lat, 180]], style).addTo(climateLayerGroup);
             
-            // Vẽ nhãn chữ
+            
             L.marker([item.lat, 160], {
                 icon: L.divIcon({
                     className: item.isEquator ? 'equator-label' : 'climate-label',
@@ -1269,7 +1345,6 @@ function toggleClimateLayer(mode) {
         });
     }
 
-    // B. Vẽ các Đai khí hậu (Nhãn chữ to giữa bản đồ)
     if (mode === "zones" || mode === "all") {
         const zones = [
             { lat: 75, name: "North Frigid Zone - HÀN ĐỚI BẮC" },
@@ -1293,17 +1368,654 @@ function toggleClimateLayer(mode) {
     renderBorders(document.getElementById('year-input').value);
 }
 };
-// Hàm này giúp bản đồ nhận diện đới khí hậu bạn vừa chọn từ menu phụ
 function renderClimateSubtype(type) {
     if (type === "none") {
         activeClimateGroup = null;
     } else {
-        // Lấy dữ liệu (màu sắc, danh sách nước) từ biến climateGroups đã có sẵn
         activeClimateGroup = climateGroups[type];
     }
-    // Lệnh này quan trọng nhất: Yêu cầu hàm renderBorders chạy lại để cập nhật màu mới
     renderBorders(document.getElementById('year-input').value);
 }
-    </script>
+
+async function showCountryDetails(name) {
+    // Nếu đang hiện ranh giới rồi thì xóa đi để đổi nước khác
+    if (provinceLayer) map.removeLayer(provinceLayer);
+
+    // Thông báo cho người dùng
+    console.log("Đang tải dữ liệu chi tiết cho: " + name);
+
+    // Ở đây chúng ta sẽ dùng một kỹ thuật gọi là "Filter" (Lọc)
+    // Nếu bạn có file GeoJSON chi tiết của nước đó, hãy nạp vào đây.
+    // Dưới đây là ví dụ vẽ ranh giới chi tiết hơn nếu có dữ liệu:
+    
+    provinceLayer = L.geoJSON(worldDataCache, {
+        filter: (feature) => {
+            // Chỉ hiện ranh giới của quốc gia đang chọn
+            const countryName = feature.properties.ADMIN || feature.properties.name;
+            return countryName === name;
+        },
+        style: {
+            color: "#00ffff", // Màu xanh neon cho ranh giới bang
+            weight: 2,
+            fillOpacity: 0.1,
+            dashArray: "5, 5" // Đường nét đứt để phân biệt với biên giới quốc gia
+        }
+    }).addTo(map);
+
+    // Tự động zoom vào quốc gia đó để xem cho rõ
+    const bounds = provinceLayer.getBounds();
+    map.fitBounds(bounds);
+}
+
+function toggleResources() {
+    if (map.hasLayer(resourceLayerGroup)) {
+        map.removeLayer(resourceLayerGroup);
+    } else {
+        resourceLayerGroup.clearLayers();
+        resourceData.forEach(res => {
+            // Vẽ một vòng tròn nhỏ tại vị trí mỏ khoáng sản
+            L.circleMarker([res.lat, res.lng], {
+                radius: 8,
+                fillColor: res.color || "#ffcc00",
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).bindTooltip(`${res.type}: ${res.name}`, {permanent: false}) // Hiện tên khi di chuột vào
+              .addTo(resourceLayerGroup);
+        });
+        resourceLayerGroup.addTo(map);
+    }
+}
+
+
+// --- 2. HÀM ĐÓNG MỞ PANEL ---
+function toggleCustomPanel() {
+    const panel = document.getElementById('custom-panel');
+    if (!customPanelOpen) {
+        panel.style.left = "0px";
+        customPanelOpen = true;
+    } else {
+        panel.style.left = "-260px";
+        customPanelOpen = false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// DỮ LIỆU VÔ CÙNG QUAN TRỌNG, KHÔNG ĐƯỢC XÓA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// ==========================================
+// 1. KHO DỮ LIỆU (DATABASE)
+// ==========================================
+const RAW_LOCATION_DATA = {
+    "Russia": {
+        "forests": [
+            { lat: 64.5, lng: 40.5, name: "Lâm trường Arkhangelsk" }, { lat: 61.7, lng: 34.3, name: "Rừng Karelia 1" },
+            { lat: 62.5, lng: 33.0, name: "Rừng Karelia 2" }, { lat: 66.0, lng: 33.0, name: "Rừng Murmansk" },
+            { lat: 61.0, lng: 36.0, name: "Vành đai Vologda" }, { lat: 59.5, lng: 30.0, name: "Rừng Leningrad 1" },
+            { lat: 60.5, lng: 31.0, name: "Rừng Leningrad 2" }, { lat: 58.5, lng: 34.0, name: "Rừng Novgorod" },
+            { lat: 57.5, lng: 38.0, name: "Rừng Yaroslavl" }, { lat: 63.0, lng: 42.0, name: "Lâm trường Severodvinsk" },
+            { lat: 61.6, lng: 50.8, name: "Đại ngàn Komi 1" }, { lat: 63.0, lng: 55.0, name: "Đại ngàn Komi 2" },
+            { lat: 65.0, lng: 58.0, name: "Đại ngàn Komi 3" }, { lat: 58.0, lng: 56.2, name: "Rừng Perm" },
+            { lat: 59.0, lng: 58.0, name: "Lâm trường Berezniki" }, { lat: 56.8, lng: 60.6, name: "Rừng Ekaterinburg" },
+            { lat: 57.5, lng: 61.0, name: "Rừng Ural Bắc" }, { lat: 55.5, lng: 62.0, name: "Rừng Chelyabinsk" },
+            { lat: 54.5, lng: 59.0, name: "Rừng Bashkortostan" }, { lat: 58.5, lng: 52.0, name: "Rừng Kirov" },
+            { lat: 61.0, lng: 69.0, name: "Taiga Khanty-Mansiysk 1" }, { lat: 60.5, lng: 72.0, name: "Taiga Khanty-Mansiysk 2" },
+            { lat: 62.0, lng: 75.0, name: "Rừng Surgut" }, { lat: 63.5, lng: 80.0, name: "Rừng Nizhnevartovsk" },
+            { lat: 55.0, lng: 73.3, name: "Rừng Omsk" }, { lat: 56.5, lng: 75.0, name: "Rừng Tara" },
+            { lat: 56.5, lng: 85.0, name: "Rừng Tomsk 1" }, { lat: 58.0, lng: 83.0, name: "Rừng Tomsk 2" },
+            { lat: 53.5, lng: 83.0, name: "Rừng Barnaul" }, { lat: 52.0, lng: 85.0, name: "Rừng Altai" },
+            { lat: 65.0, lng: 70.0, name: "Lâm trường Yamal South" }, { lat: 66.5, lng: 75.0, name: "Rừng Urengoy" },
+            { lat: 56.0, lng: 92.8, name: "Đại ngàn Krasnoyarsk 1" }, { lat: 58.5, lng: 93.0, name: "Đại ngàn Krasnoyarsk 2" },
+            { lat: 60.0, lng: 95.0, name: "Rừng Tunguska 1" }, { lat: 63.0, lng: 97.0, name: "Rừng Tunguska 2" },
+            { lat: 65.0, lng: 100.0, name: "Rừng Evenkia 1" }, { lat: 67.0, lng: 105.0, name: "Rừng Evenkia 2" },
+            { lat: 52.2, lng: 104.2, name: "Rừng Irkutsk 1" }, { lat: 54.0, lng: 106.0, name: "Rừng Irkutsk 2" },
+            { lat: 56.0, lng: 105.0, name: "Lâm trường Bratsk" }, { lat: 51.5, lng: 107.5, name: "Rừng Ulan-Ude" },
+            { lat: 53.0, lng: 109.0, name: "Rừng ven hồ Baikal" }, { lat: 58.0, lng: 110.0, name: "Rừng Bodaybo" },
+            { lat: 62.0, lng: 115.0, name: "Rừng Mirny" }, { lat: 63.5, lng: 118.0, name: "Rừng Nyurba" },
+            { lat: 62.0, lng: 129.7, name: "Lâm trường Yakutsk Central" }, { lat: 61.0, lng: 125.0, name: "Rừng Aldan 1" },
+            { lat: 59.0, lng: 125.0, name: "Rừng Aldan 2" }, { lat: 64.0, lng: 124.0, name: "Rừng Vilyuy" },
+            { lat: 66.0, lng: 123.0, name: "Rừng Zhigansk" }, { lat: 68.0, lng: 130.0, name: "Verkhoyansk" },
+            { lat: 53.0, lng: 158.5, name: "Rừng Kamchatka South" }, { lat: 56.0, lng: 160.0, name: "Rừng Kamchatka Central" }
+        ],
+        "animals": [
+            { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
+            { lat: 64.2, lng: 103.5, name: "Đàn sói săn mồi", icon: "🐺", cat: "wolf" },
+            { lat: 65.8, lng: 106.0, name: "Sói tuyết Yakutia", icon: "🐺", cat: "wolf" },
+            { lat: 63.5, lng: 101.0, name: "Sói xám hoang dã", icon: "🐺", cat: "wolf" },
+            { lat: 60.0, lng: 85.0, name: "Gấu nâu Siberia", icon: "🐻", cat: "bear" },
+            { lat: 68.0, lng: 130.0, name: "Gấu trắng Bắc Cực", icon: "🐻‍❄️", cat: "bear" },
+            { lat: 45.0, lng: 136.0, name: "Hổ Amur", icon: "🐅", cat: "tiger" },
+            { lat: 46.5, lng: 137.5, name: "Hổ Viễn Đông", icon: "🐅", cat: "tiger" }
+        ],
+        "minerals": [
+            { lat: 56.8, lng: 60.6, name: "Mỏ Sắt Ekaterinburg", icon: "⛓️", cat: "iron" },
+            { lat: 57.5, lng: 59.5, name: "Mỏ Đồng Nizhny Tagil", icon: "🟠", cat: "iron" },
+            { lat: 55.2, lng: 61.4, name: "Mỏ Niken Chelyabinsk", icon: "🛡️", cat: "iron" },
+            { lat: 60.1, lng: 59.9, name: "Mỏ Bạch kim Ural Bắc", icon: "💍", cat: "gold" },
+            { lat: 70.2, lng: 72.5, name: "Siêu mỏ khí Yamal", icon: "💨", cat: "gas" },
+            { lat: 66.5, lng: 76.4, name: "Mỏ dầu Urengoy", icon: "🛢️", cat: "oil" },
+            { lat: 61.2, lng: 73.4, name: "Mỏ dầu Surgut", icon: "🛢️", cat: "oil" },
+            { lat: 62.5, lng: 114.0, name: "Mỏ kim cương Mir", icon: "💎", cat: "diamond" },
+            { lat: 63.8, lng: 115.2, name: "Mỏ kim cương Udachnaya", icon: "💎", cat: "diamond" },
+            { lat: 69.4, lng: 88.2, name: "Mỏ Niken Norilsk", icon: "⛓️", cat: "iron" },
+            { lat: 59.5, lng: 112.5, name: "Mỏ vàng Bodaybo", icon: "🟡", cat: "gold" },
+            { lat: 62.6, lng: 148.2, name: "Mỏ vàng Kolyma", icon: "🟡", cat: "gold" },
+            { lat: 50.7, lng: 132.8, name: "Mỏ than Bureya", icon: "⬛", cat: "coal" },
+            { lat: 53.7, lng: 87.1, name: "Bể than Kuzbass", icon: "⬛", cat: "coal" },
+            { lat: 46.5, lng: 142.7, name: "Mỏ dầu khí Sakhalin-1", icon: "🛢️", cat: "oil" },
+            { lat: 46.0, lng: 143.0, name: "Mỏ dầu khí Sakhalin-2", icon: "🛢️", cat: "oil" },
+            { lat: 67.5, lng: 33.5, name: "Mỏ Apatit Kola", icon: "🧪", cat: "iron" },
+            { lat: 67.6, lng: 64.0, name: "Mỏ than Vorkuta", icon: "⬛", cat: "coal" },
+            { lat: 51.3, lng: 36.2, name: "Dị thường sắt Kursk", icon: "⛓️", cat: "iron" },
+            { lat: 55.3, lng: 86.0, name: "Kemerovo Mine", icon: "⬛", cat: "coal" },
+            { lat: 53.3, lng: 59.0, name: "Siêu mỏ Sắt Magnitogorsk", icon: "⛓️", cat: "iron" }
+        ],
+        "fish": [
+            { lat: 70.5, lng: 33.5, name: "Cua Hoàng Đế (Barents Sea)", icon: "🦀", cat: "animal" },
+            { lat: 55.0, lng: 155.0, name: "Ngư trường cá Hồi (Okhotsk Sea)", icon: "🐟", cat: "animal" },
+            { lat: 51.5, lng: 157.0, name: "Trứng cá tầm đen (Kamchatka)", icon: "⚫", cat: "animal" },
+            { lat: 43.0, lng: 132.0, name: "Cua Tuyết (Vladivostok)", icon: "🦀", cat: "animal" },
+            { lat: 65.0, lng: 175.0, name: "Cá Tuyết trắng (Bering Sea)", icon: "🐟", cat: "animal" },
+            { lat: 53.5, lng: 108.0, name: "Cá Omul (Đặc hữu hồ Baikal)", icon: "🐠", cat: "animal" }
+        ]
+    },
+    
+    "Vietnam": {
+        "animals": [
+            { lat: 21.0, lng: 105.5, name: "Trang trại Gà Đông Tảo", icon: "🐓", cat: "chicken" },
+            { lat: 21.3, lng: 105.8, name: "Gà đồi", icon: "🐓", cat: "chicken" },
+            { lat: 15.0, lng: 108.5, name: "Bò Vàng", icon: "🐄", cat: "cow" },
+            { lat: 11.5, lng: 108.9, name: "Đàn Cừu Ninh Thuận", icon: "🐑", cat: "sheep" }
+        ],
+        "minerals": [
+            { lat: 20.95, lng: 107.05, name: "Mỏ than Cọc Sáu", icon: "⬛", cat: "coal" },
+            { lat: 21.01, lng: 107.25, name: "Mỏ than Cao Sơn", icon: "⬛", cat: "coal" },
+            { lat: 11.9, lng: 107.7, name: "Mỏ Bauxite Tân Rai", icon: "🧱", cat: "iron" },
+            { lat: 12.4, lng: 107.5, name: "Mỏ Bauxite Nhân Cơ", icon: "🧱", cat: "iron" },
+            { lat: 18.4, lng: 105.9, name: "Mỏ sắt Thạch Khê", icon: "⛓️", cat: "iron" },
+            { lat: 22.3, lng: 103.9, name: "Mỏ đồng Sin Quyền", icon: "🟠", cat: "iron" },
+            { lat: 22.5, lng: 103.5, name: "Mỏ Đất hiếm Bắc Nậm Xe", icon: "💎", cat: "diamond" },
+            { lat: 9.7, lng: 107.9, name: "Mỏ dầu Bạch Hổ", icon: "🛢️", cat: "oil" },
+            { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" }
+        ]
+    },
+    "Japan": {
+        "minerals": [
+            { lat: 38.0, lng: 138.3, name: "Siêu mỏ vàng Sado (Đảo Sado)", icon: "🟡", cat: "gold" },
+            { lat: 35.1, lng: 132.4, name: "Mỏ bạc Iwami Ginzan", icon: "💍", cat: "gold" },
+            { lat: 32.6, lng: 129.7, name: "Mỏ than Hashima (Gunkanjima)", icon: "⬛", cat: "coal" },
+            { lat: 24.2, lng: 154.0, name: "Vỉa Đất hiếm Minamitori (Dưới đáy biển)", icon: "💎", cat: "diamond" },
+            { lat: 39.9, lng: 140.0, name: "Mỏ đồng-kẽm Akita", icon: "🟠", cat: "iron" },
+            { lat: 33.9, lng: 133.3, name: "Mỏ đồng Besshi (Ehime)", icon: "🟠", cat: "iron" },
+            { lat: 42.9, lng: 144.1, name: "Mỏ than Taiheiyo (Kushiro)", icon: "⬛", cat: "coal" },
+            { lat: 31.2, lng: 130.6, name: "Mỏ vàng Hishikari (Hàm lượng cực cao)", icon: "🟡", cat: "gold" },
+            { lat: 41.5, lng: 141.0, name: "Mỏ sắt Kamaishi", icon: "⛓️", cat: "iron" }
+        ],
+        "forests": [
+            { lat: 35.3, lng: 138.7, name: "Rừng tự sát Aokigahara (Dưới chân Phú Sĩ)", icon: "🌲", cat: "wood" },
+            { lat: 43.5, lng: 142.5, name: "Rừng lá kim Daisetsuzan (Hokkaido)", icon: "🌲", cat: "wood" },
+            { lat: 30.3, lng: 130.5, name: "Rừng tuyết tùng cổ đại Yakushima (7000 năm)", icon: "🌳", cat: "wood" },
+            { lat: 35.0, lng: 135.7, name: "Rừng tre Sagano (Kyoto)", icon: "🎍", cat: "wood" },
+            { lat: 40.4, lng: 140.1, name: "Rừng sồi Shirakami-Sanchi (Di sản TG)", icon: "🌳", cat: "wood" },
+            { lat: 26.7, lng: 128.2, name: "Rừng cận nhiệt đới Yanbaru (Okinawa)", icon: "🌴", cat: "wood" },
+            { lat: 37.0, lng: 139.5, name: "Khu bảo tồn Oze (Đầm lầy & Rừng)", icon: "🌿", cat: "wood" }
+        ],
+        "animals": [
+            { lat: 36.7, lng: 138.5, name: "Khỉ tuyết Jigokudani (Tắm suối nước nóng)", icon: "🐒", cat: "animal" },
+            { lat: 43.3, lng: 144.5, name: "Sếu đầu đỏ Kushiro (Biểu tượng may mắn)", icon: "🦢", cat: "animal" },
+            { lat: 44.3, lng: 145.0, name: "Gấu nâu Ussuri khổng lồ (Hokkaido)", icon: "🐻", cat: "bear" },
+            { lat: 31.6, lng: 131.4, name: "Ngựa hoang Misaki (Kyushu)", icon: "🐎", cat: "animal" },
+            { lat: 33.7, lng: 132.5, name: "Đảo mèo Aoshima (Dân số mèo > người)", icon: "🐈", cat: "animal" },
+            { lat: 34.2, lng: 132.9, name: "Đảo thỏ Okunoshima", icon: "🐰", cat: "animal" },
+            { lat: 34.6, lng: 135.8, name: "Nai Nara (Được coi là thần linh)", icon: "🦌", cat: "animal" },
+            { lat: 24.3, lng: 123.8, name: "Mèo rừng Iriomote (Cực hiếm)", icon: "🐆", cat: "animal" },
+            { lat: 41.5, lng: 140.9, name: "Khỉ Nhật Bản (Cực Bắc thế giới)", icon: "🐒", cat: "animal" },
+            { lat: 35.2, lng: 139.1, name: "Lợn rừng vùng Hakone", icon: "🐗", cat: "animal" },
+            { lat: 35.5, lng: 137.5, name: "Linh dương Serow Nhật Bản", icon: "🐐", cat: "animal" }
+        ],
+        "fish": [
+            { lat: 35.6, lng: 140.0, name: "Cá ngừ vây xanh (Chợ Toyosu)", icon: "🐟", cat: "animal" },
+            { lat: 44.0, lng: 144.5, name: "Cua hoàng đế Hokkaido", icon: "🦀", cat: "animal" },
+            { lat: 33.8, lng: 131.0, name: "Cá nóc Fugu (Vùng Shimonoseki)", icon: "🐡", cat: "animal" },
+            { lat: 34.8, lng: 138.5, name: "Tôm anh đào (Vịnh Suruga)", icon: "🦐", cat: "animal" },
+            { lat: 35.5, lng: 133.0, name: "Cua Tuyết Matsuba", icon: "🦀", cat: "animal" },
+            { lat: 38.5, lng: 141.5, name: "Sò điệp Sanriku", icon: "🐚", cat: "animal" },
+            { lat: 26.5, lng: 127.5, name: "Cá nhiệt đới Okinawa", icon: "🐠", cat: "animal" },
+            { lat: 35.4, lng: 136.0, name: "Cá Ayu (Sông ngòi miền Trung)", icon: "🐟", cat: "animal" },
+            { lat: 34.0, lng: 134.8, name: "Tảo biển Nori (Vịnh Seto)", icon: "🌿", cat: "animal" }
+        ]
+    },
+    "South_Africa": {
+        "minerals": [
+            { lat: -26.2, lng: 27.8, name: "Mỏ vàng Mponeng", icon: "🟡", cat: "gold" },
+            { lat: -25.7, lng: 28.2, name: "Mỏ kim cương Cullinan", icon: "💎", cat: "diamond" }
+        ]
+    },
+    "Chile": {
+        "minerals": [
+            { lat: -22.3, lng: -68.9, name: "Mỏ đồng Chuquicamata", icon: "🟠", cat: "iron" },
+            { lat: -23.9, lng: -68.1, name: "Mỏ Lithium Atacama", icon: "🔋", cat: "iron" }
+        ]
+    },
+    "Middle_East": {
+        "minerals": [
+            { lat: 25.9, lng: 48.1, name: "Siêu mỏ dầu Ghawar", icon: "🛢️", cat: "oil" },
+            { lat: 26.5, lng: 52.0, name: "Mỏ khí North Field", icon: "💨", cat: "gas" }
+        ]
+    },
+    "USA": {
+        "minerals": [
+            { lat: 40.5, lng: -112.1, name: "Mỏ đồng Bingham Canyon (Hố đào lớn nhất TG)", icon: "🟠", cat: "iron" },
+            { lat: 44.3, lng: -103.7, name: "Mỏ vàng Homestake (Nam Dakota)", icon: "🟡", cat: "gold" },
+            { lat: 32.5, lng: -108.6, name: "Mỏ đồng Chino (New Mexico)", icon: "🟠", cat: "iron" },
+            { lat: 47.4, lng: -92.9, name: "Dãy sắt Mesabi (Minnesota)", icon: "⛓️", cat: "iron" },
+            { lat: 38.0, lng: -81.0, name: "Mỏ than Appalachia (Tây Virginia)", icon: "⬛", cat: "coal" }
+        ]
+    },
+    "Canada": {
+        "minerals": [
+            { lat: 46.5, lng: -81.0, name: "Mỏ Niken Sudbury (Vết thiên thạch cổ)", icon: "⛓️", cat: "iron" },
+            { lat: 56.7, lng: -111.4, name: "Cát dầu Athabasca (Alberta)", icon: "🛢️", cat: "oil" },
+            { lat: 52.7, lng: -67.3, name: "Mỏ sắt Mount Wright (Quebec)", icon: "⛓️", cat: "iron" },
+            { lat: 64.7, lng: -110.6, name: "Mỏ kim cương Ekati (Vùng cực)", icon: "💎", cat: "diamond" },
+            { lat: 54.9, lng: -126.2, name: "Mỏ vàng-đồng Babine", icon: "🟡", cat: "gold" }
+        ]
+    },
+    
+
+
+
+
+
+
+
+    
+};
+
+//HÀM KINH TẾ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KHÔNG XÓA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const RAW_ECONOMY_DATA = {
+    "Russia": {
+        "industry": [
+            { lat: 55.7, lng: 37.6, name: "Trung tâm điều khiển Roscosmos (Moscow)", icon: "🚀", cat: "space" },
+            { lat: 45.9, lng: 63.3, name: "Sân bay vũ trụ Baikonur (Thuê của Kazakhstan)", icon: "🛰️", cat: "space" },
+            { lat: 51.8, lng: 128.3, name: "Sân bay vũ trụ Vostochny (Viễn Đông)", icon: "🚀", cat: "space" },
+            { lat: 62.9, lng: 40.5, name: "Sân bay vũ trụ Plesetsk", icon: "🛰️", cat: "space" }
+        ]
+    },
+    "USA": {
+        "industry": [
+            { lat: 28.5, lng: -80.6, name: "Trung tâm vũ trụ Kennedy (NASA/SpaceX)", icon: "🚀", cat: "space" },
+            { lat: 29.5, lng: -95.1, name: "Trung tâm điều khiển Johnson (Houston)", icon: "📡", cat: "space" },
+            { lat: 34.7, lng: -120.5, name: "Căn cứ vũ trụ Vandenberg (California)", icon: "🛰️", cat: "space" },
+            { lat: 25.9, lng: -97.1, name: "Starbase SpaceX (Boca Chica)", icon: "🚀", cat: "space" }
+        ]
+    },
+    "China": {
+        "industry": [
+            { lat: 28.2, lng: 102.0, name: "Trung tâm phóng vệ tinh Tây Xương", icon: "🚀", cat: "space" },
+            { lat: 40.9, lng: 100.2, name: "Trung tâm phóng Tử Tửu Tuyền", icon: "🛰️", cat: "space" },
+            { lat: 19.6, lng: 110.9, name: "Sân bay vũ trụ Văn Xương (Đảo Hải Nam)", icon: "🚀", cat: "space" }
+        ]
+    },
+    "France": { // Đại diện cho Cơ quan Vũ trụ Châu Âu (ESA)
+        "industry": [
+            { lat: 5.2, lng: -52.7, name: "Trung tâm vũ trụ Guiana (Nam Mỹ - ESA)", icon: "🚀", cat: "space" }
+        ]
+    },
+    "India": {
+        "industry": [
+            { lat: 13.7, lng: 80.2, name: "Trung tâm vũ trụ Satish Dhawan (ISRO)", icon: "🚀", cat: "space" }
+        ]
+    },
+    "Japan": {
+        "industry": [
+            { lat: 30.3, lng: 130.9, name: "Trung tâm vũ trụ Tanegashima (JAXA)", icon: "🚀", cat: "space" },
+            { lat: 31.2, lng: 131.0, name: "Trung tâm vũ trụ Uchinoura", icon: "🛰️", cat: "space" }
+        ]
+    },
+    "Vietnam": {
+        "industry": [
+            { lat: 21.0, lng: 105.8, name: "Trung tâm Vũ trụ Việt Nam (VNSC - Hòa Lạc)", icon: "📡", cat: "space" }
+        ]
+    }
+};
+
+// ==========================================
+// 2. KHAI BÁO BIẾN & CÁC HÀM SINH DỮ LIỆU (PHẢI CÓ TRƯỚC KHI GỌI)
+// ==========================================
+let uiVisible = true;
+let customPanelOpen = false;
+let provinceLayer = null;
+let resourceLayerGroup = L.layerGroup().addTo(map);
+let economyLayerGroup = L.layerGroup().addTo(map); // Khay riêng cho kinh tế
+let resourceData = [];
+let economyData = []; // Mảng chứa dữ liệu kinh tế
+
+// Định nghĩa hàm sinh than đá
+function generateMoreCoal() {
+    const coalCenters = [{lat: 55.3, lng: 86.0}, {lat: 67.5, lng: 64.0}, {lat: 56.0, lng: 92.0}, {lat: 51.0, lng: 113.0}];
+    coalCenters.forEach(center => {
+        for (let i = 0; i < 20; i++) {
+            resourceData.push({
+                lat: center.lat + (Math.random() - 0.5) * 1.5,
+                lng: center.lng + (Math.random() - 0.5) * 1.5,
+                cat: "coal", name: `Mỏ than vệ tinh`, icon: "⬛"
+            });
+        }
+    });
+}
+
+// Định nghĩa hàm sinh Ural
+function generateUralRichness() {
+    for (let lat = 50; lat <= 68; lat += 0.5) {
+        const lng = 60 + (Math.random() - 0.5) * 2; 
+        const types = [{cat: "iron", icon: "⛓️", name: "Mỏ Sắt Ural"}, {cat: "gold", icon: "🟡", name: "Vỉa Vàng"}, {cat: "iron", icon: "🟠", name: "Mỏ Đồng"}];
+        const res = types[Math.floor(Math.random() * types.length)];
+        resourceData.push({ lat, lng, cat: res.cat, name: res.name, icon: res.icon });
+    }
+}
+
+// Định nghĩa hàm sinh than VN
+function generateVietnamCoal() {
+    const qn = {lat: 21.0, lng: 107.1};
+    for (let i = 0; i < 30; i++) {
+        resourceData.push({
+            lat: qn.lat + (Math.random() - 0.5) * 0.4,
+            lng: qn.lng + (Math.random() - 0.5) * 0.8,
+            cat: "coal", name: "Khai trường than QN", icon: "⬛"
+        });
+    }
+}
+
+// Định nghĩa hàm sinh Bauxite TN
+function generateTayNguyenBauxite() {
+    const tn = {lat: 12.2, lng: 107.6};
+    for (let i = 0; i < 15; i++) {
+        resourceData.push({
+            lat: tn.lat + (Math.random() - 0.5) * 0.8,
+            lng: tn.lng + (Math.random() - 0.5) * 0.5,
+            cat: "iron", name: "Vỉa Bauxite", icon: "🧱"
+        });
+    }
+}
+
+
+function loadEverything() {
+    resourceData = [];
+    economyData = [];
+    
+    // Nạp Tài nguyên & Thủy sản
+    for (let country in RAW_LOCATION_DATA) {
+        for (let category in RAW_LOCATION_DATA[country]) {
+            RAW_LOCATION_DATA[country][category].forEach(item => {
+                // SỬA TẠI ĐÂY: Fix icon rừng và danh mục wood
+                let finalIcon = item.icon;
+                if (!finalIcon && category === "forests") finalIcon = "🌲";
+                
+                resourceData.push({ 
+                    ...item, 
+                    icon: finalIcon || "❓",
+                    cat: item.cat || (category === "forests" ? "wood" : category),
+                    name: `${item.name} (${country})` 
+                });
+            });
+        }
+    }
+    
+    // Nạp Kinh tế
+    if (typeof RAW_ECONOMY_DATA !== 'undefined') {
+        for (let country in RAW_ECONOMY_DATA) {
+            for (let sector in RAW_ECONOMY_DATA[country]) {
+                RAW_ECONOMY_DATA[country][sector].forEach(item => {
+                    economyData.push({ 
+                        ...item, 
+                        cat: item.cat || sector, // Đảm bảo có cat để lọc
+                        name: `[${sector.toUpperCase()}] ${item.name}` 
+                    });
+                });
+            }
+        }
+    }
+}
+
+// Chỉ cần gọi loadEverything một lần duy nhất
+loadEverything();
+
+// ==========================================
+// 3. THỰC THI (CHẠY HỆ THỐNG)
+// ==========================================
+loadAllResources();        // 1. Nạp dữ liệu gốc trước
+generateMoreCoal();        // 2. Sau đó mới sinh thêm các mỏ phụ
+generateUralRichness();
+generateVietnamCoal();
+generateTayNguyenBauxite();
+
+console.log("Hệ thống tài nguyên thế giới đã sẵn sàng");
+
+
+// ==========================================
+// 4. HÀM ĐIỀU KHIỂN GIAO DIỆN & PHÍM TẮT
+// ==========================================
+document.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (key === 'h') toggleUI();
+    if (key === 'c') takeScreenshot();
+});
+
+function toggleUI(state) {
+    uiVisible = (state !== undefined) ? state : !uiVisible;
+    const panels = ['control-panel', 'custom-panel', 'bottom-ui', 'wiki-panel', 'coords-box'];
+    panels.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.opacity = uiVisible ? "1" : "0";
+            el.style.pointerEvents = uiVisible ? "auto" : "none";
+            el.style.transition = "0.5s";
+        }
+    });
+    const attr = document.querySelector('.leaflet-control-attribution');
+    if (attr) attr.style.display = uiVisible ? "block" : "none";
+}
+
+
+function toggleCustomPanel() {
+    const p = document.getElementById('custom-panel');
+    if (!p) return;
+    customPanelOpen = !customPanelOpen;
+    p.style.left = customPanelOpen ? "0px" : "-260px";
+}
+
+function updateFilters() {
+    // 1. Dọn dẹp bản đồ trước khi vẽ lại
+    resourceLayerGroup.clearLayers();
+    economyLayerGroup.clearLayers();
+
+    // 2. Xử lý TÀI NGUYÊN (Màu Vàng)
+    const activeRes = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
+    resourceData.forEach(r => {
+        if (activeRes.includes(r.cat)) {
+            L.marker([r.lat, r.lng], {
+                icon: L.divIcon({
+                    html: `<div style="font-size:22px; filter: drop-shadow(0 0 3px gold);">${r.icon}</div>`,
+                    className: 'res-icon', iconSize:[22,22], iconAnchor:[11,11]
+                })
+            }).bindTooltip(r.name).addTo(resourceLayerGroup);
+        }
+    });
+
+    // 3. Xử lý KINH TẾ (Màu Xanh Neon)
+    const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
+    economyData.forEach(e => {
+        if (activeEco.includes(e.cat)) {
+            // Nếu là hàng không vũ trụ (space), cho hiệu ứng đặc biệt
+            const isSpace = e.cat === "space";
+            const shadowColor = isSpace ? "#00fbff" : "#00ff88";
+            const size = isSpace ? 28 : 25;
+
+            L.marker([e.lat, e.lng], {
+                icon: L.divIcon({
+                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 8px ${shadowColor}); transition: 0.3s;" 
+                          onmouseover="this.style.transform='scale(1.5)'" 
+                          onmouseout="this.style.transform='scale(1)'">${e.icon}</div>`,
+                    className: 'eco-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
+                })
+            }).bindTooltip(`<b>${e.name}</b><br>Loại: Hàng không vũ trụ`).addTo(economyLayerGroup);
+        }
+    });
+}
+
+
+function clearCustomColors() {
+    customColors = {};
+    if (typeof renderBorders === 'function') renderBorders(document.getElementById('year-input').value);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function takeScreenshot() {
+    // 1. Ẩn UI để ảnh sạch
+    toggleUI(false); 
+    
+    // 2. Đợi 0.8s để đảm bảo các layer vector (viền xanh) đã khớp hoàn toàn
+    setTimeout(async () => {
+        const mapContainer = document.getElementById('map');
+        
+        try {
+            // Ép chụp chính xác container của Leaflet
+            const canvas = await html2canvas(mapContainer, {
+                useCORS: true,
+                allowTaint: false,
+                scale: 2, // Tăng độ nét
+                logging: false,
+                backgroundColor: "#000",
+                // KHÓA CHẾT: Đảm bảo canvas không bị lệch do cuộn chuột (scroll)
+                scrollX: 0,
+                scrollY: 0,
+                x: 0,
+                y: 0,
+                width: mapContainer.offsetWidth,
+                height: mapContainer.offsetHeight
+            });
+
+            const link = document.createElement('a');
+            // Đặt tên ảnh theo năm để Sói dễ quản lý
+            const currentYear = document.getElementById('year-input')?.value || 'History';
+            link.download = `Map_Soi_${currentYear}_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        } catch (error) {
+            console.error("Lỗi chụp ảnh:", error);
+        }
+
+        // 3. Hiện lại UI
+        toggleUI(true); 
+    }, 800);
+}
+
+// --- CÁC HÀM XỬ LÝ PANEL ---
+function toggleCustomPanel() {
+    const p = document.getElementById('custom-panel');
+    customPanelOpen = !customPanelOpen;
+    p.style.left = customPanelOpen ? "0px" : "-260px";
+}
+
+function filterResources(val) {
+    resourceLayerGroup.clearLayers();
+    economyLayerGroup.clearLayers(); // Xóa sạch cả 2 khay khi lọc
+    
+    if (val === "none") return;
+
+    // 1. Vẽ Tài nguyên (Mỏ, rừng, thú, cá)
+    resourceData.forEach(r => {
+        if (val === "all" || r.cat === val) {
+            const isAnimal = ["wolf", "bear", "tiger", "sheep", "cow", "chicken", "animal"].includes(r.cat);
+            const size = isAnimal ? 30 : 22;
+            const shadow = isAnimal ? "rgba(255,255,255,0.8)" : "gold";
+
+            L.marker([r.lat, r.lng], {
+                icon: L.divIcon({
+                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 5px ${shadow}); transition: 0.3s;" 
+                          onmouseover="this.style.transform='scale(2)'" 
+                          onmouseout="this.style.transform='scale(1)'">${r.icon}</div>`,
+                    className: 'res-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
+                })
+            }).bindTooltip(r.name).addTo(resourceLayerGroup);
+        }
+    });
+
+    // 2. Vẽ Kinh tế (Vũ trụ, Ô tô, Lúa...)
+    economyData.forEach(e => {
+        if (val === "all" || e.cat === val) {
+            L.marker([e.lat, e.lng], {
+                icon: L.divIcon({
+                    html: `<div style="font-size:25px; filter: drop-shadow(0 0 5px #00fbff); transition: 0.3s;" 
+                          onmouseover="this.style.transform='scale(2)'" 
+                          onmouseout="this.style.transform='scale(1)'">${e.icon}</div>`,
+                    className: 'eco-icon', iconSize:[25,25], iconAnchor:[12,12]
+                })
+            }).bindTooltip(e.name).addTo(economyLayerGroup);
+        }
+    });
+}
+
+function showCountryDetails(name) {
+    if (provinceLayer) map.removeLayer(provinceLayer);
+    provinceLayer = L.geoJSON(worldDataCache, {
+        filter: (f) => (f.properties.ADMIN || f.properties.name || "").toLowerCase() === name.toLowerCase(),
+        style: { color: "#00ffff", weight: 3, fillColor: "transparent", dashArray: "10, 10" }
+    }).addTo(map);
+    if (provinceLayer.getLayers().length > 0) map.flyToBounds(provinceLayer.getBounds(), {padding:[50,50]});
+}
+
+</script>
 </body>
 </html>
