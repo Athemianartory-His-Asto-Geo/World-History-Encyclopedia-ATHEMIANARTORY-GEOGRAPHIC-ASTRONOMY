@@ -396,14 +396,39 @@ left-group {
         </div>
 
         <h3 style="color: #00fbff; margin: 10px 0 10px 0; font-size: 16px; text-align: center;">HỆ THỐNG KINH TẾ</h3>
-        <div id="economy-container" style="background:#222; border:1px solid #00fbff; padding:10px; border-radius:5px; max-height: 250px; overflow-y: auto;">
-            <h4 style="color:#00fbff; margin: 5px 0;">🏭 Công nghiệp & Dịch vụ</h4>
-            <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ & Hàng không</label><br>
-            <label class="check-item"><input type="checkbox" class="eco-check" value="auto" onchange="updateFilters()"> 🚗 Công nghiệp Ô tô</label><br>
-            <label class="check-item"><input type="checkbox" class="eco-check" value="heavy" onchange="updateFilters()"> 🛡️ Công nghiệp nặng</label><br>
-            <label class="check-item"><input type="checkbox" class="eco-check" value="crop" onchange="updateFilters()"> 🌾 Nông nghiệp</label><br>
+<div id="economy-container" style="background:#222; border:1px solid #00fbff; padding:10px; border-radius:5px; max-height: 350px; overflow-y: auto;">
+    
+    <h4 style="color:#00fbff; margin: 5px 0;">🏭 Công nghiệp sản xuất</h4>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="automotive" onchange="updateFilters()"> 🚗 Công nghiệp Ô tô</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="heavy_industry" onchange="updateFilters()"> 🛡️ Công nghiệp nặng</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ & Hàng không</label><br>
+    
+    <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🏗️ Hạ tầng chiến lược</h4>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="power_plant" onchange="updateFilters()"> ⚡ Hệ thống Năng lượng</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="airport" onchange="updateFilters()"> ✈️ Cửa ngõ Hàng không</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="seaport" onchange="updateFilters()"> ⚓ Cảng biển nước sâu</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="railway" onchange="updateFilters()"> 🚂 Mạng lưới Đường sắt</label><br>
+
+    <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🌾 Nông nghiệp & Cây trồng</h4>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="crop" onchange="updateFilters()"> 🌾 Lúa nước</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="coffee" onchange="updateFilters()"> ☕ Cà phê</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="maize" onchange="updateFilters()"> 🌽 Ngô (Bắp)</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="potato" onchange="updateFilters()"> 🥔 Khoai tây & Củ</label><br>
+
+            <div class="filter-group">
+            <h4>Nông nghiệp & Cây trồng</h4>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="crop" onchange="updateFilters()"> 🌾 Lúa nước</label>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="coffee" onchange="updateFilters()"> ☕ Cà phê</label>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="maize" onchange="updateFilters()"> 🌽 Ngô (Bắp)</label>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="potato" onchange="updateFilters()"> 🥔 Khoai tây/lang</label>
+            <label class="check-item"><input type="checkbox" class="eco-check" value="cassava" onchange="updateFilters()"> 🍠 Sắn (Khoai mì)</label>
+            </div>
+
         </div>
     </div>
+</div>
+            
+    
 
 
 
@@ -417,10 +442,6 @@ left-group {
     <button onclick="clearCustomColors()" style="width:100%; background:#cc0000; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px; font-weight:bold;">XÓA TẤT CẢ MÀU TÔ</button>
 </div>
 
-    <div id="bottom-ui" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 80%; pointer-events: auto;">
-        <div id="year-display" style="color: #ffcc00; text-align: center; font-size: 30px; font-weight: bold; text-shadow: 2px 2px 5px #000; margin-bottom: 10px;">1900</div>
-        <input type="range" id="year-input" min="1500" max="2024" value="1900" style="width: 100%; cursor: pointer;">
-    </div>
 
     <div id="wiki-panel">
         <span id="wiki-close">&times;</span>
@@ -652,60 +673,9 @@ left-group {
 
 
 
-function updateFilters() {
-    // 1. Xóa hết các icon đang hiện trên map
-    resourceLayerGroup.clearLayers();
 
-    // 2. Lấy danh sách các loại tài nguyên đang được tích chọn
-    const checkedValues = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
 
-    // 3. Duyệt qua kho dữ liệu và hiển thị
-    resourceData.forEach(r => {
-        if (checkedValues.includes(r.cat)) {
-            const isAnimal = ["wolf", "bear", "tiger", "sheep", "cow", "chicken"].includes(r.cat);
-            const size = isAnimal ? 30 : 22;
-            const shadow = isAnimal ? "white" : "gold";
 
-            L.marker([r.lat, r.lng], {
-                icon: L.divIcon({
-                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 5px ${shadow}); transition: 0.2s;" 
-                          onmouseover="this.style.transform='scale(2)'" 
-                          onmouseout="this.style.transform='scale(1)'">${r.icon}</div>`,
-                    className: 'res-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
-                })
-            }).bindTooltip(r.name).addTo(resourceLayerGroup);
-        }
-    });
-}
-
-        const historyData = {
-    1784: { text: "Chuẩn bị lực lượng Tây Sơn", country: "vietnam" },
-    1785: { text: "Chiến thắng Rạch Gầm - Xoài Mút", country: "vietnam" },
-    1887: { text: "Thành lập Liên bang Đông Dương", country: "vietnam" },
-    1930: { text: "Thành lập Đảng Cộng sản Việt Nam", country: "vietnam" },
-    1945: { text: "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9", country: "vietnam" },
-    1954: { text: "Hiệp định Genève - Chia cắt Việt Nam (Vĩ tuyến 17)", country: "vietnam" },
-    1973: { text: "Hiệp định Paris - Kết thúc chiến tranh Việt Nam", country: "vietnam" },
-    1975: { text: "Giải phóng miền Nam - Thống nhất đất nước", country: "vietnam" },
-    1989: { text: "Bức tường Berlin sụp đổ", country: "germany" }, 
-    2025: { text: "Kỷ niệm 50 năm ngày Thống nhất đất nước", country: "vietnam" },
-    1950: { text: "Chiến dịch Biên Giới 1950", country: "vietnam" },
-    1972: { text: "Chiến dịch Quảng Trị 1972", country: "vietnam" },
-    1988: { text: "Hải chiến Trường Sa 1988", country: "vietnam" }
-};
-
-const specialEvents = {
-    1785: { pos: [10.345, 106.250], text: "TRẬN CHIẾN<br>RẠCH GẦM XOÀI MÚT<br>⚔️" },
-    1979: [
-        { pos: [22.82, 104.85], text: "HÀ GIANG ⚔️" },
-        { pos: [22.48, 103.97], text: "LÀO CAI ⚔️" },
-        { pos: [22.67, 106.25], text: "CAO BẰNG ⚔️" },
-        { pos: [21.85, 106.75], text: "LẠNG SƠN ⚔️" },
-        { pos: [21.54, 107.97], text: "MÓNG CÁI ⚔️" }
-    ], 
-    1988: { pos: [8.814, 114.28], text: "TRẬN CHIẾN<br>GẠC MA<br>⚔️" }
-    
-};
 
         const countryCoords = {
     "vietnam": { center: [16.4637, 107.5908], zoom: 6, adminName: "Vietnam" },
@@ -1192,76 +1162,6 @@ if(mainSlider) {
             }
         }   
 
-        async function fetchWiki(eventName) {
-            const panel = document.getElementById('wiki-panel');
-            const body = document.getElementById('wiki-body');
-            const title = document.getElementById('wiki-title');
-            const wikiMap = {
-                "Việt Nam Tuyên Ngôn Độc Lập Ngày 2 Tháng 9": "Tuyên ngôn độc lập Việt Nam Dân chủ Cộng hòa",
-                "Chiến thắng Rạch Gầm - Xoài Mút": "Trận Rạch Gầm – Xoài Mút",
-                "Hiệp định Genève - Chia cắt Việt Nam": "Hiệp định Genève (1954)",
-                "Giải phóng miền Nam - Thống nhất đất nước": "Sự kiện 30 tháng 4 năm 1975",
-                "Trận chiến Gạc Ma": "Hải chiến Gạc Ma 1988",
-                "Chiến tranh biên giới Việt - Trung": "Chiến tranh biên giới Việt–Trung, 1979",
-                "Hải chiến Hoàng Sa": "Trận hải chiến Hoàng Sa 1974",
-                "Phong trào Đông Du": "Phong trào Đông Du",
-                "Phong trào Duy Tân": "Phong trào Duy Tân",
-                "Phong trào Cần Vương": "Phong trào Cần Vương",
-                "Khởi nghĩa Yên Bái": "Khởi nghĩa Yên Bái",
-                "Khởi nghĩa Bãi Sậy": "Khởi nghĩa Bãi Sậy",
-                "Khởi nghĩa Hương Khê": "Khởi nghĩa Hương Khê",
-                "Phong trào Xô Viết Nghệ Tĩnh": "Xô viết Nghệ Tĩnh",
-                "Phong trào Vô sản hóa": "Chính sách vô sản hóa ở Việt Nam",
-                "Phong trào Bình dân học vụ": "Phong trào Bình dân học vụ ở Việt Nam",
-                "Phong trào Nhân văn - Giai phẩm": "Phong trào Nhân văn - Giai phẩm",
-                "Phong trào Tây Sơn": "Tây Sơn (phong trào)",
-                "Chiến dịch Điện Biên Phủ": "Chiến dịch Điện Biên Phủ",
-                "Chiến dịch Hồ Chí Minh": "Chiến dịch Hồ Chí Minh",  
-                "Chiến dịch Biên Giới Thu - Đông 1950": "Chiến dịch Biên giới Thu – Đông 1950",
-                "Chiến dịch Tây Nguyên": "Chiến dịch Tây Nguyên",   
-                "Chiến dịch Mậu Thân 1968": "Tổng tiến công và nổi dậy Tết Mậu Thân",
-                "Phong trào Đồng Khởi": "Phong trào Đồng Khởi",
-                "Phong trào Nhân dân Việt Nam": "Phong trào Nhân dân Việt Nam chống Pháp",
-                "Phong trào Chấn Hưng Đạo Đức": "Phong trào Chấn Hưng Đạo Đức",
-                "Phong trào Thiên Chúa Giáo Cứu Quốc": "Phong trào Thiên Chúa Giáo Cứu Quốc",           
-                "Phong trào Hòa Hảo": "Hòa Hảo",
-                "Phong trào Cao Đài": "Cao Đài",     
-                "Phong trào Việt Nam Quốc Dân Đảng": "Việt Nam Quốc Dân Đảng",
-                "Phong trào Đảng Cộng sản Việt Nam": "Đảng Cộng sản Việt Nam",    
-                "Phong trào Đông Kinh Nghĩa Thục": "Đông Kinh Nghĩa Thục",
-                "Chiến dịch Biên Giới 1950": "Chiến dịch Biên giới Thu – Đông 1950",
-                "Chiến dịch Quảng Trị 1972": "Chiến dịch Quảng Trị (1972)",
-                "Hải chiến Trường Sa 1988": "Hải chiến Trường Sa 1988",
-            };
-            const searchName = wikiMap[eventName] || eventName;
-            title.innerText = eventName;
-            panel.classList.add('active');
-            body.innerHTML = "Đang tải...";
-            try {
-                const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchName)}`);
-                const data = await response.json();
-                body.innerHTML = data.extract ? `<p>${data.extract}</p><a href="${data.content_urls.desktop.page}" target="_blank">Xem thêm</a>` : "Không tìm thấy bài viết.";
-            } catch { body.innerHTML = "Lỗi tải dữ liệu."; }
-        }
-
-        function updateSystem(val, manualMode = false) {
-            if (manualMode) activeAlliance = null; 
-            let year = parseInt(val);
-            document.getElementById('year-input').value = year; 
-            document.getElementById('slider').value = year;
-            const selectedCountry = document.getElementById('country-select').value;
-            const dataYear = historyData[year];
-            let eventName = (dataYear && dataYear.country === selectedCountry) ? dataYear.text : "...";
-            document.getElementById('event-val').innerHTML = eventName;
-            renderBorders(year);
-            if (eventName !== "...") fetchWiki(eventName);
-            else document.getElementById('wiki-panel').classList.remove('active');
-
-            clearTimeout(flyTimer);
-            flyTimer = setTimeout(() => {
-                if (manualMode && countryCoords[selectedCountry]) map.flyTo(countryCoords[selectedCountry].center, countryCoords[selectedCountry].zoom);
-            }, 250);
-        }
 
         // --- CÁC SỰ KIỆN ĐIỀU KHIỂN ---
         fetchBorders();
@@ -1704,8 +1604,96 @@ const RAW_ECONOMY_DATA = {
         "industry": [
             { lat: 21.0, lng: 105.8, name: "Trung tâm Vũ trụ Việt Nam (VNSC - Hòa Lạc)", icon: "📡", cat: "space" }
         ]
+    },
+
+
+
+
+    "Vietnam": {
+        "agriculture": [
+            { lat: 10.5, lng: 105.5, name: "Vựa lúa Đồng bằng Sông Cửu Long", icon: "🌾", cat: "crop" },
+            { lat: 10.2, lng: 106.3, name: "Lúa nước Tiền Giang", icon: "🌾", cat: "crop" },
+            { lat: 21.0, lng: 106.2, name: "Vựa lúa Đồng bằng Sông Hồng", icon: "🌾", cat: "crop" },
+            { lat: 20.4, lng: 106.3, name: "Lúa Thái Bình (Quê hương 5 tấn)", icon: "🌾", cat: "crop" },
+        ],
+        "agriculture": [
+            { lat: 14.8, lng: 108.0, name: "Thủ phủ Cà phê Tây Nguyên", icon: "☕", cat: "coffee" },
+            { lat: 12.6, lng: 108.2, name: "Cà phê Buôn Ma Thuột", icon: "☕", cat: "coffee" },
+            { lat: 11.5, lng: 107.8, name: "Vùng trồng Sắn (Khoai mì) Đồng Nai", icon: "🍠", cat: "cassava" },
+            { lat: 21.5, lng: 104.5, name: "Ngô đồi vùng cao Sơn La", icon: "🌽", cat: "maize" },
+            { lat: 20.5, lng: 105.8, name: "Khoai lang Bình Minh", icon: "🥔", cat: "potato" },
+        ]
+    },
+    "Thailand": {
+        "agriculture": [
+            { lat: 15.2, lng: 100.5, name: "Lúa gạo miền Trung Thái Lan", icon: "🌾", cat: "crop" },
+            { lat: 16.0, lng: 103.0, name: "Cánh đồng Kula Ronghai (Gạo Jasmine)", icon: "🌾", cat: "crop" }
+        ]
+    },
+    "China": {
+        "agriculture": [
+            { lat: 30.5, lng: 114.3, name: "Lúa nước lưu vực Sông Dương Tử", icon: "🌾", cat: "crop" },
+            { lat: 23.1, lng: 113.3, name: "Vựa lúa Đồng bằng Châu Giang", icon: "🌾", cat: "crop" }
+        ]
+    },
+    "India": {
+        "agriculture": [
+            { lat: 22.5, lng: 88.3, name: "Lúa nước Tây Bengal", icon: "🌾", cat: "crop" },
+            { lat: 16.5, lng: 81.5, name: "Vựa lúa Andhra Pradesh", icon: "🌾", cat: "crop" }
+        ]
+    },
+    "Philippines": {
+        "agriculture": [
+            { lat: 17.0, lng: 121.0, name: "Ruộng bậc thang Banaue", icon: "🎋", cat: "crop" }
+        ]
+    },
+    "Brazil": {
+        "agriculture": [
+            { lat: -23.5, lng: -46.6, name: "Vành đai Cà phê Brazil", icon: "☕", cat: "coffee" },
+            { lat: -18.5, lng: -46.5, name: "Vùng Cerrado Mineiro (Minas Gerais)" },
+            { lat: -20.3, lng: -41.5, name: "Vùng Montanhas do Espírito Santo" },
+            { lat: -21.2, lng: -45.0, name: "Sul de Minas (Trọng điểm cà phê Brazil)" },
+            { lat: -23.2, lng: -47.5, name: "Vùng Mogiana (São Paulo)" },
+            { lat: -12.1, lng: -45.0, name: "Vùng Bahia (Cà phê chất lượng cao)" },
+        ]
+    },
+    "USA": {
+        "agriculture": [
+            { lat: 41.5, lng: -93.6, name: "Vành đai Ngô (Corn Belt) Iowa", icon: "🌽", cat: "maize" },
+            { lat: 43.5, lng: -114.3, name: "Khoai tây Idaho", icon: "🥔", cat: "potato" }
+        ]
+    },
+    "Africa": { // Đại diện các vùng ở Châu Phi
+        "agriculture": [
+            { lat: 7.5, lng: -5.5, name: "Vùng Sắn Bờ Biển Ngà", icon: "🍠", cat: "cassava" },
+            { lat: 9.0, lng: 38.0, name: "Cà phê Ethiopia (Cội nguồn)", icon: "☕", cat: "coffee" }
+        ]
     }
+    
 };
+
+// Thêm vào trong RAW_ECONOMY_DATA hoặc khai báo riêng
+const AUTO_BRANDS = {
+    "Vietnam": [
+        { lat: 20.8, lng: 106.7, name: "VinFast Hải Phòng (Complex)", icon: "🚗", cat: "automotive" },
+        { lat: 21.3, lng: 105.8, name: "Toyota / Honda (Vĩnh Phúc)", icon: "🏭", cat: "automotive" },
+        { lat: 15.4, lng: 108.4, name: "THACO Chu Lai (Quảng Nam)", icon: "🚚", cat: "automotive" }
+    ],
+    "Germany": [
+        { lat: 48.7, lng: 9.1, name: "Mercedes-Benz / Porsche (Stuttgart)", icon: "🏎️", cat: "automotive" },
+        { lat: 48.1, lng: 11.5, name: "BMW HQ (Munich)", icon: "🚗", cat: "automotive" },
+        { lat: 52.4, lng: 10.7, name: "Volkswagen (Wolfsburg)", icon: "🏭", cat: "automotive" }
+    ],
+    "Japan": [
+        { lat: 35.1, lng: 137.0, name: "Toyota City (Aichi)", icon: "🚗", cat: "automotive" },
+        { lat: 35.4, lng: 139.6, name: "Nissan HQ (Yokohama)", icon: "🏎️", cat: "automotive" }
+    ],
+    "USA": [
+        { lat: 42.3, lng: -83.0, name: "Detroit (Ford / GM Motor City)", icon: "🏭", cat: "automotive" },
+        { lat: 30.3, lng: -97.7, name: "Tesla Giga Texas", icon: "⚡", cat: "automotive" }
+    ]
+};
+
 
 // ==========================================
 // 2. KHAI BÁO BIẾN & CÁC HÀM SINH DỮ LIỆU (PHẢI CÓ TRƯỚC KHI GỌI)
@@ -1717,6 +1705,7 @@ let resourceLayerGroup = L.layerGroup().addTo(map);
 let economyLayerGroup = L.layerGroup().addTo(map); // Khay riêng cho kinh tế
 let resourceData = [];
 let economyData = []; // Mảng chứa dữ liệu kinh tế
+let railwayLayerGroup = L.layerGroup().addTo(map);
 
 // Định nghĩa hàm sinh than đá
 function generateMoreCoal() {
@@ -1766,19 +1755,39 @@ function generateTayNguyenBauxite() {
     }
 }
 
+function generateCoffeeBelt() {
+    const coffeeRegions = [
+        { lat: 14.5, lng: 108.0, name: "Tây Nguyên Việt Nam", count: 40 }, // Rất nhiều ở VN
+        { lat: -15.0, lng: -45.0, name: "Cao nguyên Brazil", count: 60 }, // Brazil là trùm cà phê
+        { lat: 9.0, lng: 39.0, name: "Vùng Kaffa Ethiopia", count: 30 },
+        { lat: -7.5, lng: 110.0, name: "Đảo Java Indonesia", count: 25 },
+        { lat: 4.5, lng: -74.0, name: "Colombia", count: 35 }
+    ];
+
+    coffeeRegions.forEach(region => {
+        for (let i = 0; i < region.count; i++) {
+            economyData.push({
+                lat: region.lat + (Math.random() - 0.5) * 4.5, // Độ văng rộng ra cả vùng
+                lng: region.lng + (Math.random() - 0.5) * 4.5,
+                cat: "coffee", 
+                name: `Trang trại Cà phê (${region.name})`, 
+                icon: "☕"
+            });
+        }
+    });
+}
 
 function loadEverything() {
-    resourceData = [];
-    economyData = [];
+    // Luôn xóa sạch mảng trước khi nạp để tránh bị "nhân bản" icon
+    resourceData.length = 0;
+    economyData.length = 0;
     
-    // Nạp Tài nguyên & Thủy sản
+    // Nạp Tài nguyên
     for (let country in RAW_LOCATION_DATA) {
         for (let category in RAW_LOCATION_DATA[country]) {
             RAW_LOCATION_DATA[country][category].forEach(item => {
-                // SỬA TẠI ĐÂY: Fix icon rừng và danh mục wood
                 let finalIcon = item.icon;
                 if (!finalIcon && category === "forests") finalIcon = "🌲";
-                
                 resourceData.push({ 
                     ...item, 
                     icon: finalIcon || "❓",
@@ -1790,34 +1799,62 @@ function loadEverything() {
     }
     
     // Nạp Kinh tế
-    if (typeof RAW_ECONOMY_DATA !== 'undefined') {
-        for (let country in RAW_ECONOMY_DATA) {
-            for (let sector in RAW_ECONOMY_DATA[country]) {
-                RAW_ECONOMY_DATA[country][sector].forEach(item => {
-                    economyData.push({ 
-                        ...item, 
-                        cat: item.cat || sector, // Đảm bảo có cat để lọc
-                        name: `[${sector.toUpperCase()}] ${item.name}` 
-                    });
+    for (let country in RAW_ECONOMY_DATA) {
+        for (let sector in RAW_ECONOMY_DATA[country]) {
+            RAW_ECONOMY_DATA[country][sector].forEach(item => {
+                economyData.push({ 
+                    ...item, 
+                    cat: item.cat || sector,
+                    name: `[${sector.toUpperCase()}] ${item.name}` 
                 });
-            }
+            });
+        }
+    }
+
+
+}
+
+function updateRailways() {
+    railwayLayerGroup.clearLayers();
+    // Lấy trạng thái từ checkbox có id="rail-check"
+    const isRailActive = document.getElementById('rail-check')?.checked;
+    
+    if (isRailActive) {
+        for (let id in RAW_RAILWAY_DATA) {
+            const line = RAW_RAILWAY_DATA[id];
+            L.polyline(line.path, {
+                color: line.color, weight: 3, opacity: 0.7, dashArray: '10, 10'
+            }).bindTooltip(line.name).addTo(railwayLayerGroup);
+
+            L.marker(line.path[0], {
+                icon: L.divIcon({ html: `<div>🚂</div>`, className: 'rail-icon' })
+            }).addTo(railwayLayerGroup);
         }
     }
 }
 
-// Chỉ cần gọi loadEverything một lần duy nhất
-loadEverything();
 
-// ==========================================
-// 3. THỰC THI (CHẠY HỆ THỐNG)
-// ==========================================
-loadAllResources();        // 1. Nạp dữ liệu gốc trước
-generateMoreCoal();        // 2. Sau đó mới sinh thêm các mỏ phụ
-generateUralRichness();
-generateVietnamCoal();
-generateTayNguyenBauxite();
 
-console.log("Hệ thống tài nguyên thế giới đã sẵn sàng");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ==========================================
@@ -1852,45 +1889,68 @@ function toggleCustomPanel() {
     p.style.left = customPanelOpen ? "0px" : "-260px";
 }
 
+
 function updateFilters() {
-    // 1. Dọn dẹp bản đồ trước khi vẽ lại
     resourceLayerGroup.clearLayers();
     economyLayerGroup.clearLayers();
 
-    // 2. Xử lý TÀI NGUYÊN (Màu Vàng)
     const activeRes = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
+    const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
+
+    // Vẽ Tài nguyên
     resourceData.forEach(r => {
         if (activeRes.includes(r.cat)) {
             L.marker([r.lat, r.lng], {
-                icon: L.divIcon({
-                    html: `<div style="font-size:22px; filter: drop-shadow(0 0 3px gold);">${r.icon}</div>`,
-                    className: 'res-icon', iconSize:[22,22], iconAnchor:[11,11]
-                })
+                icon: L.divIcon({ html: `<div style="font-size:22px; filter: drop-shadow(0 0 5px gold);">${r.icon}</div>`, className: 'res-icon' })
             }).bindTooltip(r.name).addTo(resourceLayerGroup);
         }
     });
 
-    // 3. Xử lý KINH TẾ (Màu Xanh Neon)
-    const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
+    // Vẽ Kinh tế
+    // Vẽ Kinh tế - Bản sửa lỗi Click không hiện
     economyData.forEach(e => {
         if (activeEco.includes(e.cat)) {
-            // Nếu là hàng không vũ trụ (space), cho hiệu ứng đặc biệt
-            const isSpace = e.cat === "space";
-            const shadowColor = isSpace ? "#00fbff" : "#00ff88";
-            const size = isSpace ? 28 : 25;
+            let shadowColor = "#00fbff"; 
+            if (e.cat === "automotive") shadowColor = "#ff3300"; 
+            if (e.cat === "heavy_industry") shadowColor = "#808080"; 
 
-            L.marker([e.lat, e.lng], {
+            const marker = L.marker([e.lat, e.lng], {
                 icon: L.divIcon({
-                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 8px ${shadowColor}); transition: 0.3s;" 
-                          onmouseover="this.style.transform='scale(1.5)'" 
-                          onmouseout="this.style.transform='scale(1)'">${e.icon}</div>`,
-                    className: 'eco-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
+                    html: `<div class="eco-marker" style="font-size:25px; filter: drop-shadow(0 0 5px ${shadowColor}); cursor: pointer;">${e.icon}</div>`,
+                    className: 'eco-icon', 
+                    iconSize: [30, 30], 
+                    iconAnchor: [15, 15]
                 })
-            }).bindTooltip(`<b>${e.name}</b><br>Loại: Hàng không vũ trụ`).addTo(economyLayerGroup);
+            });
+
+            // Gắn nội dung Popup (Đảm bảo có thông tin để nói)
+            const popupContent = `
+                <div style="background: #111; color: white; padding: 10px; border: 2px solid ${shadowColor}; border-radius: 8px; min-width: 180px;">
+                    <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
+                    <hr style="border-color: #333; margin: 5px 0;">
+                    <div style="font-size: 12px; line-height: 1.4;">
+                        ${e.details ? e.details : "Hệ thống Athe-AI đang cập nhật thông tin chi tiết cho khu vực này..."}
+                    </div>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent, {
+                closeButton: false,
+                offset: L.point(0, -10)
+            });
+
+            // Thêm hiệu ứng hover bằng CSS thay vì viết trực tiếp vào HTML để tránh lỗi click
+            marker.on('mouseover', function() { this.openTooltip(); }); 
+            
+            marker.addTo(economyLayerGroup);
         }
     });
+
+    if (typeof updateRailways === "function") updateRailways();
 }
 
+// Menu thả xuống cũng dùng chung bộ lọc này luôn cho đồng bộ
+function filterResources(val) { updateFilters(); }
 
 function clearCustomColors() {
     customColors = {};
@@ -1921,100 +1981,263 @@ function clearCustomColors() {
 
 
 
-async function takeScreenshot() {
-    // 1. Ẩn UI để ảnh sạch
-    toggleUI(false); 
-    
-    // 2. Đợi 0.8s để đảm bảo các layer vector (viền xanh) đã khớp hoàn toàn
-    setTimeout(async () => {
-        const mapContainer = document.getElementById('map');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Ô TÔ
+
+function generateAutomotiveData() {
+    const autoData = [
+        // VINFAST & PHỤ TRỢ (Hải Phòng) - Căn chỉnh cực chuẩn
+        { lat: 20.83, lng: 106.72, name: "VinFast Hải Phòng", icon: "🚗", cat: "automotive", details: "Tổ hợp SX ô tô điện hiện đại nhất Đông Nam Á." },
+        { lat: 20.85, lng: 106.68, name: "KCN Tràng Duệ (Phụ trợ VinFast)", icon: "⚙️", cat: "automotive", details: "Nơi đặt các nhà máy linh kiện điện tử và nhựa bổ trợ." },
+        { lat: 20.81, lng: 106.75, name: "KCN Đình Vũ (Logistics Ô tô)", icon: "⚙️", cat: "automotive", details: "Trung tâm vận tải và kho bãi cho xe xuất khẩu." },
+
+        // THACO & PHỤ TRỢ (Quảng Nam)
+        { lat: 15.42, lng: 108.41, name: "THACO Chu Lai", icon: "🚚", cat: "automotive", details: "Trung tâm sản xuất ô tô đa dụng và xe tải lớn nhất VN." },
+        { lat: 15.45, lng: 108.38, name: "Cụm CN phụ trợ Tam Hiệp", icon: "⚙️", cat: "automotive", details: "Sản xuất linh kiện cơ khí, kính và ghế ô tô." },
+
+        // TOYOTA CITY (Nhật Bản) - Tọa độ nội đô, không ra biển
+        { lat: 35.10, lng: 137.01, name: "Toyota Headquarter", icon: "🚗", cat: "automotive", details: "Trụ sở điều hành toàn cầu của Toyota." },
+        { lat: 35.12, lng: 137.05, name: "Nhà máy Motomachi", icon: "⚙️", cat: "automotive", details: "Nơi sản xuất các dòng xe hạng sang và xe điện." },
+
+        // VOLKSWAGEN (Đức) - Cụm Wolfsburg
+        { lat: 52.42, lng: 10.78, name: "VW Wolfsburg Main Plant", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất Châu Âu." },
+        { lat: 52.40, lng: 10.75, name: "Khu chế tạo động cơ VW", icon: "⚙️", cat: "automotive", details: "Chuyên sản xuất hệ thống truyền động và động cơ." }
+    ];
+
+    autoData.forEach(item => economyData.push(item));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//CÔNG NGHIỆP NẶNG
+
+
+
+function generateHeavyIndustryData() {
+    const heavyData = [
+        // THÉP VIỆT NAM
+        { lat: 21.51, lng: 105.85, name: "Gang thép Thái Nguyên", icon: "🛡️", cat: "heavy_industry", details: "Sản xuất thép xây dựng, phôi thép lớn nhất miền Bắc." },
+        { lat: 18.06, lng: 106.42, name: "Formosa Hà Tĩnh (Khu luyện kim)", icon: "🏗️", cat: "heavy_industry", details: "Sản xuất thép cuộn cán nóng lớn nhất khu vực." },
+
+        // CÔNG NGHIỆP NẶNG ĐỨC (Vùng Ruhr)
+        { lat: 51.45, lng: 7.01, name: "ThyssenKrupp Steel", icon: "⛓️", cat: "heavy_industry", details: "Tập đoàn công nghiệp nặng hàng đầu thế giới." },
+        { lat: 51.51, lng: 7.46, name: "Cụm cơ khí Dortmund", icon: "🏗️", cat: "heavy_industry", details: "Chuyên chế tạo máy móc hạng nặng và thiết bị mỏ." },
+
+        // HOA KỲ (Vành đai thép)
+        { lat: 40.44, lng: -79.99, name: "U.S. Steel Pittsburgh", icon: "🛡️", cat: "heavy_industry", details: "Lịch sử ngành thép Hoa Kỳ, biểu tượng của sự trỗi dậy công nghiệp." }
+    ];
+
+    heavyData.forEach(item => economyData.push(item));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- 2. HÀM NÔNG NGHIỆP ---
+
+function generateAgriData() {
+    // Vành đai Cà phê
+    const coffeeHubs = [{lat: 14.5, lng: 108.0}, {lat: -15.0, lng: -45.0}];
+    coffeeHubs.forEach(h => {
+        for(let i=0; i<30; i++) {
+            economyData.push({lat: h.lat+(Math.random()-0.5)*3, lng: h.lng+(Math.random()-0.5)*3, cat: "coffee", name: "Trang trại Cà phê", icon: "☕"});
+        }
+    });
+    // Vựa lúa
+    const riceHubs = [{lat: 10.5, lng: 105.5}, {lat: 21.0, lng: 106.0}];
+    riceHubs.forEach(h => {
+        for(let i=0; i<30; i++) {
+            economyData.push({lat: h.lat+(Math.random()-0.5)*2, lng: h.lng+(Math.random()-0.5)*2, cat: "crop", name: "Cánh đồng lúa nước", icon: "🌾"});
+        }
+    });
+} // <--- Phải có ngoặc đóng ở đây!
+
+
+
+
+
+
+
+
+
+
+
+
+//THỦY ĐIỆN
+
+
+
+
+function generateEnergyData() {
+    const energyHubs = [
+        // THỦY ĐIỆN & NHIỆT ĐIỆN -> Dùng chung cat: "power_plant"
+        { lat: 20.84, lng: 105.15, name: "Thủy điện Hòa Bình", icon: "💧", cat: "power_plant", details: "Công trình thủy điện lớn nhất VN thế kỷ 20. Công suất: 1.920 MW." },
+        { lat: 21.38, lng: 102.83, name: "Thủy điện Sơn La", icon: "💧", cat: "power_plant", details: "Nhà máy thủy điện lớn nhất Đông Nam Á." },
+        { lat: 21.07, lng: 107.35, name: "Nhiệt điện Mông Dương", icon: "🔥", cat: "power_plant", details: "Sử dụng công nghệ nhiệt điện than hiện đại tại Quảng Ninh." },
+        { lat: 10.55, lng: 107.24, name: "Trung tâm Điện lực Phú Mỹ", icon: "🔥", cat: "power_plant", details: "Cụm nhà máy điện khí lớn nhất Việt Nam." }
+    ];
+    energyHubs.forEach(item => economyData.push(item));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//CỤM GIAO Thông
+
+
+function generateTransportData() {
+    const transportHubs = [
+        // SÂN BAY -> Dùng cat: "airport"
+        { lat: 21.21, lng: 105.80, name: "Sân bay Quốc tế Nội Bài (HAN)", icon: "✈️", cat: "airport", details: "Cửa ngõ hàng không lớn nhất miền Bắc." },
+        { lat: 10.81, lng: 106.66, name: "Sân bay Tân Sơn Nhất (SGN)", icon: "✈️", cat: "airport", details: "Sân bay có lưu lượng khách đông nhất Việt Nam." },
+
+        // CẢNG BIỂN -> Dùng cat: "seaport"
+        { lat: 20.83, lng: 106.76, name: "Cảng Lạch Huyện (Hải Phòng)", icon: "🚢", cat: "seaport", details: "Cảng cửa ngõ quốc tế có khả năng đón tàu siêu trọng." },
+        { lat: 1.26, lng: 103.81, name: "Cảng Singapore", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển container bận rộn hàng đầu thế giới." },
         
-        try {
-            // Ép chụp chính xác container của Leaflet
-            const canvas = await html2canvas(mapContainer, {
-                useCORS: true,
-                allowTaint: false,
-                scale: 2, // Tăng độ nét
-                logging: false,
-                backgroundColor: "#000",
-                // KHÓA CHẾT: Đảm bảo canvas không bị lệch do cuộn chuột (scroll)
-                scrollX: 0,
-                scrollY: 0,
-                x: 0,
-                y: 0,
-                width: mapContainer.offsetWidth,
-                height: mapContainer.offsetHeight
-            });
-
-            const link = document.createElement('a');
-            // Đặt tên ảnh theo năm để Sói dễ quản lý
-            const currentYear = document.getElementById('year-input')?.value || 'History';
-            link.download = `Map_Soi_${currentYear}_${new Date().getTime()}.png`;
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-        } catch (error) {
-            console.error("Lỗi chụp ảnh:", error);
-        }
-
-        // 3. Hiện lại UI
-        toggleUI(true); 
-    }, 800);
+        // GA TÀU -> Nếu ông muốn dùng nút Rail-check thì để cat: "railway"
+        { lat: 21.02, lng: 105.84, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Điểm đầu của tuyến đường sắt Bắc - Nam lịch sử." }
+    ];
+    transportHubs.forEach(item => economyData.push(item));
 }
 
-// --- CÁC HÀM XỬ LÝ PANEL ---
-function toggleCustomPanel() {
-    const p = document.getElementById('custom-panel');
-    customPanelOpen = !customPanelOpen;
-    p.style.left = customPanelOpen ? "0px" : "-260px";
-}
 
-function filterResources(val) {
-    resourceLayerGroup.clearLayers();
-    economyLayerGroup.clearLayers(); // Xóa sạch cả 2 khay khi lọc
-    
-    if (val === "none") return;
 
-    // 1. Vẽ Tài nguyên (Mỏ, rừng, thú, cá)
-    resourceData.forEach(r => {
-        if (val === "all" || r.cat === val) {
-            const isAnimal = ["wolf", "bear", "tiger", "sheep", "cow", "chicken", "animal"].includes(r.cat);
-            const size = isAnimal ? 30 : 22;
-            const shadow = isAnimal ? "rgba(255,255,255,0.8)" : "gold";
 
-            L.marker([r.lat, r.lng], {
-                icon: L.divIcon({
-                    html: `<div style="font-size:${size}px; filter: drop-shadow(0 0 5px ${shadow}); transition: 0.3s;" 
-                          onmouseover="this.style.transform='scale(2)'" 
-                          onmouseout="this.style.transform='scale(1)'">${r.icon}</div>`,
-                    className: 'res-icon', iconSize:[size,size], iconAnchor:[size/2,size/2]
-                })
-            }).bindTooltip(r.name).addTo(resourceLayerGroup);
-        }
-    });
 
-    // 2. Vẽ Kinh tế (Vũ trụ, Ô tô, Lúa...)
-    economyData.forEach(e => {
-        if (val === "all" || e.cat === val) {
-            L.marker([e.lat, e.lng], {
-                icon: L.divIcon({
-                    html: `<div style="font-size:25px; filter: drop-shadow(0 0 5px #00fbff); transition: 0.3s;" 
-                          onmouseover="this.style.transform='scale(2)'" 
-                          onmouseout="this.style.transform='scale(1)'">${e.icon}</div>`,
-                    className: 'eco-icon', iconSize:[25,25], iconAnchor:[12,12]
-                })
-            }).bindTooltip(e.name).addTo(economyLayerGroup);
-        }
-    });
-}
 
-function showCountryDetails(name) {
-    if (provinceLayer) map.removeLayer(provinceLayer);
-    provinceLayer = L.geoJSON(worldDataCache, {
-        filter: (f) => (f.properties.ADMIN || f.properties.name || "").toLowerCase() === name.toLowerCase(),
-        style: { color: "#00ffff", weight: 3, fillColor: "transparent", dashArray: "10, 10" }
-    }).addTo(map);
-    if (provinceLayer.getLayers().length > 0) map.flyToBounds(provinceLayer.getBounds(), {padding:[50,50]});
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- THỨ TỰ KÍCH HOẠT CHUẨN CHO SÓI ---
+
+// 1. Nạp dữ liệu gốc (Tài nguyên thiên nhiên...)
+loadEverything();
+
+// 2. Nạp dữ liệu Kinh tế theo từng cụm (Dễ thêm thắt về sau)
+generateAutomotiveData();    // Cụm ô tô
+generateHeavyIndustryData(); // Cụm công nghiệp nặng
+generateAgriData();          // Cụm nông nghiệp
+generateCoffeeBelt();        // Cụm cà phê toàn cầu
+
+// 3. Các hàm sinh khoáng sản đặc biệt của Sói
+generateMoreCoal();        
+generateUralRichness();
+generateVietnamCoal();
+generateTayNguyenBauxite();
+generateEnergyData();    // Thêm năng lượng
+generateTransportData(); // Thêm giao thông
+
+// 4. QUAN TRỌNG: Vẽ lên bản đồ ngay lập tức
+updateFilters();
+
+console.log("Hệ thống ATHE Studio: Đã lên sóng đủ 40 doanh nghiệp! 🚗🛡️🌾");
 
 </script>
 </body>
