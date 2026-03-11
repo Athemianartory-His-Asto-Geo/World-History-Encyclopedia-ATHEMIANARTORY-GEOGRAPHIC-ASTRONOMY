@@ -12,8 +12,202 @@
     <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
     <style>
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
-        #map { height: 100vh; width: 100%; z-index: 1; background: #000; }
         
+
+/* Chế độ Cinematic: Quét sạch mọi bảng biểu */
+body.cinematic-mode #keyframe-panel,    /* Bảng Timeline dưới cùng */
+body.cinematic-mode .main-ui-element,   /* Bảng Menu to nhất bên trái */
+body.cinematic-mode #workspace-switcher, /* Nút chuyển Mode vàng */
+body.cinematic-mode #toggle-keyframe,    /* Nút Show/Hide Timeline */
+body.cinematic-mode .leaflet-control-container, /* Nút Zoom +/- của Map */
+body.cinematic-mode .info-panel,         /* Các bảng thông tin phụ nếu có */
+body.cinematic-mode .select2-container   /* Ô chọn quốc gia Select2 */ {
+    display: none !important;
+}
+
+/* Ẩn con trỏ chuột cho chuyên nghiệp */
+body.cinematic-mode #map {
+    cursor: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- HỆ THỐNG WORKSPACE (ATHE STUDIO) --- */
+
+/* 1. Ẩn giao diện chính khi vào chế độ làm phim */
+body.mode-key .main-ui-element { 
+    display: none !important; 
+}
+
+/* 2. Nút chuyển Workspace (Vàng - Đen) */
+#workspace-switcher {
+    position: absolute; top: 10px; right: 250px; z-index: 10002;
+    background: #ffcc00; color: #000; border: none; padding: 8px 15px;
+    font-weight: bold; cursor: pointer; border-radius: 4px;
+}
+
+
+
+/* Kích hoạt bảng khi ở mode-key hoặc class active */
+body.mode-key #keyframe-panel, #keyframe-panel.active {
+    bottom: 0 !important;
+}
+
+/* 4. THANH ĐIỀU KHIỂN (Controls) */
+.keyframe-controls {
+    padding: 10px 50px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background: #000000;
+    border-bottom: 1px solid #111;
+}
+
+/* Nút gọi Timeline dự phòng */
+#toggle-keyframe {
+    position: absolute; bottom: 20px; right: 20px; z-index: 10001;
+    background: rgba(0, 255, 255, 0.1); color: #00ffff;
+    border: 1px solid #00ffff; padding: 10px 15px;
+    cursor: pointer; border-radius: 5px; font-weight: bold;
+    backdrop-filter: blur(5px);
+}
+
+/* Tùy chỉnh Track Label cho chuyên nghiệp */
+.track-label {
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Điểm Keyframe kim cương */
+.keyframe {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: #00ffff;
+    border: 1px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 0 8px #00ffff;
+    z-index: 10;
+}
+
+/* --- CHẾ ĐỘ STUDIO ĐEN KỊT --- */
+body.mode-key .main-ui-element { display: none !important; }
+
+#workspace-switcher {
+    position: absolute; top: 10px; right: 250px; z-index: 10002;
+    background: #ffcc00; color: #000; border: none; padding: 8px 15px;
+    font-weight: bold; cursor: pointer; border-radius: 4px;
+}
+
+#keyframe-panel {
+    position: absolute; bottom: -250px; left: 0; width: 100vw; height: 220px;
+    background: #000000; border-top: 1px solid #333; z-index: 10000;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; flex-direction: column;
+}
+
+body.mode-key #keyframe-panel { bottom: 0 !important; }
+
+.keyframe-controls {
+    padding: 10px 50px; display: flex; gap: 20px; align-items: center;
+    background: #000; border-bottom: 1px solid #1a1a1a;
+}
+
+#timeline {
+    position: relative; flex-grow: 1; margin: 20px 50px;
+    background: #050505; border: 1px solid #222; border-radius: 4px;
+}
+
+#playhead {
+    position: absolute; top: 0; left: 0; width: 2px; height: 100%;
+    background: #ff0000; box-shadow: 0 0 10px #ff0000; z-index: 10;
+}
+
+.keyframe {
+    position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
+    width: 12px; height: 12px; background: #00ffff; border: 1px solid #fff;
+    cursor: grab; z-index: 5; box-shadow: 0 0 10px #00ffff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#map {
+    height: 100vh;
+    width: 100%;
+    background: #000;
+    /* CHIÊU QUYẾT ĐỊNH: Làm map đen bóng, nổi bật khối núi */
+    filter: brightness(0.9) contrast(1.6) saturate(0.4);
+}
+
+/* Hiệu ứng chói cho đầu đạn */
+.glowing-missile {
+    filter: drop-shadow(0 0 8px #00ffff) drop-shadow(0 0 15px #ffffff);
+    animation: flicker 0.2s infinite alternate;
+}
+
+@keyframes flicker {
+    from { opacity: 1; filter: brightness(1); }
+    to { opacity: 0.8; filter: brightness(2); }
+}
+
+/* Làm cho cái bảng điều khiển trông "Pro" hơn */
+#missile-control {
+    border: 2px solid #fff !important;
+    box-shadow: 0 0 20px #ff0000 !important; /* Đổi sang viền đỏ cho máu lửa */
+}
+
+#missile-control {
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    color: #00ffff;
+    padding: 15px;
+    border: 2px solid #00ffff;
+    display: none; /* Mặc định ẩn, dblclick mới hiện */
+    border-radius: 8px;
+    width: 200px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+#missile-control input { width: 100%; cursor: pointer; }
+#missile-control b { font-size: 14px; text-transform: uppercase; }
+
+
+
 path.leaflet-interactive {
     filter: drop-shadow(0 0 2px #00FF00);
     transition: all 0.3s;
@@ -21,6 +215,16 @@ path.leaflet-interactive {
 path.leaflet-interactive:hover {
     stroke-width: 4;
     stroke: #fff; /* Di chuột vào sẽ sáng trắng lên */
+}
+
+/* Hiệu ứng đường ray chuyển động */
+@keyframes railFlow {
+    from { stroke-dashoffset: 30; }
+    to { stroke-dashoffset: 0; }
+}
+
+.railway-line {
+    animation: railFlow 1.5s linear infinite;
 }
 
     /* Chỉnh màu cho ô Select2 giống giao diện của bạn */
@@ -371,7 +575,37 @@ left-group {
     </style>
 </head>
 <body> 
+    
     <div id="map"></div>
+    
+
+<div id="keyframe-panel">
+    <div class="keyframe-controls">
+        <span style="color: #00ffff; font-weight: bold; font-size: 13px;">🎬 ATHEMIANARTORY ANIMATION KEYFRAME</span>
+        <button onclick="playAnimation()" style="background: #00ff00; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; border-radius: 3px;">PLAY (SPACE)</button>
+        <button onclick="clearKeyframes()" style="background: #ff0000; border: none; padding: 5px 15px; color: white; cursor: pointer; border-radius: 3px;">RESET</button>
+        <div id="current-time-display" style="color: yellow; font-family: 'Courier New'; font-size: 14px; margin-left: auto;">00:00:00</div>
+    </div>
+
+    <div id="timeline-wrapper" style="display: flex; flex-direction: column; overflow-y: auto; flex-grow: 1;">
+        
+        <div class="track-row" style="display: flex; border-bottom: 1px solid #111; height: 50px; align-items: center;">
+            <div class="track-label" style="width: 120px; background: #0a0a0a; height: 100%; display: flex; align-items: center; padding-left: 15px; color: #888; font-size: 11px; border-right: 1px solid #222;">TRACK 1 (MISSILE)</div>
+            <div id="timeline" style="position: relative; flex-grow: 1; height: 100%; background: #050505;">
+                <div id="playhead"></div>
+                </div>
+        </div>
+
+        <div class="track-row" style="display: flex; border-bottom: 1px solid #111; height: 50px; align-items: center;">
+            <div class="track-label" style="width: 120px; background: #0a0a0a; height: 100%; display: flex; align-items: center; padding-left: 15px; color: #888; font-size: 11px; border-right: 1px solid #222;">TRACK 2 (FX)</div>
+            <div class="track-content" style="flex-grow: 1; height: 100%; background: #030303;"></div>
+        </div>
+
+    </div>
+</div>
+
+
+
     <div id="coords-box">LAT: 0.0000 | LNG: 0.0000</div>
 
     <div id="custom-panel" style="position: absolute; top: 50%; left: -260px; transform: translateY(-50%); width: 250px; background: rgba(0,0,0,0.9); color: white; padding: 15px; border-radius: 0 15px 15px 0; border: 1px solid #ffcc00; z-index: 2000; transition: 0.4s;">
@@ -408,12 +642,9 @@ left-group {
     <label class="check-item"><input type="checkbox" class="eco-check" value="airport" onchange="updateFilters()"> ✈️ Cửa ngõ Hàng không</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="seaport" onchange="updateFilters()"> ⚓ Cảng biển nước sâu</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="railway" onchange="updateFilters()"> 🚂 Mạng lưới Đường sắt</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="maritime" onchange="updateFilters()"> 🚢 Đường giao thương (biển)</label><br>
 
-    <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🌾 Nông nghiệp & Cây trồng</h4>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="crop" onchange="updateFilters()"> 🌾 Lúa nước</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="coffee" onchange="updateFilters()"> ☕ Cà phê</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="maize" onchange="updateFilters()"> 🌽 Ngô (Bắp)</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="potato" onchange="updateFilters()"> 🥔 Khoai tây & Củ</label><br>
+
 
             <div class="filter-group">
             <h4>Nông nghiệp & Cây trồng</h4>
@@ -426,6 +657,25 @@ left-group {
 
         </div>
     </div>
+
+
+
+
+    
+<div id="missile-control" style="position: absolute; top: 20px; left: 20px; z-index: 9999; background: rgba(0,0,0,0.8); color: cyan; padding: 15px; border: 1px solid cyan; display: none; border-radius: 8px; width: 200px; font-family: 'Segoe UI';">
+    <h3 style="margin: 0 0 10px 0; font-size: 14px;">BỘ ĐIỀU KHIỂN TÊN LỬA</h3>
+    <p style="font-size: 12px; margin: 5px 0;">Sóng xung kích (Radius):</p>
+    <input type="range" id="shock-radius" min="10" max="500" value="100" style="width: 100%;">
+    
+    <p style="font-size: 12px; margin: 5px 0;">Tốc độ bay (ms):</p>
+    <input type="range" id="flight-speed" min="500" max="5000" value="2000" step="100" style="width: 100%; transform: scaleX(-1);">
+    <small style="color: #888;">(Kéo trái: Nhanh | Kéo phải: Chậm)</small>
+    
+    <div id="status" style="margin-top: 10px; font-size: 11px; color: yellow;">Đã chọn điểm phóng. Click vào map để khai hỏa!</div>
+    <button onclick="cancelLaunch()" style="margin-top: 10px; width: 100%; cursor: pointer;">Hủy lệnh</button>
+</div>
+
+
 </div>
             
     
@@ -669,7 +919,29 @@ left-group {
         </div>
     </div>
 
+
+
+    <button id="toggle-keyframe" onclick="toggleTimeline()">🎬 Keyframe</button>
+
+<div id="keyframe-panel">
+    <div class="keyframe-header">
+        <span>🎬 ATHEMIANARTORY ANIMATION KEYFRAMES </span>
+        <button onclick="clearKeyframes()" style="background:red; color:white; border:none; cursor:pointer; font-size:10px;">XÓA HẾT</button>
+    </div>
+    <div id="timeline-container">
+        <div id="playhead"></div> </div>
+    <div class="keyframe-info">
+        <small id="current-action">Chưa có hành động nào được ghi lại...</small>
+    </div>
+</div>
+
     <script>
+
+
+
+
+
+
 
 
 
@@ -820,7 +1092,27 @@ const map = L.map('map', {
     preferCanvas: true // THÊM DÒNG NÀY VÀO ĐÂY
 });
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png').addTo(map);
+// --- ĐƯA ATHE TRỞ LẠI MẶT ĐẤT (HẾT TRẮNG XÓA) ---
+// 1. Layer vệ tinh 3D mượt mà (Thay cho cái Thụy Sĩ bị giới hạn)
+var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri',
+    maxZoom: 19
+}).addTo(map);
+
+// 2. Layer đổ bóng địa hình (Tạo khối núi 3D đổ bóng rầm rập)
+var hillshadeLayer = L.tileLayer('https://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
+    opacity: 0.4,
+    maxZoom: 15
+}).addTo(map);
+
+// 3. Layer biên giới mảnh (Định hình bản đồ cho chuyên nghiệp)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+    opacity: 0.5
+}).addTo(map);
+
+
+
+
 const climateGroups = {
     monsoon: {
         name: "Monsoon - Nhiệt đới gió mùa",
@@ -979,6 +1271,7 @@ if(mainSlider) {
         // --- KHAI BÁO BIẾN TOÀN CỤC ---
         let geojsonLayer;
         let worldDataCache = null;
+        let atheRailway = L.layerGroup().addTo(map);
         let customColoredCountries = {}; 
         let activeAlliance = null;
         let flyTimer;
@@ -1814,22 +2107,49 @@ function loadEverything() {
 
 }
 
-function updateRailways() {
-    railwayLayerGroup.clearLayers();
-    // Lấy trạng thái từ checkbox có id="rail-check"
-    const isRailActive = document.getElementById('rail-check')?.checked;
-    
-    if (isRailActive) {
-        for (let id in RAW_RAILWAY_DATA) {
-            const line = RAW_RAILWAY_DATA[id];
-            L.polyline(line.path, {
-                color: line.color, weight: 3, opacity: 0.7, dashArray: '10, 10'
-            }).bindTooltip(line.name).addTo(railwayLayerGroup);
+function drawRailways() {
+    // 1. Kiểm tra bảng vẽ mang tên Athe của ông
+    if (typeof atheRailway === 'undefined' || !atheRailway) return; 
 
-            L.marker(line.path[0], {
-                icon: L.divIcon({ html: `<div>🚂</div>`, className: 'rail-icon' })
-            }).addTo(railwayLayerGroup);
-        }
+    // 2. Xóa sạch các nét cũ
+    atheRailway.clearLayers(); 
+    
+    // 3. Kiểm tra cái nút trong bảng kinh tế (Phải khớp với value="railway")
+    const railCheck = document.querySelector('.eco-check[value="railway"]');
+    
+    if (railCheck && railCheck.checked) {
+        railwayData.forEach(path => {
+            // VẼ ĐƯỜNG RAY (Sử dụng polyline với hiệu ứng nét đứt)
+            L.polyline(path.coords, {
+                color: path.color,
+                weight: 3,
+                opacity: 0.9,
+                dashArray: "1, 10", // Tạo hiệu ứng tà vẹt
+                lineCap: "square",
+                className: 'railway-line-anim' // Class để làm hiệu ứng chạy (nếu có CSS)
+            })
+            .bindPopup(`<b style="color:black;">${path.name}</b><br><span style="color:black;">${path.details}</span>`)
+            .addTo(atheRailway);
+
+            // VẼ CÁC ĐIỂM TỌA ĐỘ CHI TIẾT (Để làm học liệu)
+            path.coords.forEach((pos, index) => {
+                // Cứ 6 điểm tọa độ thì mình chấm 1 điểm cho đỡ rối mắt
+                if (index % 6 === 0) { 
+                    L.circleMarker(pos, {
+                        radius: 2,
+                        color: '#fff',
+                        fillColor: path.color,
+                        fillOpacity: 1,
+                        weight: 1
+                    })
+                    .bindTooltip(`Điểm học liệu: ${pos[0].toFixed(2)}, ${pos[1].toFixed(2)}`, {
+                        direction: 'top',
+                        sticky: true
+                    })
+                    .addTo(atheRailway);
+                }
+            });
+        });
     }
 }
 
@@ -1925,6 +2245,8 @@ function updateFilters() {
     });
 
     if (typeof updateRailways === "function") updateRailways();
+    drawRailways(); // Gọi đệ 1
+    drawMaritime();
 }
 
 // Menu thả xuống cũng dùng chung bộ lọc này luôn cho đồng bộ
@@ -1934,6 +2256,117 @@ function clearCustomColors() {
     customColors = {};
     if (typeof renderBorders === 'function') renderBorders(document.getElementById('year-input').value);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//ĐƯỜNG SẮT
+
+
+function drawRailways() {
+    const railCheck = document.querySelector('.eco-check[value="railway"]');
+    if (railCheck && railCheck.checked) {
+        railwayData.forEach(path => {
+            L.polyline(path.coords, { color: path.color, weight: 3, dashArray: "1, 10" })
+            .bindPopup(`<b>🚂 ${path.name}</b>`).addTo(atheRailway);
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//ĐƯỜNG BIỂN (các tuyến hàng hải)
+function drawMaritime() {
+    if (typeof atheRailway === 'undefined' || !atheRailway) return;
+    const seaCheck = document.querySelector('.eco-check[value="maritime"]');
+    
+    if (seaCheck && seaCheck.checked) {
+        maritimeData.forEach(route => {
+            // 1. Vẽ đường di chuyển
+            L.polyline(route.coords, {
+                color: route.color,
+                weight: 2,
+                dashArray: "10, 10",
+                opacity: 0.8
+            })
+            .bindTooltip(`🚢 ${route.name}`, { sticky: true })
+            .addTo(atheRailway);
+
+            // 2. Tự động đánh dấu Cảng Đầu và Cảng Cuối
+            const startPoint = route.coords[0];
+            const endPoint = route.coords[route.coords.length - 1];
+
+            // Icon mỏ neo cho cảng
+            const portIcon = L.divIcon({
+                html: `<div style="font-size:18px; filter: drop-shadow(0 0 2px black);">⚓</div>`,
+                className: 'port-marker'
+            });
+
+            L.marker(startPoint, { icon: portIcon }).bindPopup(`<b>Điểm đi:</b> ${route.portStart}`).addTo(atheRailway);
+            L.marker(endPoint, { icon: portIcon }).bindPopup(`<b>Điểm đến:</b> ${route.portEnd}`).addTo(atheRailway);
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1965,6 +2398,22 @@ function generateAutomotiveData() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //CÔNG NGHIỆP NẶNG
 
 
@@ -1985,6 +2434,33 @@ function generateHeavyIndustryData() {
 
     heavyData.forEach(item => economyData.push(item));
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2009,6 +2485,28 @@ function generateAgriData() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //THỦY ĐIỆN
 
 
@@ -2025,6 +2523,221 @@ function generateEnergyData() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Mảng 1: Chỉ chứa đường sắt
+const railwayData = [
+    {
+        name: "Đường sắt Bắc - Nam",
+        color: "#ff00ff",
+        coords: [[21.02, 105.84], [16.46, 107.59], [10.77, 106.69]] // Tọa độ chi tiết của ông
+    }
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// DỮ LIỆU ĐƯỜNG BIỂN CHI TIẾT (Từ GeoJSON của Sói)
+const maritimeData = [
+    
+
+
+
+
+
+
+
+{
+    name: "Tuyến hàng hải: Việt Nam - Malaysia (VN-MY)",
+    color: "#00ff88", // Màu xanh lá đặc trưng Malaysia
+    // Tọa độ Sói chấm đã được luyện sang định dạng [lat, lng]
+    coords: [
+        [10.507, 107.009], [10.506, 106.998], [10.492, 106.996], [10.464, 107.002],
+        [10.404, 107.008], [10.297, 106.992], [10.201, 106.978], [9.458, 106.755],
+        [8.226, 106.362], [6.479, 105.513], [5.104, 104.274], [3.433, 103.972],
+        [2.413, 104.699], [1.414, 104.502], [1.220, 103.973], [1.138, 103.749],
+        [1.136, 103.700], [1.125, 103.650], [1.152, 103.488], [1.225, 103.383],
+        [1.510, 102.947], [1.800, 102.382], [2.520, 101.374], [2.878, 101.263],
+        [2.916, 101.276], [2.946, 101.296], [2.984, 101.321], [2.997, 101.346],
+        [2.996, 101.370], [2.995, 101.386], [2.995, 101.393]
+    ],
+    portStart: "Cảng Cái Mép (VN)",
+    portEnd: "Cảng Klang (MY)"
+},
+    
+
+
+
+{
+    name: "Tuyến hàng hải: Việt Nam - Đài Loan (VN-TW)",
+    color: "#ff3399", 
+    coords: [
+        [20.777, 106.922], // Điểm id 3: Cảng Lạch Huyện (Hải Phòng)
+        [20.150, 110.500], // Điểm đệm: Eo biển Quỳnh Châu (Né đảo Hải Nam)
+        [21.200, 115.500], // Điểm đệm: Ngoài khơi Hong Kong
+        [22.867, 120.193], // Điểm id 0: Tiếp cận vùng biển Đài Loan
+        [22.618, 120.274]  // Điểm id 4: Cảng Cao Hùng (Kaohsiung)
+    ],
+    portStart: "Cảng Lạch Huyện (VN)",
+    portEnd: "Cảng Kaohsiung (TW)"
+},
+
+
+
+
+
+    {
+        name: "Hành lang kinh tế phía Nam: VN - THAILAND (Full Detail)",
+        color: "#FF9800",
+        // Giữ nguyên toàn bộ vertex từ GeoJSON của Sói
+        coords: [
+            [10.76227545725753, 106.79468045584724], [10.755329274541054, 106.79035851746698],
+            [10.74993010791485, 106.7766204077468], [10.742608150836134, 106.76877378975615],
+            [10.735666442634809, 106.76445601207467], [10.723710904771565, 106.75778308293081],
+            [10.716768762715759, 106.75268025476123], [10.709825107058478, 106.75189406170364],
+            [10.70095278877453, 106.75346241919988], [10.692082262063835, 106.75817257255102],
+            [10.683982957162712, 106.7656305913336], [10.67858322563508, 106.77073352799073],
+            [10.67434045186289, 106.77426634609981], [10.669995668683967, 106.78723281068977],
+            [10.665227792908041, 106.79451123653547], [10.65932371824664, 106.80155880257212],
+            [10.65569049315441, 106.80710449792849], [10.647742431470121, 106.81137928259488],
+            [10.639453519612161, 106.81403653013194], [10.632640538015849, 106.81877348577251],
+            [10.628211936302307, 106.82466592532535], [10.62775726122652, 106.83217688154696],
+            [10.62696319930454, 106.83841363846386], [10.622535378001388, 106.84534382372408],
+            [10.622196771202738, 106.85411803974989], [10.622763177813454, 106.85989809485852],
+            [10.616177803257429, 106.86301653746693], [10.609477779782253, 106.86394229041105],
+            [10.60345871536984, 106.86810272863698], [10.595505103356203, 106.86206754453781],
+            [10.590735079354914, 106.85906326262881], [10.58530556356456, 106.85825212740264],
+            [10.583374394006029, 106.85143727921451], [10.583147259603422, 106.843118496962],
+            [10.583829275480824, 106.83664749578651], [10.580423508042884, 106.83318053161418],
+            [10.574973413606173, 106.8360680487092], [10.566891589722331, 106.83825236321042],
+            [10.559511407728635, 106.83940687719411], [10.554891251312924, 106.84477357932178],
+            [10.548982641792279, 106.84927942262902], [10.54178875160703, 106.84912117420498],
+            [10.53588487330586, 106.85535682091722], [10.533617720378487, 106.86262919984017],
+            [10.523622417584804, 106.87140870531113], [10.519305341049403, 106.88354133848333],
+            [10.51896423829632, 106.89659802503581], [10.518736946113052, 106.91184956081764],
+            [10.52646217239986, 106.91508545783734], [10.531348410546656, 106.91924702393806],
+            [10.528053901743775, 106.93311374919483], [10.519874008801693, 106.94559407661882],
+            [10.500559147531362, 106.94952311738825], [10.486925379402635, 106.95090726203892],
+            [10.476811963569475, 106.9449002209542], [10.46919870477248, 106.93507821253019],
+            [10.457863587690426, 106.94165823208743], [10.433300792286445, 106.95794704320241],
+            [10.42083244767359, 106.98243334195229], [10.395023771844365, 106.9801886348194],
+            [10.37930695071185, 106.95014176601], [10.36973980331058, 106.92217907306957],
+            [10.181626010195586, 106.86829573184178], [9.968217198501392, 106.87881763870905],
+            [9.75466858957931, 106.87460888094938], [8.90422727775588, 106.40796296127138],
+            [8.363526838967388, 105.51860845061071], [8.146441665818514, 104.74646794010101],
+            [8.660363438438594, 103.82762217840735], [9.522432531230479, 103.54684381094978],
+            [10.320227532055497, 102.46766558618413], [11.176576322516567, 101.45684468147806],
+            [11.958755071847946, 101.03200690993583], [12.617193282554993, 100.60716913839366],
+            [12.849115706728696, 100.71258474211425], [12.953780757145111, 100.7471701758505],
+            [12.977686840090598, 100.8111130126436], [12.995712858078036, 100.85896960118504],
+            [13.028626556148254, 100.87827309908465], [13.032334723678403, 100.87825513646266],
+            [13.034807352355585, 100.88239806900083], [13.037170871381136, 100.88825789249853],
+            [13.044515817165163, 100.88769803674984], [13.052828219696224, 100.88692368622975],
+            [13.05610054000772, 100.88808072144366], [13.047942167713188, 100.88744342008204],
+            [13.056048291445094, 100.8880744633828]
+        ],
+        portStart: "Cát Lái (TP.HCM)",
+        portEnd: "Laem Chabang (Thái Lan)",
+        description: "Hành trình chi tiết qua sông Soài Rạp và Vịnh Thái Lan."
+    },
+
+
+{name: "Tuyến Hải Phòng - Kobe (JP)",
+    color: "#ff3300", // Màu đỏ cam mạnh mẽ
+    coords: [
+        // Khúc rời cảng Hải Phòng
+        [20.7772, 106.9222], [20.6553, 107.0283], [20.4657, 107.4430], [20.3798, 107.8336],
+        [20.2124, 108.4461], [20.1264, 109.3093], [20.1816, 110.4039], [20.3580, 111.1513],
+        [20.6877, 112.1303], [21.0257, 113.0562], [21.4604, 114.2206], [22.0159, 115.9133],
+        [22.2286, 116.5440], [22.7551, 117.7245], [23.5224, 118.8337], [24.2204, 119.4748],
+        // Đoạn qua eo biển Đài Loan & vùng biển Nhật Bản
+        [25.8014, 120.8612], [26.8684, 122.7948], [28.2398, 125.6035], [28.8566, 127.4455],
+        [29.1877, 128.8840], [29.3485, 129.4421], [29.5754, 130.2266], [30.0198, 131.5080],
+        [31.2426, 132.7365], [32.5758, 134.7498], [33.6352, 135.0090], [33.9125, 134.9646],
+        [34.1094, 134.9443], [34.2341, 134.9614], [34.3287, 135.0069], [34.4261, 135.1059],
+        [34.5180, 135.1749], [34.5769, 135.1974], [34.6354, 135.1940], [34.6565, 135.1945],
+        [34.6688, 135.1939], [34.6729, 135.1942], [34.6744, 135.1946], [34.6763, 135.1959],
+        [34.6782, 135.1972], [34.6828, 135.1979]
+    ]
+},
+
+{name: "Tuyến Hải Phòng - Manila (PH)",
+    color: "#00eeff", // Màu xanh lục bảo neon cho nổi bật trên bản đồ
+    coords: [
+        // Khúc rời cảng Hải Phòng và vịnh Bắc Bộ
+        [20.7771, 106.9223], 
+        [20.0450, 107.6378], 
+        [18.4580, 107.7826], 
+        
+        // Đoạn cắt ngang Biển Đông
+        [16.6565, 110.5666], 
+        [14.6376, 116.0163], 
+        
+        // Đoạn tiến vào vịnh Manila
+        [14.3246, 120.6247], 
+        [14.5000, 120.8257], 
+        [14.5793, 120.9686]
+    ]
+}
+
+
+    
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //CỤM GIAO Thông
 
 
@@ -2034,9 +2747,61 @@ function generateTransportData() {
         { lat: 21.21, lng: 105.80, name: "Sân bay Quốc tế Nội Bài (HAN)", icon: "✈️", cat: "airport", details: "Cửa ngõ hàng không lớn nhất miền Bắc." },
         { lat: 10.81, lng: 106.66, name: "Sân bay Tân Sơn Nhất (SGN)", icon: "✈️", cat: "airport", details: "Sân bay có lưu lượng khách đông nhất Việt Nam." },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // CẢNG BIỂN -> Dùng cat: "seaport"
         { lat: 20.83, lng: 106.76, name: "Cảng Lạch Huyện (Hải Phòng)", icon: "🚢", cat: "seaport", details: "Cảng cửa ngõ quốc tế có khả năng đón tàu siêu trọng." },
         { lat: 1.26, lng: 103.81, name: "Cảng Singapore", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển container bận rộn hàng đầu thế giới." },
+        // Thêm vào trong mảng transportHubs của ông
+{ lat: 10.53, lng: 107.02, name: "Cảng Cái Mép", icon: "🚢", cat: "seaport", details: "Cảng nước sâu hiện đại nhất Việt Nam." },
+{ lat: 3.00, lng: 101.35, name: "Cảng Klang", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển lớn nhất Malaysia." },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         // GA TÀU -> Nếu ông muốn dùng nút Rail-check thì để cat: "railway"
         { lat: 21.02, lng: 105.84, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Điểm đầu của tuyến đường sắt Bắc - Nam lịch sử." }
@@ -2045,29 +2810,405 @@ function generateTransportData() {
 }
 
 
-// --- THỨ TỰ KÍCH HOẠT CHUẨN CHO SÓI ---
+// --- THỨ TỰ KÍCH HOẠT CHUẨN CHO ATHE STUDIO ---
 
-// 1. Nạp dữ liệu gốc (Tài nguyên thiên nhiên...)
+// 1. Nạp dữ liệu gốc & Tài nguyên thiên nhiên
 loadEverything();
+generateAgriData();          // Rừng, lúa gạo
+generateMoreCoal();          // Than, vàng, sắt
+generateEnergyData();        // Dầu khí, năng lượng
+generateUralRichness();      // Khoáng sản vùng Ural
+generateVietnamCoal();       // Chi tiết than VN
+generateTayNguyenBauxite();  // Bauxite Tây Nguyên
+generateHeavyIndustryData(); // Công nghiệp nặng
+generateTransportData();     // Cảng biển, sân bay, ga tàu
 
-// 2. Nạp dữ liệu Kinh tế theo từng cụm (Dễ thêm thắt về sau)
-generateAutomotiveData();    // Cụm ô tô
-generateHeavyIndustryData(); // Cụm công nghiệp nặng
-generateAgriData();          // Cụm nông nghiệp
-generateCoffeeBelt();        // Cụm cà phê toàn cầu
+// 2. Nạp các cụm kinh tế đặc biệt
+generateAutomotiveData();    // Ô tô
+generateCoffeeBelt();        // Cà phê toàn cầu
 
-// 3. Các hàm sinh khoáng sản đặc biệt của Sói
-generateMoreCoal();        
-generateUralRichness();
-generateVietnamCoal();
-generateTayNguyenBauxite();
-generateEnergyData();    // Thêm năng lượng
-generateTransportData(); // Thêm giao thông
-
-// 4. QUAN TRỌNG: Vẽ lên bản đồ ngay lập tức
+// 3. QUAN TRỌNG: Gọi hàm tổng để hiển thị tất cả lên bản đồ
 updateFilters();
 
-console.log("Hệ thống ATHE Studio: Đã lên sóng đủ 40 doanh nghiệp! 🚗🛡️🌾");
+console.log("Hệ thống Athemianarotry Geography: Tài nguyên đã sẵn sàng! 🌳💎🚢");
+
+
+
+
+
+
+
+
+
+// --- HÀM TẠO SÓNG XUNG KÍCH (SHOCKWAVE) ---
+
+// Sói gọi hàm này khi muốn có vụ nổ: createShockwave(16.0, 108.0, 500000); // 500km radius
+function createShockwave(lat, lng, maxRadius) {
+    // 1. Vòng tròn đại diện cho sóng xung kích
+    var shockwave = L.circle([lat, lng], {
+        radius: 0, // Bắt đầu từ 0
+        color: '#ffcc00', // Màu vàng chanh (bắt mắt trên nền đen)
+        fillColor: '#fff', // Màu trắng bên trong (nhìn cho "bóng")
+        fillOpacity: 0.8,
+        weight: 3
+    }).addTo(map);
+
+    // 2. Animation: Làm cho vòng tròn lan rộng ra
+    var currentRadius = 0;
+    var animationInterval = setInterval(function() {
+        currentRadius += maxRadius / 50; // Tốc độ lan
+        shockwave.setRadius(currentRadius);
+        
+        // Làm mờ dần khi lan rộng
+        var currentOpacity = 0.8 * (1 - currentRadius / maxRadius);
+        shockwave.setStyle({ fillOpacity: currentOpacity, opacity: currentOpacity });
+
+        // Dừng và xóa khi đạt bán kính tối đa
+        if (currentRadius >= maxRadius) {
+            clearInterval(animationInterval);
+            map.removeLayer(shockwave);
+        }
+    }, 20); // 20ms mỗi khung hình (50fps) - Rất mượt trên RTX 3050
+}
+
+// --- TẠO KHÓI NỔ (GIF ICON) ---
+var smokeIcon = L.icon({
+    iconUrl: 'https://media.giphy.com/media/uQPh295V2/giphy.gif', // Link GIF khói nấm (hoặc link ảnh của Sói)
+    iconSize: [100, 100], // Chỉnh kích thước cho hợp với map
+    iconAnchor: [50, 50] // Tâm của ảnh nằm đúng tọa độ
+});
+
+// Thả khói tại một tọa độ cụ thể
+function dropSmoke(lat, lng) {
+    var smoke = L.marker([lat, lng], {icon: smokeIcon}).addTo(map);
+    // Sau 10 giây (hoặc tùy GIF) thì xóa khói đi
+    setTimeout(() => { map.removeLayer(smoke); }, 10000); 
+}
+
+
+
+let startPoint = null;
+let missileControl = document.getElementById('missile-control');
+
+// 1. Kích đúp để chọn điểm phóng
+map.on('dblclick', function(e) {
+    startPoint = e.latlng;
+    missileControl.style.display = 'block';
+    L.circleMarker(startPoint, {color: 'red', radius: 5}).addTo(map).bindPopup("Bệ phóng").openPopup();
+});
+
+map.on('click', function(e) {
+    if (!startPoint) return;
+    
+    let targetPoint = e.latlng;
+    let speed = parseInt(document.getElementById('flight-speed').value);
+    let radius = parseInt(document.getElementById('shock-radius').value) * 1000;
+
+    // THAY VÌ BẮN NGAY, CHÚNG TA GHI VÀO KEYFRAME
+    recordAction(startPoint, targetPoint, speed, radius);
+    
+    startPoint = null;
+    document.getElementById('missile-control').style.display = 'none';
+    alert("Đã thêm Keyframe vào dòng thời gian. Nhấn SPACE để chạy phim!");
+});
+
+// --- HÀM PHÓNG TÊN LỬA CHÓI LOÀ & CHẬM ---
+function launchMissile(start, end, duration, explosionSize) {
+    // Chế độ bay siêu chậm: Sói nhân duration với 2 hoặc chỉnh thanh gạt về mức cao nhất
+    let actualDuration = duration; 
+
+    // Tạo đầu đạn có hiệu ứng chói (Glow) bằng CSS
+    let missile = L.circleMarker(start, {
+        radius: 5,
+        color: '#fff',
+        weight: 2,
+        fillColor: '#00ffff',
+        fillOpacity: 1,
+        className: 'glowing-missile' // Lớp CSS để làm chói
+    }).addTo(map);
+
+    let startTime = null;
+
+    function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+        let progress = (timestamp - startTime) / actualDuration;
+
+        if (progress < 1) {
+            let currLat = start.lat + (end.lat - start.lat) * progress;
+            let currLng = start.lng + (end.lng - start.lng) * progress;
+            missile.setLatLng([currLat, currLng]);
+            
+            // Đuôi tên lửa để lại vệt sáng mờ
+            L.circleMarker([currLat, currLng], {
+                radius: 2,
+                color: '#00ffff',
+                opacity: 0.1,
+                fillOpacity: 0.1
+            }).addTo(map);
+            
+            requestAnimationFrame(animate);
+        } else {
+            map.removeLayer(missile);
+            // Kích hoạt sóng xung kích siêu chậm
+            createSlowShockwave(end.lat, end.lng, explosionSize);
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+// --- HÀM SÓNG XUNG KÍCH CHẬM & CHÓI ---
+function createSlowShockwave(lat, lng, maxR) {
+    let shock = L.circle([lat, lng], {
+        radius: 0,
+        color: '#fff', // Viền trắng chói
+        fillColor: '#ffff00', // Tâm vàng rực
+        fillOpacity: 0.9,
+        weight: 5
+    }).addTo(map);
+
+    let r = 0;
+    // Tốc độ lan tỏa: 60ms mỗi bước (Chậm hơn bản cũ gấp đôi)
+    let interval = setInterval(() => {
+        r += maxR / 100; // Lan tỏa từng chút một
+        shock.setRadius(r);
+        
+        // Hiệu ứng mờ dần cực chậm
+        let opacity = 0.9 * (1 - r / maxR);
+        shock.setStyle({
+            fillOpacity: opacity,
+            opacity: opacity,
+            weight: 10 * (1 - r / maxR) // Viền cũng mờ dần
+        });
+
+        if (r >= maxR) {
+            clearInterval(interval);
+            map.removeLayer(shock);
+        }
+    }, 60); // 60ms tạo cảm giác Slow-mo rất nghệ
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let actions = []; // Lưu danh sách các vụ nổ/tên lửa
+let isPlaying = false;
+let currentTime = 0;
+const timelineWidth = window.innerWidth - 80;
+
+// 1. Hàm ghi lại hành động khi Sói phóng tên lửa
+function recordAction(start, end, speed, radius) {
+    let id = Date.now();
+    let action = {
+        id: id,
+        time: 50, // Mặc định xuất hiện ở vị trí 50px trên timeline
+        start: start,
+        end: end,
+        speed: speed,
+        radius: radius
+    };
+    actions.push(action);
+    renderKeyframe(action);
+}
+
+// 2. Vẽ viên kim cương lên Timeline và cho phép kéo
+function renderKeyframe(action) {
+    let dot = document.createElement('div');
+    dot.className = 'keyframe';
+    dot.id = 'kf-' + action.id;
+    dot.style.left = action.time + 'px';
+    
+    // Logic Kéo thả Keyframe
+    dot.onmousedown = function(e) {
+        let shiftX = e.clientX - dot.getBoundingClientRect().left - 6;
+        function onMouseMove(e) {
+            let newLeft = e.clientX - shiftX - document.getElementById('timeline').getBoundingClientRect().left;
+            if (newLeft < 0) newLeft = 0;
+            if (newLeft > timelineWidth) newLeft = timelineWidth;
+            dot.style.left = newLeft + 'px';
+            action.time = newLeft; // Cập nhật thời gian thực hiện
+        }
+        document.addEventListener('mousemove', onMouseMove);
+        document.onmouseup = function() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+        };
+    };
+    document.getElementById('timeline').appendChild(dot);
+}
+
+
+
+
+
+
+
+
+
+let animationId = null; // Biến để quản lý việc dừng animation
+let startTimeOffset = 0; // Lưu vị trí đã chạy để resume (tiếp tục)
+
+window.addEventListener('keydown', function(e) {
+    if (e.key.toLowerCase() === 'h' && e.target.tagName !== 'INPUT') {
+        document.body.classList.toggle('cinematic-mode');
+    }
+});
+
+function pauseAnimation() {
+    isPlaying = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId); // Dừng khung hình ngay lập tức
+    }
+    document.querySelector('.keyframe-controls button').innerText = "PLAY (SPACE)";
+    document.querySelector('.keyframe-controls button').style.background = "#00ff00";
+}
+
+function playAnimation() {
+    isPlaying = true;
+    document.querySelector('.keyframe-controls button').innerText = "PAUSE (SPACE)";
+    document.querySelector('.keyframe-controls button').style.background = "#ffff00"; // Đổi sang vàng khi đang chạy
+    
+    let playhead = document.getElementById('playhead');
+    let duration = 10000; // Tổng thời gian timeline (10 giây)
+    let startTimestamp = null;
+    
+    // Tính toán lại mốc thời gian nếu trước đó đã Pause
+    let initialX = parseFloat(playhead.style.left) || 0;
+    let initialProgress = (initialX / timelineWidth) * duration;
+
+    function step(timestamp) {
+        if (!startTimestamp) startTimestamp = timestamp - initialProgress;
+        let progress = timestamp - startTimestamp;
+        let x = (progress / duration) * timelineWidth;
+
+        if (x <= timelineWidth && isPlaying) {
+            playhead.style.left = x + 'px';
+            
+            // Cập nhật số giây hiển thị trên bảng
+            let seconds = (progress / 1000).toFixed(2);
+            document.getElementById('current-time-display').innerText = seconds + "s";
+
+            // Kích hoạt Keyframe
+            actions.forEach(action => {
+                if (!action.fired && Math.abs(x - action.time) < 2) {
+                    launchMissile(action.start, action.end, action.speed, action.radius);
+                    action.fired = true;
+                }
+            });
+            
+            animationId = requestAnimationFrame(step);
+        } else if (x > timelineWidth) {
+            // Khi chạy hết Timeline
+            resetPlayback();
+        }
+    }
+    animationId = requestAnimationFrame(step);
+}
+
+function resetPlayback() {
+    isPlaying = false;
+    animationId = null;
+    document.getElementById('playhead').style.left = '0px';
+    document.querySelector('.keyframe-controls button').innerText = "PLAY (SPACE)";
+    document.querySelector('.keyframe-controls button').style.background = "#00ff00";
+    actions.forEach(a => a.fired = false); // Cho phép nổ lại lượt sau
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function playAnimation() {
+    isPlaying = true;
+    let playhead = document.getElementById('playhead');
+    let startTimestamp = null;
+    let duration = 5000; // Tổng thời gian timeline (5 giây hoặc tùy Sói chỉnh)
+
+    function step(timestamp) {
+        if (!startTimestamp) startTimestamp = timestamp;
+        let progress = timestamp - startTimestamp;
+        let x = (progress / duration) * timelineWidth;
+
+        if (x <= timelineWidth) {
+            playhead.style.left = x + 'px';
+            
+            // Kiểm tra xem kim thời gian có chạm trúng Keyframe nào không
+            actions.forEach(action => {
+                if (!action.fired && Math.abs(x - action.time) < 2) {
+                    launchMissile(action.start, action.end, action.speed, action.radius);
+                    action.fired = true; // Chỉ nổ 1 lần mỗi lượt Play
+                }
+            });
+            
+            requestAnimationFrame(step);
+        } else {
+            isPlaying = false;
+            actions.forEach(a => a.fired = false); // Reset để Play lại lần sau
+            playhead.style.left = '0px';
+        }
+    }
+    requestAnimationFrame(step);
+}
+
+function toggleTimeline() {
+    const panel = document.getElementById('keyframe-panel');
+    const btn = document.getElementById('toggle-keyframe');
+    
+    if (panel.classList.contains('active')) {
+        panel.classList.remove('active');
+        btn.innerText = "🎬 SHOW TIMELINE";
+    } else {
+        panel.classList.add('active');
+        btn.innerText = "❌ HIDE TIMELINE";
+    }
+}
+
+// Tự động hiện bảng khi Sói thêm một Keyframe mới (để Sói biết là đã thêm thành công)
+const originalRecord = recordAction;
+recordAction = function(start, end, speed, radius) {
+    originalRecord(start, end, speed, radius);
+    document.getElementById('keyframe-panel').classList.add('active');
+    document.getElementById('toggle-keyframe').innerText = "❌ HIDE TIMELINE";
+};
+
+
+
+
+
+
+
 
 </script>
 </body>
