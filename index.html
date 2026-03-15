@@ -14,33 +14,169 @@
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
         
 
-/* Chế độ Cinematic: Quét sạch mọi bảng biểu */
-body.cinematic-mode #keyframe-panel,    /* Bảng Timeline dưới cùng */
-body.cinematic-mode .main-ui-element,   /* Bảng Menu to nhất bên trái */
-body.cinematic-mode #workspace-switcher, /* Nút chuyển Mode vàng */
-body.cinematic-mode #toggle-keyframe,    /* Nút Show/Hide Timeline */
-body.cinematic-mode .leaflet-control-container, /* Nút Zoom +/- của Map */
-body.cinematic-mode .info-panel,         /* Các bảng thông tin phụ nếu có */
-body.cinematic-mode .select2-container   /* Ô chọn quốc gia Select2 */ {
+/* Cinematic mode */
+body.cinematic-mode #keyframe-panel,
+body.cinematic-mode .main-ui-element,
+body.cinematic-mode #workspace-switcher,
+body.cinematic-mode #toggle-keyframe,
+body.cinematic-mode .leaflet-control-container,
+body.cinematic-mode .info-panel,
+body.cinematic-mode .select2-container {
     display: none !important;
 }
 
-/* Ẩn con trỏ chuột cho chuyên nghiệp */
 body.cinematic-mode #map {
-    cursor: none;
+    display: block !important;
+    cursor: none !important;
 }
 
+/* Keyframe panel - chỉ 1 định nghĩa */
+#keyframe-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 250px;
+    background: #121212;
+    border-top: 1px solid #333;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(100%);
+}
 
+#keyframe-panel.active,
+body.mode-key #keyframe-panel {
+    transform: translateY(0);
+}
 
+/* Controls header */
+.keyframe-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #282828;
+}
 
+.ctrl-left, .ctrl-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
+.panel-title {
+    color: #00ffff;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
 
+/* Buttons */
+.btn-play, .btn-reset, .btn-close-panel {
+    border: none;
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
+.btn-play {
+    background: #00ff00;
+    color: #000;
+}
+.btn-play:hover {
+    background: #00cc00;
+    transform: scale(1.05);
+}
 
+.btn-reset {
+    background: #333;
+    color: #eee;
+    border: 1px solid #444;
+}
+.btn-reset:hover {
+    background: #444;
+    border-color: #ff0000;
+    color: #ff0000;
+}
 
+.btn-close-panel {
+    background: transparent;
+    color: #666;
+    font-size: 16px;
+    padding: 0 8px;
+}
+.btn-close-panel:hover {
+    color: #ff0000;
+}
 
+/* Time display */
+#current-time-display {
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: bold;
+    background: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #333;
+}
 
+/* Timeline area */
+#timeline-container {
+    position: relative;
+    flex-grow: 1;
+    background: #050505;
+    overflow-y: auto;
+}
 
+#playhead {
+    position: absolute;
+    top: 0;
+    left: 120px;
+    width: 2px;
+    height: 100%;
+    background: #ff0000;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+    z-index: 9999;
+    pointer-events: none;
+    
+}
+
+#timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-top: 40px;
+    height: 100%;
+}
+
+.timeline-track {
+    width: 100%;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid #222;
+    position: relative;
+}
+
+.keyframe {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #00ffff;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    cursor: grab;
+    z-index: 5;
+}
 
 
 
@@ -77,13 +213,19 @@ body.mode-key #keyframe-panel, #keyframe-panel.active {
     border-bottom: 1px solid #111;
 }
 
-/* Nút gọi Timeline dự phòng */
 #toggle-keyframe {
-    position: absolute; bottom: 20px; right: 20px; z-index: 10001;
-    background: rgba(0, 255, 255, 0.1); color: #00ffff;
-    border: 1px solid #00ffff; padding: 10px 15px;
-    cursor: pointer; border-radius: 5px; font-weight: bold;
-    backdrop-filter: blur(5px);
+    position: absolute;
+    bottom: 20px; /* Cách đáy màn hình 20px */
+    right: 20px;  /* Cách bên phải 20px */
+    z-index: 10001; /* Luôn nằm trên cùng của mọi thứ */
+    background: #ffcc00;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
 /* Tùy chỉnh Track Label cho chuyên nghiệp */
@@ -116,12 +258,56 @@ body.mode-key .main-ui-element { display: none !important; }
     font-weight: bold; cursor: pointer; border-radius: 4px;
 }
 
-#keyframe-panel {
-    position: absolute; bottom: -250px; left: 0; width: 100vw; height: 220px;
-    background: #000000; border-top: 1px solid #333; z-index: 10000;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex; flex-direction: column;
+
+
+#keyframe-panel.active { bottom: 0 !important; }
+
+/* Vùng làm việc Timeline */
+#timeline-workspace {
+    position: relative; flex-grow: 1; overflow-y: auto; background: #050505;
+    margin-left: 0; /* Không lề để tận dụng toàn màn hình */
 }
+
+/* Một hàng ngang (Track) [4] */
+.timeline-track {
+    display: flex; align-items: center; width: 100%; height: 35px;
+    background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid #1a1a1a;
+    position: relative;
+}
+
+/* Nhãn cho từng track bên trái [5], [3] */
+.track-label {
+    width: 120px; height: 100%; background: #111; color: #aaa;
+    font-size: 10px; display: flex; align-items: center; padding-left: 10px;
+    border-right: 1px solid #333; sticky: left; z-index: 20;
+}
+
+/* Kim thời gian đỏ rực [3] */
+#playhead {
+    position: absolute; top: 0; left: 120px; width: 2px; height: 100%;
+    background: #ff0000; box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    z-index: 9999; pointer-events: none;
+}
+
+/* Viên kim cương Keyframe Cyan [4], [5] */
+.keyframe {
+    position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
+    width: 10px; height: 10px; background: #00ffff; border: 1px solid #fff;
+    cursor: grab; z-index: 10; box-shadow: 0 0 8px #00ffff;
+}
+
+
+
+
+/* KHI CÓ CLASS ACTIVE: Trồi lên vị trí cũ */
+#keyframe-panel.active {
+    transform: translateY(0);
+}
+
+
+
+
+
 
 body.mode-key #keyframe-panel { bottom: 0 !important; }
 
@@ -136,8 +322,17 @@ body.mode-key #keyframe-panel { bottom: 0 !important; }
 }
 
 #playhead {
-    position: absolute; top: 0; left: 0; width: 2px; height: 100%;
-    background: #ff0000; box-shadow: 0 0 10px #ff0000; z-index: 10;
+    position: absolute;
+    top: 0;
+    /* 120px là độ rộng của cột nhãn (track-label) */
+    left: 120px; 
+    width: 2px;
+    height: 100%;
+    background: #ff0000;
+    /* Đổ bóng nhẹ để nhìn cho rõ trên nền đen */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8); 
+    z-index: 9999;
+    pointer-events: none; /* Để không bị vướng khi click vào keyframe */
 }
 
 .keyframe {
@@ -572,35 +767,582 @@ left-group {
     font-weight: bold;
     color: #000;
 }
+
+
+
+
+
+/* Nút kim cương keyframe */
+
+
+
+.btn-keyframe {
+    background: #00ffff;                /* Màu cyan sáng giống keyframe */
+    color: #000;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 8px;                   /* Cách nút Reset một chút */
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+}
+
+.btn-keyframe:hover {
+    background: #00ccff;
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
+}
+
+.btn-keyframe:active {
+    transform: scale(0.95);
+}
+
+
+#playhead {
+    position: absolute;
+    top: 0;
+    left: 120px;
+    width: 2px;
+    height: 100%;
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.playhead-marker {
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    width: 12px;
+    height: 12px;
+    background: #ff0000;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.9);
+    transform: translateX(-50%);
+}
+
+/* Wrapper chứa các track */
+#tracks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Một track */
+.timeline-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #444;
+    border-radius: 8px;
+    position: relative;
+}
+
+.track-label {
+    width: 120px;
+    height: 100%;
+    background: #0f0f1f;
+    color: #00ffff;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #555;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.track-content {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    background: transparent;
+}
+
+/* Nút + thêm track */
+.btn-add-track {
+    width: 40px;
+    height: 40px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 12px;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+}
+
+.btn-add-track:hover {
+    background: #00cc66;
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9);
+}
+
+/* Track bình thường */
+.timeline-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #444;
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer; /* Con trỏ tay khi hover */
+}
+
+/* Khi hover nhẹ */
+.timeline-track:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #666;
+}
+
+/* Khi được click/chọn (active) */
+.timeline-track.active {
+    border: 2px solid #00ffff;           /* Viền sáng cyan nổi bật */
+    background: rgba(0, 255, 255, 0.08); /* Nền hơi sáng lên */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Ánh sáng glow */
+    transform: scale(1.02);              /* Phóng to nhẹ cho nổi bật */
+}
+
+/* Label khi track active */
+.timeline-track.active .track-label {
+    background: #001f1f;
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+/* Wrapper chứa tất cả track - hỗ trợ lăn chuột mượt */
+#tracks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+    height: 100%;
+    overflow-y: auto;          /* Vẫn cho phép cuộn */
+    overflow-x: hidden;
+    scrollbar-width: none;     /* Ẩn scrollbar trên Firefox */
+    -ms-overflow-style: none;  /* Ẩn scrollbar trên IE/Edge */
+}
+
+/* Ẩn scrollbar trên Chrome/Safari/Edge mới */
+#tracks-wrapper::-webkit-scrollbar {
+    display: none;             /* Hoàn toàn ẩn thanh cuộn */
+}
+
+/* Track vẫn giữ nguyên */
+.timeline-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #444;
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.timeline-track:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #666;
+}
+
+.timeline-track.active {
+    border: 2px solid #00ffff;
+    background: rgba(0, 255, 255, 0.08);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+/* Nút + vẫn giữ */
+.btn-add-track {
+    width: 40px;
+    height: 40px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 12px;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+}
+
+.btn-add-track:hover {
+    background: #00cc66;
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9);
+}
+
+
+
+
+
+
+
+
+
+#news-ticker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    z-index: 99999;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    pointer-events: none;
+    text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    opacity: 0; /* Bắt đầu ẩn */
+    animation: fadeIn 1s forwards 0.5s; /* Fade in sau 0.5s */
+}
+
+/* Animation fade-in */
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* Nội dung chạy */
+.ticker-content {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: ticker 45s linear infinite; /* Giảm xuống 45s để chạy nhanh hơn */
+}
+
+/* Nhân bản nội dung để không bị giật */
+.ticker-content span {
+    padding-right: 100vw;
+}
+
+/* Animation chạy từ phải sang trái */
+@keyframes ticker {
+    0% { transform: translateX(0); }          /* Bắt đầu từ vị trí 0 (hiện ngay) */
+    100% { transform: translateX(-100%); }
+}
+
+
+
+
+.ticker-content {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: ticker 240s linear infinite; /* Chậm hơn: 240 giây/vòng để đọc chi tiết dài */
+}
+
+/* Tăng khoảng cách để nội dung dài không bị lặp nhanh */
+.ticker-content span {
+    padding-right: 300vw; /* Rất lớn để thanh "dài vô tận" */
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Nút cài đặt tùy chỉnh */
+.settings-control {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+}
+
+.settings-control a {
+    display: block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    color: #333;
+    font-size: 18px;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.settings-control a:hover {
+    background: #f4f4f4;
+}
+
+/* Modal cài đặt */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: rgba(20,20,30,0.95);
+    border: 1px solid #00ffff;
+    border-radius: 12px;
+    width: 320px;
+    max-width: 90%;
+    box-shadow: 0 0 30px rgba(0,255,255,0.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #0f0f1f;
+    border-bottom: 1px solid #444;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #00ffff;
+    font-size: 16px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #ff4444;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-close:hover { color: #ff7777; }
+
+.modal-body {
+    padding: 16px;
+}
+
+.setting-item {
+    display: block;
+    margin: 12px 0;
+    color: #ddd;
+    font-size: 14px;
+}
+
+.setting-item input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #00ffff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </style>
 </head>
 <body> 
+
+
+<!-- Context menu khi chuột phải vào bệ phóng hoặc mũi tên -->
+<div id="context-menu" style="display: none; position: absolute; background: rgba(0,0,0,0.9); border: 1px solid #ff0000; border-radius: 6px; padding: 8px; z-index: 100000; min-width: 120px;">
+    <button onclick="deleteSelectedMarker()" style="width: 100%; background: #ff4444; color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer;">Xóa</button>
+</div>
+
+
+<!-- Modal cài đặt mờ mờ (ẩn mặc định) -->
+<div id="settings-modal" class="settings-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Cài đặt hệ thống</h3>
+            <button class="modal-close" onclick="closeSettingsModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <label class="setting-item">
+                <input type="checkbox" id="toggle-ticker" checked onchange="toggleNewsTicker(this.checked)">
+                Hiển thị thanh tin tức (ticker)
+            </label>
+            
+            <!-- Thêm tùy chọn khác ở đây sau -->
+            <label class="setting-item">
+                <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
+                Bật chế độ cinematic (ẩn UI)
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Thanh tin thời sự chạy ngang trên cùng -->
+<div id="news-ticker">
+    <div class="ticker-content">
+        <!-- Nội dung tin sẽ được JS thêm vào đây -->
+        <span>Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông • Nga tăng cường hiện diện quân sự ở Bắc Cực • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS • EU áp đặt lệnh trừng phạt mới với một số quốc gia • Trung Quốc thử nghiệm vệ tinh lượng tử mới • Tin nóng: Bầu cử Mỹ 2028 đang nóng lên • ...</span>
+        <!-- Nhân bản để chạy mượt không giật -->
+        <span>Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông • Nga tăng cường hiện diện quân sự ở Bắc Cực • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS • EU áp đặt lệnh trừng phạt mới với một số quốc gia • Trung Quốc thử nghiệm vệ tinh lượng tử mới • Tin nóng: Bầu cử Mỹ 2028 đang nóng lên • ...</span>
+    </div>
+</div>
+
     
     <div id="map"></div>
     
 
+<!-- Chỉ giữ 1 #keyframe-panel, dùng transform -->
 <div id="keyframe-panel">
     <div class="keyframe-controls">
-        <span style="color: #00ffff; font-weight: bold; font-size: 13px;">🎬 ATHEMIANARTORY ANIMATION KEYFRAME</span>
-        <button onclick="playAnimation()" style="background: #00ff00; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; border-radius: 3px;">PLAY (SPACE)</button>
-        <button onclick="clearKeyframes()" style="background: #ff0000; border: none; padding: 5px 15px; color: white; cursor: pointer; border-radius: 3px;">RESET</button>
-        <div id="current-time-display" style="color: yellow; font-family: 'Courier New'; font-size: 14px; margin-left: auto;">00:00:00</div>
+        <div class="ctrl-left">
+            <span class="panel-title">🎬 ATHE STUDIO TIMELINE</span>
+            <button class="btn-play" onclick="playAnimation()" id="play-btn">PLAY (SPACE)</button>
+            <button class="btn-reset" onclick="clearKeyframes()">RESET</button>
+            
+            <!-- Nút kim cương mới -->
+            <button class="btn-keyframe" onclick="addManualKeyframe()" title="Thêm Keyframe thủ công">
+                💎
+            </button>
+        </div>
+        <div class="ctrl-right">
+            <div id="current-time-display">00:00:00.000</div>
+            <button class="btn-close-panel" onclick="toggleTimeline()" title="Đóng">✖</button>
+        </div>
     </div>
 
-    <div id="timeline-wrapper" style="display: flex; flex-direction: column; overflow-y: auto; flex-grow: 1;">
-        
-        <div class="track-row" style="display: flex; border-bottom: 1px solid #111; height: 50px; align-items: center;">
-            <div class="track-label" style="width: 120px; background: #0a0a0a; height: 100%; display: flex; align-items: center; padding-left: 15px; color: #888; font-size: 11px; border-right: 1px solid #222;">TRACK 1 (MISSILE)</div>
-            <div id="timeline" style="position: relative; flex-grow: 1; height: 100%; background: #050505;">
-                <div id="playhead"></div>
-                </div>
+    <!-- Khu vực timeline chính -->
+    <div id="timeline-container">
+        <div id="playhead">
+            <div class="playhead-marker"></div>  <!-- Chấm tròn nhỏ ở trên -->
         </div>
 
-        <div class="track-row" style="display: flex; border-bottom: 1px solid #111; height: 50px; align-items: center;">
-            <div class="track-label" style="width: 120px; background: #0a0a0a; height: 100%; display: flex; align-items: center; padding-left: 15px; color: #888; font-size: 11px; border-right: 1px solid #222;">TRACK 2 (FX)</div>
-            <div class="track-content" style="flex-grow: 1; height: 100%; background: #030303;"></div>
+        <!-- Wrapper chứa tất cả track (bắt đầu với 1 track trống) -->
+        <div id="tracks-wrapper">
+            <!-- Track mặc định đầu tiên (trống) -->
+            <div class="timeline-track" data-track-id="1">
+                <div class="track-label">TRACK 1</div>
+                <div class="track-content"></div>
+                <!-- Nút + để thêm track mới -->
+                <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
+            </div>
         </div>
-
     </div>
 </div>
 
@@ -689,7 +1431,6 @@ left-group {
     .res-check { cursor: pointer; margin-right: 8px; }
 </style>
 
-    <button onclick="clearCustomColors()" style="width:100%; background:#cc0000; color:white; border:none; padding:8px; cursor:pointer; border-radius:5px; font-weight:bold;">XÓA TẤT CẢ MÀU TÔ</button>
 </div>
 
 
@@ -923,17 +1664,7 @@ left-group {
 
     <button id="toggle-keyframe" onclick="toggleTimeline()">🎬 Keyframe</button>
 
-<div id="keyframe-panel">
-    <div class="keyframe-header">
-        <span>🎬 ATHEMIANARTORY ANIMATION KEYFRAMES </span>
-        <button onclick="clearKeyframes()" style="background:red; color:white; border:none; cursor:pointer; font-size:10px;">XÓA HẾT</button>
-    </div>
-    <div id="timeline-container">
-        <div id="playhead"></div> </div>
-    <div class="keyframe-info">
-        <small id="current-action">Chưa có hành động nào được ghi lại...</small>
-    </div>
-</div>
+
 
     <script>
 
@@ -1084,12 +1815,21 @@ left-group {
     "south_africa": { center: [-30.5595, 22.9375], zoom: 6, adminName: "South Africa" },
 };
 
-        // --- 1. KHỞI TẠO BẢN ĐỒ ---
+
+
+
+// --- 1. KHỞI TẠO BẢN ĐỒ (BẢN MƯỢT MÀ ATHE STUDIO) ---
 const map = L.map('map', {
     center: [20, 0],
     zoom: 3,
     minZoom: 2,
-    preferCanvas: true // THÊM DÒNG NÀY VÀO ĐÂY
+    preferCanvas: true,
+
+    // --- CỤM NÀY GIÚP ZOOM NHIỀU NẤC, KHÔNG BỊ QUÁ TRỚN ---
+    zoomSnap: 0.1,        // Chia nhỏ nấc zoom (bình thường là 1, giờ là 0.1)
+    zoomDelta: 0.1,       // Mỗi nấc lăn chuột chỉ nhảy 0.1 (zoom rất chậm và mịn)
+    wheelPxPerZoomLevel: 150, // Lăn chuột nhiều hơn mới nhảy 1 level (chống vọt)
+    wheelDebounceTime: 10     // Phản hồi chuột nhanh hơn
 });
 
 // --- ĐƯA ATHE TRỞ LẠI MẶT ĐẤT (HẾT TRẮNG XÓA) ---
@@ -1457,22 +2197,103 @@ if(mainSlider) {
 
 
         // --- CÁC SỰ KIỆN ĐIỀU KHIỂN ---
-        fetchBorders();
-        document.getElementById('slider').oninput = (e) => updateSystem(e.target.value);
-        document.getElementById('year-input').oninput = (e) => updateSystem(e.target.value);
-        document.getElementById('country-select').onchange = () => updateSystem(document.getElementById('year-input').value, true);
-        document.getElementById('wiki-close').onclick = () => document.getElementById('wiki-panel').classList.remove('active');
-        
-        document.getElementById('screenshot-btn').onclick = function() {
-            this.style.display = 'none';
-            html2canvas(document.body, { useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Map_${document.getElementById('year-input').value}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                this.style.display = 'block';
-            });
-        };
+fetchBorders();
+
+// Xóa các sự kiện liên quan đến year-input và slider (vì bạn đã xóa phần năm)
+document.getElementById('country-select').onchange = () => {
+    // Nếu bạn vẫn cần update khi chọn quốc gia (không dùng năm nữa)
+    renderBorders();  // hoặc hàm updateBorders() của bạn
+    // Nếu có flyToCountry hoặc tương tự thì gọi ở đây
+};
+
+document.getElementById('wiki-close').onclick = () => {
+    document.getElementById('wiki-panel').classList.remove('active');
+};
+
+// Chụp ảnh màn hình (nút + phím C)
+// Hàm chụp ảnh (dùng cho cả nút và phím C)
+function takeScreenshot() {
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    if (screenshotBtn) screenshotBtn.style.display = 'none';
+
+    // Lấy phần tử map
+    const mapElement = document.getElementById('map');
+    const originalFilter = mapElement.style.filter;  // Lưu filter gốc
+
+    // Tắt tạm filter gây tối/sáng để html2canvas capture đúng
+    mapElement.style.filter = 'none';
+
+    html2canvas(mapElement, {
+        useCORS: true,
+        backgroundColor: '#000000',          // Buộc nền đen tuyệt đối
+        scale: window.devicePixelRatio || 2, // Tăng chất lượng (2x cho màn Retina)
+        logging: false,
+        removeContainer: true,
+        allowTaint: true,
+        windowWidth: mapElement.scrollWidth,
+        windowHeight: mapElement.scrollHeight
+    }).then(canvas => {
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.T]/g, '-').slice(0, 19);
+        const link = document.createElement('a');
+        link.download = `Athemianaroty_Map_${timestamp}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }).catch(err => {
+        console.error("Lỗi chụp ảnh:", err);
+        alert("Không chụp được ảnh, thử lại nhé!");
+    }).finally(() => {
+        // Khôi phục filter gốc ngay lập tức
+        mapElement.style.filter = originalFilter;
+        if (screenshotBtn) screenshotBtn.style.display = 'block';
+    });
+}
+
+// Gắn cho nút chụp
+document.getElementById('screenshot-btn').onclick = takeScreenshot;
+
+// Gắn phím C chụp ảnh
+window.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
+
+    if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('cinematic-mode');
+    }
+
+    // Phím C chụp ảnh
+    if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        takeScreenshot();
+    }
+});
+
+// Gắn sự kiện click nút chụp
+document.getElementById('screenshot-btn').onclick = takeScreenshot;
+
+// Gắn phím C chụp ảnh (bất kỳ lúc nào)
+window.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
+
+    if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('cinematic-mode');
+    }
+
+    // Phím C chụp ảnh
+    if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        takeScreenshot();
+    }
+});
 
         map.on('zoomend', updateLabels);
         // --- LOGIC ẨN/HIỆN PANEL ĐIỀU KHIỂN ---
@@ -3013,195 +3834,1528 @@ function createSlowShockwave(lat, lng, maxR) {
 
 
 
-let actions = []; // Lưu danh sách các vụ nổ/tên lửa
-let isPlaying = false;
-let currentTime = 0;
-const timelineWidth = window.innerWidth - 80;
+// ==========================================
+// 🎬 HỆ THỐNG TIMELINE & ANIMATION - ATHE STUDIO
+// ==========================================
 
-// 1. Hàm ghi lại hành động khi Sói phóng tên lửa
+// Biến toàn cục cho hệ thống timeline & animation
+let actions = [];
+let isPlaying = false;
+let animationId = null;
+let pausedElapsed = 0;          // Thời gian đã chạy trước khi pause (ms)
+let currentTime = 0;            // Nếu bạn vẫn cần biến này, giữ lại; nếu không thì xóa
+
+// Độ rộng cột nhãn bên trái (vách ngăn)
+const LABEL_WIDTH = 120; 
+
+// --- 1. GHI LẠI HÀNH ĐỘNG (TẠO KEYFRAME) ---
 function recordAction(start, end, speed, radius) {
     let id = Date.now();
     let action = {
         id: id,
-        time: 50, // Mặc định xuất hiện ở vị trí 50px trên timeline
+        time: 50, // Vị trí mặc định trên track (tính từ vách ngăn)
         start: start,
         end: end,
         speed: speed,
-        radius: radius
+        radius: radius,
+        fired: false
     };
     actions.push(action);
-    renderKeyframe(action);
+    
+    // Tự động mở bảng khi có keyframe mới
+    const panel = document.getElementById('keyframe-panel');
+    panel.classList.add('active');
+    document.getElementById('toggle-keyframe').innerText = "❌ HIDE TIMELINE";
+    
+    renderKeyframe(action, actions.length);
 }
 
-// 2. Vẽ viên kim cương lên Timeline và cho phép kéo
-function renderKeyframe(action) {
-    let dot = document.createElement('div');
+// --- 2. VẼ TRACK VÀ KEYFRAME TỰ ĐỘNG ---
+function renderKeyframe(action, index) {
+    const container = document.getElementById('timeline-container');
+
+    // Tạo hàng Track mới
+    const trackRow = document.createElement('div');
+    trackRow.className = 'track-row';
+    trackRow.style = "display: flex; border-bottom: 1px solid #111; min-height: 40px; align-items: center;";
+
+    // Tạo nhãn bên trái (MISSILE)
+    const label = document.createElement('div');
+    label.className = 'track-label';
+    label.style = `width: ${LABEL_WIDTH}px; background: #0a0a0a; height: 40px; display: flex; align-items: center; padding-left: 15px; color: #00ffff; font-size: 10px; border-right: 1px solid #222; flex-shrink: 0;`;
+    label.innerText = `MISSILE ${index}`;
+
+    // Tạo vùng chứa Keyframe bên phải
+    const trackContent = document.createElement('div');
+    trackContent.className = 'track-content';
+    trackContent.style = "flex-grow: 1; height: 40px; position: relative; background: transparent;";
+
+    // Tạo viên kim cương Keyframe
+    const dot = document.createElement('div');
     dot.className = 'keyframe';
-    dot.id = 'kf-' + action.id;
-    dot.style.left = action.time + 'px';
-    
-    // Logic Kéo thả Keyframe
+    dot.style = `position: absolute; left: ${action.time}px; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #00ffff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); cursor: grab;`;
+
+    // Logic kéo thả Keyframe
     dot.onmousedown = function(e) {
-        let shiftX = e.clientX - dot.getBoundingClientRect().left - 6;
+        e.preventDefault();
+        let rect = trackContent.getBoundingClientRect();
         function onMouseMove(e) {
-            let newLeft = e.clientX - shiftX - document.getElementById('timeline').getBoundingClientRect().left;
-            if (newLeft < 0) newLeft = 0;
-            if (newLeft > timelineWidth) newLeft = timelineWidth;
-            dot.style.left = newLeft + 'px';
-            action.time = newLeft; // Cập nhật thời gian thực hiện
+            let x = e.clientX - rect.left;
+            if (x < 0) x = 0;
+            if (x > rect.width) x = rect.width;
+            dot.style.left = x + 'px';
+            action.time = x; 
         }
         document.addEventListener('mousemove', onMouseMove);
         document.onmouseup = function() {
             document.removeEventListener('mousemove', onMouseMove);
-            document.onmouseup = null;
         };
     };
-    document.getElementById('timeline').appendChild(dot);
+
+    trackContent.appendChild(dot);
+    trackRow.appendChild(label);
+    trackRow.appendChild(trackContent);
+    container.appendChild(trackRow);
 }
 
 
+// Cập nhật bộ đếm (giờ:phút:giây.mili)
+function updateTimeDisplay(timeMs) {
+    const totalSeconds = timeMs / 1000;
+    const hours   = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+    const seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+    const millis  = Math.floor(timeMs % 1000).toString().padStart(3, '0');
+    document.getElementById('current-time-display').innerText = `${hours}:${minutes}:${seconds}.${millis}`;
+}
 
+// Play / Resume animation
+function playAnimation() {
+    if (isPlaying) return;
+    isPlaying = true;
 
+    const playhead = document.getElementById('playhead');
+    const btn = document.querySelector('.keyframe-controls button');
+    btn.innerText = "PAUSE (SPACE)";
+    btn.style.background = "#ffcc00";
 
+    // Tính timelineWidth mỗi lần play để tránh lệch khi resize
+    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
+    const startTimestamp = performance.now() - pausedElapsed;
 
+    function step(timestamp) {
+        if (!isPlaying) return;
 
+        const elapsed = timestamp - startTimestamp;
+        const progress = elapsed / 10000; // duration = 10000ms
+        const x = progress * timelineWidth;
 
+        if (x <= timelineWidth) {
+            playhead.style.left = (LABEL_WIDTH + x) + 'px';
 
-let animationId = null; // Biến để quản lý việc dừng animation
-let startTimeOffset = 0; // Lưu vị trí đã chạy để resume (tiếp tục)
+            actions.forEach(action => {
+                if (!action.fired && Math.abs(x - action.time) < 3) {
+                    if (typeof launchMissile === "function") {
+                        launchMissile(action.start, action.end, action.speed, action.radius);
+                    }
+                    action.fired = true;
+                }
+            });
 
+            updateTimeDisplay(elapsed);
+
+            animationId = requestAnimationFrame(step);
+        } else {
+            stopAnimation();
+        }
+    }
+
+    animationId = requestAnimationFrame(step);
+}
+
+// Pause animation (giữ nguyên vị trí kim)
+function stopAnimation() {
+    isPlaying = false;
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+
+        // Lưu thời gian đã chạy để resume sau
+        const currentLeft = parseFloat(document.getElementById('playhead').style.left) || LABEL_WIDTH;
+        const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
+        pausedElapsed = ((currentLeft - LABEL_WIDTH) / timelineWidth) * 10000;
+    }
+
+    const btn = document.querySelector('.keyframe-controls button');
+    btn.innerText = "PLAY (SPACE)";
+    btn.style.background = "#00ff00";
+}
+
+// Reset toàn bộ (khi clear keyframes)
+function clearKeyframes() {
+    actions = [];
+    pausedElapsed = 0;           // Reset thời gian pause
+    const container = document.getElementById('timeline-container');
+    container.innerHTML = '<div id="playhead"></div>';
+    stopAnimation();
+    document.getElementById('current-time-display').innerText = "00:00:00.000";
+}
+
+// Phím tắt
 window.addEventListener('keydown', function(e) {
-    if (e.key.toLowerCase() === 'h' && e.target.tagName !== 'INPUT') {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
+
+    if (e.key.toLowerCase() === 'h') {
         document.body.classList.toggle('cinematic-mode');
     }
 });
 
-function pauseAnimation() {
-    isPlaying = false;
-    if (animationId) {
-        cancelAnimationFrame(animationId); // Dừng khung hình ngay lập tức
-    }
-    document.querySelector('.keyframe-controls button').innerText = "PLAY (SPACE)";
-    document.querySelector('.keyframe-controls button').style.background = "#00ff00";
-}
-
-function playAnimation() {
-    isPlaying = true;
-    document.querySelector('.keyframe-controls button').innerText = "PAUSE (SPACE)";
-    document.querySelector('.keyframe-controls button').style.background = "#ffff00"; // Đổi sang vàng khi đang chạy
-    
-    let playhead = document.getElementById('playhead');
-    let duration = 10000; // Tổng thời gian timeline (10 giây)
-    let startTimestamp = null;
-    
-    // Tính toán lại mốc thời gian nếu trước đó đã Pause
-    let initialX = parseFloat(playhead.style.left) || 0;
-    let initialProgress = (initialX / timelineWidth) * duration;
-
-    function step(timestamp) {
-        if (!startTimestamp) startTimestamp = timestamp - initialProgress;
-        let progress = timestamp - startTimestamp;
-        let x = (progress / duration) * timelineWidth;
-
-        if (x <= timelineWidth && isPlaying) {
-            playhead.style.left = x + 'px';
-            
-            // Cập nhật số giây hiển thị trên bảng
-            let seconds = (progress / 1000).toFixed(2);
-            document.getElementById('current-time-display').innerText = seconds + "s";
-
-            // Kích hoạt Keyframe
-            actions.forEach(action => {
-                if (!action.fired && Math.abs(x - action.time) < 2) {
-                    launchMissile(action.start, action.end, action.speed, action.radius);
-                    action.fired = true;
-                }
-            });
-            
-            animationId = requestAnimationFrame(step);
-        } else if (x > timelineWidth) {
-            // Khi chạy hết Timeline
-            resetPlayback();
-        }
-    }
-    animationId = requestAnimationFrame(step);
-}
-
-function resetPlayback() {
-    isPlaying = false;
-    animationId = null;
-    document.getElementById('playhead').style.left = '0px';
-    document.querySelector('.keyframe-controls button').innerText = "PLAY (SPACE)";
-    document.querySelector('.keyframe-controls button').style.background = "#00ff00";
-    actions.forEach(a => a.fired = false); // Cho phép nổ lại lượt sau
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function playAnimation() {
-    isPlaying = true;
-    let playhead = document.getElementById('playhead');
-    let startTimestamp = null;
-    let duration = 5000; // Tổng thời gian timeline (5 giây hoặc tùy Sói chỉnh)
-
-    function step(timestamp) {
-        if (!startTimestamp) startTimestamp = timestamp;
-        let progress = timestamp - startTimestamp;
-        let x = (progress / duration) * timelineWidth;
-
-        if (x <= timelineWidth) {
-            playhead.style.left = x + 'px';
-            
-            // Kiểm tra xem kim thời gian có chạm trúng Keyframe nào không
-            actions.forEach(action => {
-                if (!action.fired && Math.abs(x - action.time) < 2) {
-                    launchMissile(action.start, action.end, action.speed, action.radius);
-                    action.fired = true; // Chỉ nổ 1 lần mỗi lượt Play
-                }
-            });
-            
-            requestAnimationFrame(step);
-        } else {
-            isPlaying = false;
-            actions.forEach(a => a.fired = false); // Reset để Play lại lần sau
-            playhead.style.left = '0px';
-        }
-    }
-    requestAnimationFrame(step);
-}
-
 function toggleTimeline() {
     const panel = document.getElementById('keyframe-panel');
     const btn = document.getElementById('toggle-keyframe');
+    panel.classList.toggle('active');
+    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- MŨI TÊN CHỈ HƯỚNG TÀI LIỆU (CHỈNH SỬA CHUẨN) ---
+let arrowStartPoint = null;
+let lastRightClick = 0;
+let arrowLayerGroup = L.layerGroup().addTo(map);
+
+// 1. Nhận diện CLICK 2 LẦN CHUỘT PHẢI ĐỂ CHỌN ĐIỂM GỐC
+map.on('contextmenu', function(e) {
+    L.DomEvent.preventDefault(e); // Ngăn menu trình duyệt hiện ra
+
+    let now = Date.now();
+    if (now - lastRightClick < 500) { // Nhận diện double click chuột phải
+        arrowStartPoint = e.latlng;
+        
+        // Tạo marker gốc phát sáng theo phong cách Athe [1]
+        L.circleMarker(arrowStartPoint, {
+            color: '#ffffff',
+            radius: 6,
+            fillOpacity: 1,
+            className: 'glowing-missile' // Hiệu ứng chói lòa từ nguồn [1]
+        }).addTo(arrowLayerGroup).bindPopup("<b>GỐC MŨI TÊN</b>").openPopup();
+        
+        console.log("Đã chọn điểm gốc. Click chuột trái vào điểm đích để hoàn thành.");
+    }
+    lastRightClick = now;
+});
+
+// 2. CLICK CHUỘT TRÁI ĐỂ CHỌN ĐIỂM ĐÍCH VÀ VẼ MŨI TÊN
+map.on('click', function(e) {
+    if (!arrowStartPoint) return;
+
+    let arrowEndPoint = e.latlng;
     
-    if (panel.classList.contains('active')) {
-        panel.classList.remove('active');
-        btn.innerText = "🎬 SHOW TIMELINE";
-    } else {
-        panel.classList.add('active');
-        btn.innerText = "❌ HIDE TIMELINE";
+    // Vẽ thân mũi tên (nét đứt chuyên nghiệp [2])
+    L.polyline([arrowStartPoint, arrowEndPoint], {
+        color: '#ffffff',
+        weight: 3,
+        dashArray: '10, 10', // Nét đứt từ nguồn [2]
+        opacity: 0.8
+    }).addTo(arrowLayerGroup);
+
+    // Tính toán góc xoay chuẩn để không bị vẹo
+    const dy = arrowEndPoint.lat - arrowStartPoint.lat;
+    const dx = arrowEndPoint.lng - arrowStartPoint.lng;
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    // Thêm đầu mũi tên (➤) tại điểm cuối
+    L.marker(arrowEndPoint, {
+    icon: L.divIcon({
+        className: 'doc-arrow-head arrow-marker',  // Thêm class arrow-marker
+        html: `<div style="transform: rotate(${-angle}deg);">➤</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    })
+}).addTo(arrowLayerGroup);
+
+    arrowStartPoint = null; // Reset để vẽ mũi tên mới
+});
+
+function renderTracks() {
+    const container = document.getElementById('timeline-tracks-container');
+    container.innerHTML = ''; // Làm sạch trước khi vẽ lại
+
+    actions.forEach((action, index) => {
+        // 1. Tạo hàng Track mới
+        const track = document.createElement('div');
+        track.className = 'timeline-track';
+
+        // 2. Thêm nhãn tên hành động (Ví dụ: Missile 1, Missile 2)
+        const label = document.createElement('div');
+        label.className = 'track-label';
+        label.innerText = `ACTION #${index + 1}`;
+        track.appendChild(label);
+
+        // 3. Thêm viên kim cương Keyframe vào track đó
+        const key = document.createElement('div');
+        key.className = 'keyframe';
+        // Vị trí dựa trên thời gian (label_width + time) [3], [6]
+        key.style.left = (120 + action.time) + 'px'; 
+        
+        // Cho phép kéo thả Keyframe để chỉnh thời gian nổ
+        makeDraggable(key, action);
+        
+        track.appendChild(key);
+        container.appendChild(track);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//KEY FRAME
+
+
+// Hàm thêm keyframe thủ công (ví dụ: thêm tại vị trí hiện tại của playhead)
+function addManualKeyframe() {
+    // Lấy vị trí hiện tại của kim chỉ (playhead)
+    const playhead = document.getElementById('playhead');
+    const currentLeft = parseFloat(playhead.style.left) || LABEL_WIDTH;
+    
+    // Tính thời gian tương ứng (dựa trên timelineWidth)
+    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
+    const currentTimePx = currentLeft - LABEL_WIDTH;
+    const currentTimePercent = currentTimePx / timelineWidth;
+    
+    // Tạo action mới tại vị trí hiện tại
+    const newAction = {
+        id: Date.now(),
+        time: currentTimePx,           // vị trí pixel trên track
+        start: map.getCenter(),        // ví dụ: dùng vị trí trung tâm bản đồ hiện tại
+        end: map.getCenter(),          // bạn có thể thay bằng logic chọn điểm đích
+        speed: 2000,
+        radius: 100000,                // mặc định
+        fired: false
+    };
+    
+    actions.push(newAction);
+    
+    // Render lại tracks
+    renderTracks();  // hoặc renderKeyframe nếu bạn dùng hàm cũ
+    
+    console.log("Đã thêm keyframe thủ công tại thời gian:", currentTimePx);
+    
+    // Optional: mở rộng panel nếu đang ẩn
+    const panel = document.getElementById('keyframe-panel');
+    if (!panel.classList.contains('active')) {
+        toggleTimeline();
     }
 }
 
-// Tự động hiện bảng khi Sói thêm một Keyframe mới (để Sói biết là đã thêm thành công)
-const originalRecord = recordAction;
-recordAction = function(start, end, speed, radius) {
-    originalRecord(start, end, speed, radius);
-    document.getElementById('keyframe-panel').classList.add('active');
-    document.getElementById('toggle-keyframe').innerText = "❌ HIDE TIMELINE";
+// Biến lưu đối tượng đang được right-click (bệ phóng hoặc mũi tên)
+let selectedMarker = null;
+
+// Hiện context menu khi chuột phải
+map.on('contextmenu', function(e) {
+    // Kiểm tra nếu click vào marker/mũi tên (hoặc layer tương ứng)
+    const layers = map._layers;
+    for (let id in layers) {
+        const layer = layers[id];
+        if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+            // Kiểm tra khoảng cách click có gần marker không
+            if (layer.getLatLng && e.latlng.distanceTo(layer.getLatLng()) < 20) { // 20m
+                selectedMarker = layer;
+                showContextMenu(e.originalEvent);
+                return;
+            }
+        }
+    }
+    
+    // Nếu không click vào marker nào, ẩn menu
+    hideContextMenu();
+});
+
+// Hiện menu tại vị trí chuột
+function showContextMenu(event) {
+    const menu = document.getElementById('context-menu');
+    menu.style.left = event.clientX + 'px';
+    menu.style.top = event.clientY + 'px';
+    menu.style.display = 'block';
+}
+
+// Ẩn menu
+function hideContextMenu() {
+    document.getElementById('context-menu').style.display = 'none';
+    selectedMarker = null;
+}
+
+// Xóa đối tượng được chọn
+function deleteSelectedMarker() {
+    if (selectedMarker) {
+        map.removeLayer(selectedMarker);
+        selectedMarker = null;
+    }
+    hideContextMenu();
+}
+
+// Ẩn menu khi click bất kỳ đâu khác
+document.addEventListener('click', function(e) {
+    if (!document.getElementById('context-menu').contains(e.target)) {
+        hideContextMenu();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Cho phép kéo kim chỉ (playhead)
+function makePlayheadDraggable() {
+    const playhead = document.getElementById('playhead');
+    if (!playhead) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startLeft = 0;
+    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
+
+    playhead.onmousedown = function(e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        isDragging = true;
+        startX = e.clientX;
+        startLeft = parseFloat(playhead.style.left) || 120;
+        playhead.classList.add('draggable');
+        document.body.style.userSelect = 'none';
+    };
+
+    document.onmousemove = function(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        let newLeft = startLeft + dx;
+        newLeft = Math.max(120, Math.min(newLeft, 120 + timelineWidth));
+        
+        playhead.style.left = newLeft + 'px';
+        pausedElapsed = ((newLeft - 120) / timelineWidth) * 10000;
+        updateTimeDisplay(pausedElapsed);
+    };
+
+    document.onmouseup = function() {
+        if (!isDragging) return;
+        isDragging = false;
+        playhead.classList.remove('draggable');
+        document.body.style.userSelect = '';
+    };
+}
+
+// Gọi khi mở timeline
+function toggleTimeline() {
+    const panel = document.getElementById('keyframe-panel');
+    const btn = document.getElementById('toggle-keyframe');
+    panel.classList.toggle('active');
+    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
+    
+    if (panel.classList.contains('active')) {
+        makePlayheadDraggable();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+let trackCounter = 1;  // Bắt đầu từ track 1
+
+function addNewTrack() {
+    trackCounter++;
+    
+    const wrapper = document.getElementById('tracks-wrapper');
+    
+    const newTrack = document.createElement('div');
+    newTrack.className = 'timeline-track';
+    newTrack.dataset.trackId = trackCounter;
+    
+    newTrack.innerHTML = `
+        <div class="track-label">TRACK ${trackCounter}</div>
+        <div class="track-content"></div>
+        <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
+    `;
+    
+    wrapper.appendChild(newTrack);
+    
+    // Optional: cuộn xuống track mới
+    wrapper.scrollTop = wrapper.scrollHeight;
+}
+
+
+// Biến lưu track đang được chọn
+let selectedTrack = null;
+
+// Hàm chọn track (highlight)
+function selectTrack(trackElement) {
+    // Bỏ highlight track cũ (nếu có)
+    if (selectedTrack) {
+        selectedTrack.classList.remove('active');
+    }
+    
+    // Highlight track mới
+    trackElement.classList.add('active');
+    selectedTrack = trackElement;
+    
+    // Optional: lưu id track đang chọn (nếu sau này cần thêm keyframe vào track cụ thể)
+    console.log("Đã chọn track:", trackElement.dataset.trackId);
+}
+
+// Gắn sự kiện click cho tất cả track (kể cả track mới tạo sau)
+function attachTrackClickListeners() {
+    const tracks = document.querySelectorAll('.timeline-track');
+    tracks.forEach(track => {
+        track.onclick = function(e) {
+            // Ngăn click vào nút + hoặc các phần con khác nếu cần
+            if (e.target.classList.contains('btn-add-track')) return;
+            selectTrack(track);
+        };
+    });
+}
+
+// Gọi lại hàm này mỗi khi thêm track mới hoặc mở timeline
+function addNewTrack() {
+    trackCounter++;
+    
+    const wrapper = document.getElementById('tracks-wrapper');
+    
+    const newTrack = document.createElement('div');
+    newTrack.className = 'timeline-track';
+    newTrack.dataset.trackId = trackCounter;
+    
+    newTrack.innerHTML = `
+        <div class="track-label">TRACK ${trackCounter}</div>
+        <div class="track-content"></div>
+        <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
+    `;
+    
+    wrapper.appendChild(newTrack);
+    
+    // Gắn lại sự kiện click cho track mới
+    attachTrackClickListeners();
+    
+    // Cuộn xuống track mới
+    wrapper.scrollTop = wrapper.scrollHeight;
+}
+
+// Khi mở timeline → gắn sự kiện click cho tất cả track
+function toggleTimeline() {
+    const panel = document.getElementById('keyframe-panel');
+    const btn = document.getElementById('toggle-keyframe');
+    panel.classList.toggle('active');
+    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
+    
+    if (panel.classList.contains('active')) {
+        attachTrackClickListeners();  // Gắn sự kiện click cho các track
+        makePlayheadDraggable();      // Nếu bạn đã có hàm kéo kim
+    }
+}
+
+// Gọi lần đầu khi load (nếu timeline mở sẵn)
+window.addEventListener('load', () => {
+    if (document.getElementById('keyframe-panel').classList.contains('active')) {
+        attachTrackClickListeners();
+    }
+});
+
+// Tăng độ mượt khi lăn chuột trên #tracks-wrapper
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.getElementById('tracks-wrapper');
+    if (!wrapper) return;
+
+    wrapper.addEventListener('wheel', function(e) {
+        // Ngăn lăn chuột lan ra ngoài (nếu đang ở timeline)
+        if (document.getElementById('keyframe-panel').classList.contains('active')) {
+            e.preventDefault(); // Ngăn scroll trang chính
+        }
+        
+        // Tăng tốc độ cuộn (tùy chỉnh deltaY nếu muốn nhanh/chậm hơn)
+        const scrollSpeed = 3; // Càng lớn càng nhanh
+        wrapper.scrollTop += e.deltaY * scrollSpeed;
+    }, { passive: false }); // { passive: false } để preventDefault hoạt động
+});
+
+
+
+
+
+
+
+
+
+
+//NÚT TẮT
+
+
+window.addEventListener('keydown', function(e) {
+    // Các phím tắt cũ của bạn (Space, H, v.v.)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
+
+    if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('cinematic-mode');
+    }
+
+    // Thêm phím C để chụp ảnh
+    if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        const screenshotBtn = document.getElementById('screenshot-btn');
+        if (screenshotBtn) {
+            screenshotBtn.click(); // Gọi hàm chụp ảnh giống như click nút
+        }
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Hàm lấy tin CHI TIẾT, DÀI từ NewsAPI với key của bạn
+async function fetchDailyNews() {
+    const apiKey = '460f10f958f74c6ea94e3310746d7540'; // Key của bạn
+    
+    try {
+        // Lấy 20 tin mới nhất (category=general để có tin chính trị/quốc tế)
+        const url = `https://newsapi.org/v2/top-headlines?category=general&language=en&pageSize=20&apiKey=${apiKey}`;
+        // Nếu muốn tin tiếng Việt (hạn chế nguồn): thay language=en thành language=vi
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+
+        let newsText = "Breaking News Live Update: ";
+
+        if (data.status === "ok" && data.articles && data.articles.length > 0) {
+            // Ghép 20 tin, mỗi tin CHI TIẾT (title + description dài + nguồn + ngày)
+            data.articles.forEach(article => {
+                const title = article.title || "Tin nóng";
+                let desc = article.description || article.content || "Chi tiết đang cập nhật...";
+                
+                // Giữ mô tả dài (200 ký tự để chi tiết hơn)
+                desc = desc.replace(/<[^>]+>/g, '').trim().substring(0, 200) + (desc.length > 200 ? '...' : '');
+                
+                const source = article.source.name || "Nguồn tin";
+                const date = article.publishedAt ? new Date(article.publishedAt).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : "";
+                
+                newsText += `${title} – ${desc} (${source}, ${date}) • `;
+            });
+        } else {
+            newsText += "Tin thế giới đang được cập nhật • Các sự kiện chính trị nóng hổi từ khắp nơi • ";
+        }
+
+        // Cập nhật ticker (cả 2 span để chạy liên tục không giật)
+        const tickerSpans = document.querySelectorAll('.ticker-content span');
+        tickerSpans.forEach(span => {
+            span.textContent = newsText;
+        });
+
+        console.log(`Đã cập nhật ${data.articles?.length || 0} tin chi tiết từ NewsAPI`);
+    } catch (err) {
+        console.error("Lỗi NewsAPI:", err);
+        // Fallback SIÊU DÀI nếu lỗi (để không bị ngắn)
+        const fallback = "Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông – Hội đồng Bảo an họp kín để thảo luận giải pháp hòa bình hôm nay • Nga tăng cường lực lượng quân sự ở Bắc Cực – Triển khai thêm tàu ngầm hạt nhân và hệ thống phòng thủ tên lửa mới • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS – Tập trung vào năng lượng tái tạo, giảm phát thải carbon và phát triển bền vững • EU áp đặt lệnh trừng phạt mới với một số quốc gia – Ảnh hưởng nghiêm trọng đến xuất khẩu dầu mỏ, khí đốt và hàng hóa chiến lược • Trung Quốc thử nghiệm vệ tinh lượng tử mới – Bước tiến lớn trong công nghệ bảo mật thông tin quốc gia và quân sự • Bầu cử Mỹ 2028 đang nóng lên – Các ứng viên tổng thống bắt đầu chiến dịch tranh cử sớm và tranh luận gay gắt • ASEAN đạt thỏa thuận thương mại tự do mới với Ấn Độ – Mở rộng thị trường xuất khẩu hàng hóa, dịch vụ và đầu tư song phương • Ukraine nhận gói viện trợ quân sự lớn từ NATO – Bao gồm hệ thống phòng không Patriot, tên lửa tầm xa và thiết bị tình báo hiện đại • Tin nóng thế giới cập nhật hàng ngày – Theo dõi để nắm bắt thông tin chính xác, kịp thời và toàn diện • ";
+        document.querySelectorAll('.ticker-content span').forEach(span => {
+            span.textContent = fallback;
+        });
+    }
+}
+
+// Gọi ngay khi load trang
+fetchDailyNews();
+
+// Cập nhật mỗi 24 giờ (86400000 ms) - hoặc reload để lấy tin mới
+setInterval(fetchDailyNews, 86400000);
+
+
+
+
+
+
+
+
+
+
+
+
+// Ẩn nút zoom mặc định của Leaflet
+if (map.zoomControl) {
+    map.zoomControl.remove();
+}
+
+// Tạo nút cài đặt tùy chỉnh, dịch xuống dưới để tránh ticker
+const settingsButton = L.control({position: 'topleft'});
+
+settingsButton.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar settings-control');
+    
+    // Dịch nút xuống dưới 40px (cách ticker)
+    div.style.marginTop = '40px';  // ← Đây là phần chỉnh vị trí xuống
+    
+    div.innerHTML = `
+        <a href="#" title="Cài đặt" role="button" class="settings-btn">
+            ⚙️
+        </a>
+    `;
+    
+    L.DomEvent.disableClickPropagation(div);
+    
+    div.querySelector('.settings-btn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSettingsMenu();
+    };
+    
+    return div;
 };
+
+settingsButton.addTo(map);
+
+// Mở/đóng modal cài đặt
+function toggleSettingsMenu() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Tùy chọn tắt/mở ticker
+function toggleNewsTicker(checked) {
+    const ticker = document.getElementById('news-ticker');
+    if (ticker) ticker.style.display = checked ? 'block' : 'none';
+}
+
+// Đóng modal khi click bên ngoài
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+    
+    const modalContent = document.querySelector('.modal-content');
+    if (modal.style.display === 'flex' && !modalContent.contains(e.target) && !e.target.closest('.settings-btn')) {
+        closeSettingsModal();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
