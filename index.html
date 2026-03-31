@@ -30,316 +30,7 @@ body.cinematic-mode #map {
     cursor: none !important;
 }
 
-/* Keyframe panel - chỉ 1 định nghĩa */
-#keyframe-panel {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 250px;
-    background: #121212;
-    border-top: 1px solid #333;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateY(100%);
-}
-
-#keyframe-panel.active,
-body.mode-key #keyframe-panel {
-    transform: translateY(0);
-}
-
-/* Controls header */
-.keyframe-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 20px;
-    background: #1a1a1a;
-    border-bottom: 1px solid #282828;
-}
-
-.ctrl-left, .ctrl-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.panel-title {
-    color: #00ffff;
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-}
-
-/* Buttons */
-.btn-play, .btn-reset, .btn-close-panel {
-    border: none;
-    padding: 4px 12px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-play {
-    background: #00ff00;
-    color: #000;
-}
-.btn-play:hover {
-    background: #00cc00;
-    transform: scale(1.05);
-}
-
-.btn-reset {
-    background: #333;
-    color: #eee;
-    border: 1px solid #444;
-}
-.btn-reset:hover {
-    background: #444;
-    border-color: #ff0000;
-    color: #ff0000;
-}
-
-.btn-close-panel {
-    background: transparent;
-    color: #666;
-    font-size: 16px;
-    padding: 0 8px;
-}
-.btn-close-panel:hover {
-    color: #ff0000;
-}
-
-/* Time display */
-#current-time-display {
-    color: #00ffff;
-    font-family: 'Courier New', monospace;
-    font-size: 15px;
-    font-weight: bold;
-    background: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #333;
-}
-
-/* Timeline area */
-#timeline-container {
-    position: relative;
-    flex-grow: 1;
-    background: #050505;
-    overflow-y: auto;
-}
-
-#playhead {
-    position: absolute;
-    top: 0;
-    left: 120px;
-    width: 2px;
-    height: 100%;
-    background: #ff0000;
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
-    z-index: 9999;
-    pointer-events: none;
-    
-}
-
-#timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding-top: 40px;
-    height: 100%;
-}
-
-.timeline-track {
-    width: 100%;
-    height: 30px;
-    background: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid #222;
-    position: relative;
-}
-
-.keyframe {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 12px;
-    background: #00ffff;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    cursor: grab;
-    z-index: 5;
-}
-
-
-
-
-
-/* --- HỆ THỐNG WORKSPACE (ATHE STUDIO) --- */
-
-/* 1. Ẩn giao diện chính khi vào chế độ làm phim */
-body.mode-key .main-ui-element { 
-    display: none !important; 
-}
-
-/* 2. Nút chuyển Workspace (Vàng - Đen) */
-#workspace-switcher {
-    position: absolute; top: 10px; right: 250px; z-index: 10002;
-    background: #ffcc00; color: #000; border: none; padding: 8px 15px;
-    font-weight: bold; cursor: pointer; border-radius: 4px;
-}
-
-
-
-/* Kích hoạt bảng khi ở mode-key hoặc class active */
-body.mode-key #keyframe-panel, #keyframe-panel.active {
-    bottom: 0 !important;
-}
-
-/* 4. THANH ĐIỀU KHIỂN (Controls) */
-.keyframe-controls {
-    padding: 10px 50px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    background: #000000;
-    border-bottom: 1px solid #111;
-}
-
-#toggle-keyframe {
-    position: absolute;
-    bottom: 20px; /* Cách đáy màn hình 20px */
-    right: 20px;  /* Cách bên phải 20px */
-    z-index: 10001; /* Luôn nằm trên cùng của mọi thứ */
-    background: #ffcc00;
-    color: #000;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-}
-
-/* Tùy chỉnh Track Label cho chuyên nghiệp */
-.track-label {
-    user-select: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Điểm Keyframe kim cương */
-.keyframe {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(45deg);
-    width: 10px;
-    height: 10px;
-    background: #00ffff;
-    border: 1px solid #fff;
-    cursor: pointer;
-    box-shadow: 0 0 8px #00ffff;
-    z-index: 10;
-}
-
-/* --- CHẾ ĐỘ STUDIO ĐEN KỊT --- */
-body.mode-key .main-ui-element { display: none !important; }
-
-#workspace-switcher {
-    position: absolute; top: 10px; right: 250px; z-index: 10002;
-    background: #ffcc00; color: #000; border: none; padding: 8px 15px;
-    font-weight: bold; cursor: pointer; border-radius: 4px;
-}
-
-
-
-#keyframe-panel.active { bottom: 0 !important; }
-
-/* Vùng làm việc Timeline */
-#timeline-workspace {
-    position: relative; flex-grow: 1; overflow-y: auto; background: #050505;
-    margin-left: 0; /* Không lề để tận dụng toàn màn hình */
-}
-
-/* Một hàng ngang (Track) [4] */
-.timeline-track {
-    display: flex; align-items: center; width: 100%; height: 35px;
-    background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid #1a1a1a;
-    position: relative;
-}
-
-/* Nhãn cho từng track bên trái [5], [3] */
-.track-label {
-    width: 120px; height: 100%; background: #111; color: #aaa;
-    font-size: 10px; display: flex; align-items: center; padding-left: 10px;
-    border-right: 1px solid #333; sticky: left; z-index: 20;
-}
-
-/* Kim thời gian đỏ rực [3] */
-#playhead {
-    position: absolute; top: 0; left: 120px; width: 2px; height: 100%;
-    background: #ff0000; box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-    z-index: 9999; pointer-events: none;
-}
-
-/* Viên kim cương Keyframe Cyan [4], [5] */
-.keyframe {
-    position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
-    width: 10px; height: 10px; background: #00ffff; border: 1px solid #fff;
-    cursor: grab; z-index: 10; box-shadow: 0 0 8px #00ffff;
-}
-
-
-
-
-/* KHI CÓ CLASS ACTIVE: Trồi lên vị trí cũ */
-#keyframe-panel.active {
-    transform: translateY(0);
-}
-
-
-
-
-
-
-body.mode-key #keyframe-panel { bottom: 0 !important; }
-
-.keyframe-controls {
-    padding: 10px 50px; display: flex; gap: 20px; align-items: center;
-    background: #000; border-bottom: 1px solid #1a1a1a;
-}
-
-#timeline {
-    position: relative; flex-grow: 1; margin: 20px 50px;
-    background: #050505; border: 1px solid #222; border-radius: 4px;
-}
-
-#playhead {
-    position: absolute;
-    top: 0;
-    /* 120px là độ rộng của cột nhãn (track-label) */
-    left: 120px; 
-    width: 2px;
-    height: 100%;
-    background: #ff0000;
-    /* Đổ bóng nhẹ để nhìn cho rõ trên nền đen */
-    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8); 
-    z-index: 9999;
-    pointer-events: none; /* Để không bị vướng khi click vào keyframe */
-}
-
-.keyframe {
-    position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
-    width: 12px; height: 12px; background: #00ffff; border: 1px solid #fff;
-    cursor: grab; z-index: 5; box-shadow: 0 0 10px #00ffff;
-}
+.current-arrow { pointer-events: none; }
 
 
 
@@ -367,39 +58,12 @@ body.mode-key #keyframe-panel { bottom: 0 !important; }
     filter: brightness(0.9) contrast(1.6) saturate(0.4);
 }
 
-/* Hiệu ứng chói cho đầu đạn */
-.glowing-missile {
-    filter: drop-shadow(0 0 8px #00ffff) drop-shadow(0 0 15px #ffffff);
-    animation: flicker 0.2s infinite alternate;
-}
-
 @keyframes flicker {
     from { opacity: 1; filter: brightness(1); }
     to { opacity: 0.8; filter: brightness(2); }
 }
 
-/* Làm cho cái bảng điều khiển trông "Pro" hơn */
-#missile-control {
-    border: 2px solid #fff !important;
-    box-shadow: 0 0 20px #ff0000 !important; /* Đổi sang viền đỏ cho máu lửa */
-}
 
-#missile-control {
-    position: absolute;
-    top: 100px;
-    left: 20px;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.85);
-    color: #00ffff;
-    padding: 15px;
-    border: 2px solid #00ffff;
-    display: none; /* Mặc định ẩn, dblclick mới hiện */
-    border-radius: 8px;
-    width: 200px;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-}
-#missile-control input { width: 100%; cursor: pointer; }
-#missile-control b { font-size: 14px; text-transform: uppercase; }
 
 
 
@@ -541,16 +205,26 @@ path.leaflet-interactive:hover {
         }
         
 #ui-panel {
-    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-    width: 85%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px);
-    padding: 10px 30px; border-radius: 15px; 
+    position: absolute; 
+    bottom: 10px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    width: 85%; 
+    background: rgba(0, 0, 0, 0.6); 
+    backdrop-filter: blur(15px);
+    padding: 10px 30px; 
+    border-radius: 15px; 
     z-index: 1000; 
     border: 1px solid rgba(255, 255, 255, 0.15);
     text-align: center; 
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* Thêm 2 dòng này */
-    pointer-events: none; 
+    /* Thêm để cuộn nội dung */
+    max-height: 80vh;
+    overflow-y: auto;
+    
+    /* Giữ pointer-events như cũ */
+    pointer-events: none;
 }
 
 /* Đảm bảo tất cả các nút, ô chọn và slider bên trong panel vẫn bấm được */
@@ -558,13 +232,21 @@ path.leaflet-interactive:hover {
     pointer-events: auto;
 }
 
-        #toggle-ui {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.5); color: #ffcc00; 
-            border: 1px solid rgba(255,255,255,0.1); border-bottom: none;
-            border-radius: 10px 10px 0 0; cursor: pointer; padding: 5px 20px;
-            backdrop-filter: blur(5px);
-        }
+#toggle-ui {
+    position: fixed;  /* Cố định vị trí, không bị ảnh hưởng bởi panel */
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffcc00;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    padding: 5px 20px;
+    backdrop-filter: blur(5px);
+    z-index: 1001;  /* Cao hơn panel để luôn hiển thị */
+}
 
         #year-input {
     background: transparent; border: none;
@@ -756,17 +438,7 @@ left-group {
     border-color: #ffcc00;
 }
 
-/* Chỉnh lại nút chụp ảnh */
-#screenshot-btn {
-    position: static !important; /* Buộc nó phải nằm trong hàng */
-    background: #ffcc00;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    color: #000;
-}
+
 
 
 
@@ -801,17 +473,6 @@ left-group {
 }
 
 
-#playhead {
-    position: absolute;
-    top: 0;
-    left: 120px;
-    width: 2px;
-    height: 100%;
-    background: #ff0000;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-    z-index: 9999;
-    pointer-events: none;
-}
 
 .playhead-marker {
     position: absolute;
@@ -870,21 +531,7 @@ left-group {
     background: transparent;
 }
 
-/* Nút + thêm track */
-.btn-add-track {
-    width: 40px;
-    height: 40px;
-    background: #00ff88;
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 12px;
-    transition: all 0.2s;
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
-}
+
 
 .btn-add-track:hover {
     background: #00cc66;
@@ -972,27 +619,13 @@ left-group {
     transform: scale(1.02);
 }
 
-/* Nút + vẫn giữ */
-.btn-add-track {
-    width: 40px;
-    height: 40px;
-    background: #00ff88;
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 0 12px;
-    transition: all 0.2s;
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
-}
 
 .btn-add-track:hover {
     background: #00cc66;
     transform: scale(1.2);
     box-shadow: 0 0 15px rgba(0, 255, 136, 0.9);
 }
+
 
 
 
@@ -1159,7 +792,16 @@ left-group {
 }
 
 
-
+.terrain-tooltip {
+    background: rgba(0,0,0,0.85);
+    color: #ffdd00;
+    border: 1px solid #ffdd00;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 0 10px rgba(255,221,0,0.5);
+}
 
 
 
@@ -1290,6 +932,19 @@ left-group {
                 <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
                 Bật chế độ cinematic (ẩn UI)
             </label>
+            <label class="setting-item">
+                <input type="checkbox" id="toggle-political" checked onchange="togglePoliticalStatus(this.checked)">
+                Hiển thị tình hình chính trị (vùng chiến sự)
+            </label>
+            <span>Nút tắt</span>
+            <span>K: Mở bảng Keyframe</span>
+            <span>H: Tắt những thanh hỗ trợ</span>
+            
+<label class="setting-item">
+    <button type="button" onclick="toggleBaseMap()" style="width:100%; padding:8px; background:#00bfff; color:#000; border:none; border-radius:6px; font-weight:bold;">
+        🔄 Chuyển nền bản đồ
+    </button>
+</label>
         </div>
     </div>
 </div>
@@ -1298,28 +953,32 @@ left-group {
 <div id="news-ticker">
     <div class="ticker-content">
         <!-- Nội dung tin sẽ được JS thêm vào đây -->
-        <span>Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông • Nga tăng cường hiện diện quân sự ở Bắc Cực • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS • EU áp đặt lệnh trừng phạt mới với một số quốc gia • Trung Quốc thử nghiệm vệ tinh lượng tử mới • Tin nóng: Bầu cử Mỹ 2028 đang nóng lên • ...</span>
+        <span>Breaking:  ...</span>
         <!-- Nhân bản để chạy mượt không giật -->
-        <span>Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông • Nga tăng cường hiện diện quân sự ở Bắc Cực • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS • EU áp đặt lệnh trừng phạt mới với một số quốc gia • Trung Quốc thử nghiệm vệ tinh lượng tử mới • Tin nóng: Bầu cử Mỹ 2028 đang nóng lên • ...</span>
+        <span>Breaking:  ...</span>
     </div>
 </div>
 
     
     <div id="map"></div>
+
+
+
+
+
+
+
+
+
     
 
-<!-- Chỉ giữ 1 #keyframe-panel, dùng transform -->
 <div id="keyframe-panel">
     <div class="keyframe-controls">
         <div class="ctrl-left">
-            <span class="panel-title">🎬 ATHE STUDIO TIMELINE</span>
+            <span class="panel-title">🎬 ATHEMIANARTORY GEOGRAPHY TIMELINE</span>
             <button class="btn-play" onclick="playAnimation()" id="play-btn">PLAY (SPACE)</button>
             <button class="btn-reset" onclick="clearKeyframes()">RESET</button>
-            
-            <!-- Nút kim cương mới -->
-            <button class="btn-keyframe" onclick="addManualKeyframe()" title="Thêm Keyframe thủ công">
-                💎
-            </button>
+            <button class="btn-keyframe" onclick="addManualKeyframe()" title="Thêm Keyframe thủ công">💎</button>
         </div>
         <div class="ctrl-right">
             <div id="current-time-display">00:00:00.000</div>
@@ -1327,24 +986,38 @@ left-group {
         </div>
     </div>
 
-    <!-- Khu vực timeline chính -->
-    <div id="timeline-container">
-        <div id="playhead">
-            <div class="playhead-marker"></div>  <!-- Chấm tròn nhỏ ở trên -->
+    <!-- Timeline chính - cấu trúc sạch, không lồng -->
+    <div id="timeline-container" style="flex-grow: 1; display: flex; flex-direction: column; background: #050505; overflow-y: auto;">
+        <!-- 1. Thanh chia thời gian (ticks) - trên cùng -->
+        <div id="timeline-ticks" style="position: relative; height: 28px; width: 100%; background: #1a1a1a; border-bottom: 1px solid #444;"></div>
+
+        <!-- 2. Thanh track chính (playhead nằm đây) -->
+        <div class="track-content" style="position: relative; height: 60px; background: #222; border-top: 1px solid #444; border-bottom: 1px solid #444;">
+            <div id="playhead">
+                <div class="playhead-marker" style="position: absolute; top: -12px; left: 0; width: 14px; height: 14px; background: #ff0000; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 12px #ff0000; border: 2px solid white;"></div>
+            </div>
         </div>
 
-        <!-- Wrapper chứa tất cả track (bắt đầu với 1 track trống) -->
-        <div id="tracks-wrapper">
-            <!-- Track mặc định đầu tiên (trống) -->
+        <!-- 3. Wrapper chứa các track keyframe -->
+        <div id="tracks-wrapper" style="flex-grow: 1; padding: 10px 0; overflow-y: auto;">
+            <!-- Track mặc định -->
             <div class="timeline-track" data-track-id="1">
                 <div class="track-label">TRACK 1</div>
-                <div class="track-content"></div>
-                <!-- Nút + để thêm track mới -->
-                <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
+                <div class="track-content" style="position: relative; height: 50px;"></div> <!-- Nơi đặt dot keyframe -->
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1364,7 +1037,7 @@ left-group {
             <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()"> ⬛ Than đá</label><br>
             <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()"> ⛓️ Sắt & Đồng</label><br>
             
-            <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
+   k         <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
             <label class="check-item"><input type="checkbox" class="res-check" value="wolf" onchange="updateFilters()"> 🐺 Loài Sói</label><br>
             <label class="check-item"><input type="checkbox" class="res-check" value="bear" onchange="updateFilters()"> 🐻 Gấu</label><br>
             <label class="check-item"><input type="checkbox" class="res-check" value="tiger" onchange="updateFilters()"> 🐅 Hổ</label><br>
@@ -1404,18 +1077,7 @@ left-group {
 
 
     
-<div id="missile-control" style="position: absolute; top: 20px; left: 20px; z-index: 9999; background: rgba(0,0,0,0.8); color: cyan; padding: 15px; border: 1px solid cyan; display: none; border-radius: 8px; width: 200px; font-family: 'Segoe UI';">
-    <h3 style="margin: 0 0 10px 0; font-size: 14px;">BỘ ĐIỀU KHIỂN TÊN LỬA</h3>
-    <p style="font-size: 12px; margin: 5px 0;">Sóng xung kích (Radius):</p>
-    <input type="range" id="shock-radius" min="10" max="500" value="100" style="width: 100%;">
-    
-    <p style="font-size: 12px; margin: 5px 0;">Tốc độ bay (ms):</p>
-    <input type="range" id="flight-speed" min="500" max="5000" value="2000" step="100" style="width: 100%; transform: scaleX(-1);">
-    <small style="color: #888;">(Kéo trái: Nhanh | Kéo phải: Chậm)</small>
-    
-    <div id="status" style="margin-top: 10px; font-size: 11px; color: yellow;">Đã chọn điểm phóng. Click vào map để khai hỏa!</div>
-    <button onclick="cancelLaunch()" style="margin-top: 10px; width: 100%; cursor: pointer;">Hủy lệnh</button>
-</div>
+
 
 
 </div>
@@ -1431,6 +1093,8 @@ left-group {
     .res-check { cursor: pointer; margin-right: 8px; }
 </style>
 
+
+<button id="toggle-ui">▼</button>
 </div>
 
 
@@ -1444,7 +1108,7 @@ left-group {
 
 
     <div id="ui-panel">
-    <button id="toggle-ui">▼</button>
+    
 
     <div class="header-row">
         <div class="left-group">
@@ -1455,7 +1119,7 @@ left-group {
                 <option value="all">✨ Hiện tất cả</option>
             </select>
             <select id="climate-subtype" style="display: none; background: #1a1a1a; color: #fff; border: 1px solid #9933ff; padding: 5px; border-radius: 5px; margin-left: 5px;" onchange="renderClimateSubtype(this.value)">
-    <option value="none">-- Chọn kiểu chi tiết --</option>
+    <option value="none">-- ĐỚI KHÍ HẬU --</option>
     <option value="monsoon">Tím - Gió mùa (Monsoon)</option>
     <option value="oceanic">Xanh nhạt - Hải dương (Oceanic)</option>
     <option value="desert">Vàng - Khô hạn (Arid)</option>
@@ -1465,112 +1129,223 @@ left-group {
     <option value="tundra">Trắng - Cận cực (Tundra/Polar)</option>
     <option value="tropical_savanna">Hồng - Xavan (Tropical Savanna)</option>
 </select>
+
+
+
+
+
+
+
             <div class="left-group">
                 <input list="country-list" id="country-select" placeholder="🔍 Tìm quốc gia...">
                 <datalist id="country-list">
-    <option value="vietnam">1. Cộng Hoà Xã Hội Chủ Nghĩa Việt Nam</option>
-    <option value="germany">2. Cộng Hoà Liên Bang Đức</option>
-    <option value="china">3. Trung Quốc</option>
-    <option value="cuba">4. Cộng Hoà Cuba</option>
-    <option value="russia">5. Liên Bang Nga</option>
-    <option value="usa">6. Hợp Chúng Quốc Hoa Kỳ</option>
-    <option value="france">7. Cộng Hoà Pháp</option>
-    <option value="japan">8. Nhật Bản Quốc</option>
-    <option value="south_korea">9. Đại Hàn Dân Quốc</option>
-    <option value="india">10. Cộng Hoà Ấn Độ</option>
-    <option value="brazil">11. Cộng Hoà Liên Bang Brazil</option>
-    <option value="united_kingdom">12. Vương Quốc Anh</option> 
-    <option value="canada">13. Vương Quốc Canada</option>
-    <option value="australia">14. Khối thịnh vượng chung Australia</option>
-    <option value="italy">15. Vương Quốc Ý (Italy)</option>
-    <option value="spain">16. Vương quốc Tây Ban Nha</option>
-    <option value="mexico">17. Hợp Chúng Quốc Mexico</option>
-    <option value="indonesia">18. Cộng hòa Indonesia</option>
-    <option value="thailand">19. Vương Quốc Thái Lan</option>
-    <option value="south_africa">20. Cộng Hoà Nam Phi</option>
-    <option value="turkey">21. Cộng hoà Thổ Nhĩ Kỳ</option>
-    <option value="saudi_arabia">22. Vương quốc Ả Rập Xê Út</option>
-    <option value="argentina">23. Cộng hòa Hợp bang Argentina</option>
-    <option value="egypt">24. Cộng hòa Ả Rập Ai Cập</option>
-    <option value="poland">25. Cộng Hoà Ba Lan</option>
-    <option value="ukraine">26. Cộng Hoà Ukraine</option>
-    <option value="iran">27. Cộng hòa Hồi giáo Iran</option>
-    <option value="laos">28. Nước Cộng hòa Dân chủ Nhân dân Lào</option>
-    <option value="cambodia">29. Vương quốc Campuchia (sắp sụp đổ)</option>
-    <option value="myanmar">30. Cộng hòa Liên bang Myanmar</option>
-    <option value="philippines">31. Cộng hòa Philippines</option>
-    <option value="malaysia">32. Liên bang Malaysia</option>
-    <option value="brunei">33. Negara Brunei Darussalam</option>
-    <option value="singapore">34. Cộng hòa Singapore</option>
-    <option value="timor_leste">35. Cộng hòa Dân chủ Nhân dân Timor-Leste</option>
-    <option value="bangladesh">36. Cộng hòa Dân chủ Nhân dân Bangladesh</option>
-    <option value="nepal">37. Cộng hòa Dân chủ Nhân dân Nepal</option>
-    <option value="pakistan">38. Cộng hòa Dân chủ Nhân dân Pakistan</option>
-    <option value="afghanistan">39. Cộng hòa Dân chủ Nhân dân Afghanistan</option>
-    <option value="sri_lanka">40. Cộng hòa Dân chủ Nhân dân Sri Lanka</option>
-    <option value="kazakhstan">41. Cộng hòa Dân chủ Nhân dân Kazakhstan</option>
-    <option value="uzbekistan">42. Cộng hòa Dân chủ Nhân dân Uzbekistan</option>
-    <option value="turkmenistan">43. Cộng hòa Dân chủ Nhân dân Turkmenistan</option>
-    <option value="tajikistan">44. Cộng hòa Dân chủ Nhân dân Tajikistan</option>
-    <option value="kyrgyzstan">45. Cộng hòa Dân chủ Nhân dân Kyrgyzstan</option>
-    <option value="mongolia">46. Cộng hòa Dân chủ Nhân dân Mongolia</option>
-    <option value="bhutan">47. Cộng hòa Dân chủ Nhân dân Bhutan</option>
-    <option value="north_korea">48. Cộng hòa Dân chủ Nhân dân Triều Tiên</option>
-    <option value="south_sudan">49. Cộng hòa Nam Sudan</option>
-    <option value="ethiopia">50. Cộng hòa Liên bang Dân chủ Ethiopia</option>
-    <option value="nigeria">51. Cộng hòa Liên bang Nigeria</option>
-    <option value="kenya">52. Cộng hòa Kenya</option>
-    <option value="ghana">53. Cộng hòa Ghana</option>
-    <option value="ivory_coast">54. Cộng hòa Bờ Biển Ngà</option>
-    <option value="tanzania">55. Cộng hòa Liên bang Tanzania</option>
-    <option value="uganda">56. Cộng hòa Uganda</option>
-    <option value="rwanda">57. Cộng hòa Rwanda</option>
-    <option value="burundi">58. Cộng hòa Burundi</option>
-    <option value="zambia">59. Cộng hòa Zambia</option>
-    <option value="malawi">60. Cộng hòa Malawi</option>
-    <option value="mozambique">61. Cộng hòa Mozambique</option>
-    <option value="zimbabwe">62. Cộng hòa Zimbabwe</option>
-    <option value="botswana">63. Cộng hòa Botswana</option>
-    <option value="namibia">64. Cộng hòa Namibia</option>
-    <option value="lesotho">65. Cộng hòa Lesotho</option>
-    <option value="swaziland">66. Cộng hòa Eswatini (Swaziland)</option>
-    <option value="madagascar">67. Cộng hòa Madagascar</option>
-    <option value="comoros">68. Liên bang Comoros</option>
-    <option value="seychelles">69. Cộng hòa Seychelles</option>
-    <option value="mauritius">70. Cộng hòa Mauritius</option>
-    <option value="cape_verde">71. Cộng hòa Cabo Verde</option>
-    <option value="sao_tome_principe">72. Cộng hòa São Tomé và Príncipe</option>
-    <option value="gabon">73. Cộng hòa Gabon</option>
-    <option value="congo_brazzaville">74. Cộng hòa Congo</option>
-    <option value="democratic_republic_of_congo">75. Cộng hòa Dân chủ Congo</option>
-    <option value="angola">76. Cộng hòa Angola</option>
-    <option value="chad">77. Cộng hòa Chad</option>
-    <option value="central_african_republic">78. Cộng hòa Trung Phi</option>
-    <option value="cameroon">79. Cộng hòa Cameroon</option>
-    <option value="eritrea">80. Cộng hòa Eritrea</option>
-    <option value="djibouti">81. Cộng hòa Djibouti</option>
-    <option value="somalia">82. Cộng hòa Somalia</option>
-    <option value="sudan">83. Cộng hòa Sudan</option>
-    <option value="south_sudan">84. Cộng hòa Nam Sudan</option>
-    <option value="libya">85. Cộng hòa Libya</option>
-    <option value="egypt">86. Cộng hòa Ả Rập Ai Cập</option>
-    <option value="morocco">87. Cộng hòa Ma-rốc</option>
-    <option value="tunisia">88. Cộng hòa Tunisia</option>
-    <option value="algeria">89. Cộng hòa Algeria</option>
-    <option value="mali">90. Cộng hòa Mali</option>
-    <option value="burkina_faso">91. Cộng hòa Burkina Faso</option>
-    <option value="niger">92. Cộng hòa Niger</option>
-    <option value="central_african_republic">93. Cộng hòa Trung Phi</option>
-    <option value="cameroon">94. Cộng hòa Cameroon</option>
-    <option value="senegal">95. Cộng hòa Senegal</option>
-    <option value="gambia">96. Cộng hòa Gambia</option>
-    <option value="guinea">97. Cộng hòa Guinea</option>
-    <option value="sierra_leone">98. Cộng hòa Sierra Leone</option>
-    <option value="liberia">99. Cộng hòa Liberia</option>
-    <option value="ecuador"> 100. Cộng hòa Ecuador</option>
-    <option value="colombia">101. Cộng hòa Colombia</option>
-    <option value="peru">102. Cộng hòa Peru</option>
+    <option value="afghanistan">1. Cộng hòa Hồi giáo Afghanistan</option>
+<option value="armenia">2. Cộng hòa Armenia</option>
+<option value="azerbaijan">3. Cộng hòa Azerbaijan</option>
+<option value="bahrain">4. Vương quốc Bahrain</option>
+<option value="bangladesh">5. Cộng hòa Bangladesh</option>
+<option value="bhutan">6. Vương quốc Bhutan</option>
+<option value="brunei">7. Negara Brunei Darussalam</option>
+<option value="cambodia">8. Vương quốc Campuchia</option>
+<option value="china">9. Trung Quốc</option>
+<option value="cyprus">10. Cộng hòa Síp</option>
+<option value="georgia">11. Cộng hòa Georgia</option>
+<option value="india">12. Cộng hòa Ấn Độ</option>
+<option value="indonesia">13. Cộng hòa Indonesia</option>
+<option value="iran">14. Cộng hòa Hồi giáo Iran</option>
+<option value="iraq">15. Cộng hòa Iraq</option>
+<option value="israel">16. Nhà nước Israel</option>
+<option value="japan">17. Nhật Bản Quốc</option>
+<option value="jordan">18. Hashemite Vương quốc Jordan</option>
+<option value="kazakhstan">19. Cộng hòa Kazakhstan</option>
+<option value="kuwait">20. Quốc vương Kuwait</option>
+<option value="kyrgyzstan">21. Cộng hòa Kyrgyzstan</option>
+<option value="laos">22. Nước Cộng hòa Dân chủ Nhân dân Lào</option>
+<option value="lebanon">23. Cộng hòa Liban</option>
+<option value="malaysia">24. Liên bang Malaysia</option>
+<option value="maldives">25. Cộng hòa Maldives</option>
+<option value="mongolia">26. Mông Cổ</option>
+<option value="myanmar">27. Cộng hòa Liên bang Myanmar</option>
+<option value="nepal">28. Cộng hòa Nepal</option>
+<option value="north_korea">29. Cộng hòa Dân chủ Nhân dân Triều Tiên</option>
+<option value="oman">30. Vương quốc Oman</option>
+<option value="pakistan">31. Cộng hòa Pakistan</option>
+<option value="palestine">32. Nhà nước Palestine</option>
+<option value="philippines">33. Cộng hòa Philippines</option>
+<option value="qatar">34. Qatar</option>
+<option value="saudi_arabia">35. Vương quốc Ả Rập Xê Út</option>
+<option value="singapore">36. Cộng hòa Singapore</option>
+<option value="south_korea">37. Đại Hàn Dân Quốc</option>
+<option value="sri_lanka">38. Cộng hòa Sri Lanka</option>
+<option value="syria">39. Cộng hòa Ả Rập Syria</option>
+<option value="tajikistan">40. Cộng hòa Tajikistan</option>
+<option value="thailand">41. Vương quốc Thái Lan</option>
+<option value="timor_leste">42. Cộng hòa Dân chủ Timor-Leste</option>
+<option value="turkey">43. Cộng hòa Thổ Nhĩ Kỳ</option>
+<option value="turkmenistan">44. Cộng hòa Turkmenistan</option>
+<option value="united_arab_emirates">45. Các Tiểu vương quốc Ả Rập Thống nhất</option>
+<option value="uzbekistan">46. Cộng hòa Uzbekistan</option>
+<option value="vietnam">47. Cộng hòa Xã hội Chủ nghĩa Việt Nam</option>
+<option value="yemen">48. Cộng hòa Yemen</option>
 
+
+
+<option value="albania">49. Cộng hòa Albania</option>
+<option value="andorra">50. Vương quốc Andorra</option>
+<option value="austria">51. Cộng hòa Áo</option>
+<option value="belarus">52. Cộng hòa Belarus</option>
+<option value="belgium">53. Vương quốc Bỉ</option>
+<option value="bosnia_herzegovina">54. Bosnia và Herzegovina</option>
+<option value="bulgaria">55. Cộng hòa Bulgaria</option>
+<option value="croatia">56. Cộng hòa Croatia</option>
+<option value="czech_republic">57. Cộng hòa Séc</option>
+<option value="denmark">58. Vương quốc Đan Mạch</option>
+<option value="estonia">59. Cộng hòa Estonia</option>
+<option value="finland">60. Cộng hòa Phần Lan</option>
+<option value="france">61. Cộng hòa Pháp</option>
+<option value="germany">62. Cộng hòa Liên bang Đức</option>
+<option value="greece">63. Cộng hòa Hy Lạp</option>
+<option value="hungary">64. Cộng hòa Hungary</option>
+<option value="iceland">65. Cộng hòa Iceland</option>
+<option value="ireland">66. Ireland</option>
+<option value="italy">67. Cộng hòa Ý</option>
+<option value="kosovo">68. Cộng hòa Kosovo</option>
+<option value="latvia">69. Cộng hòa Latvia</option>
+<option value="liechtenstein">70. Công quốc Liechtenstein</option>
+<option value="lithuania">71. Cộng hòa Lithuania</option>
+<option value="luxembourg">72. Đại Công quốc Luxembourg</option>
+<option value="malta">73. Cộng hòa Malta</option>
+<option value="moldova">74. Cộng hòa Moldova</option>
+<option value="monaco">75. Công quốc Monaco</option>
+<option value="montenegro">76. Montenegro</option>
+<option value="netherlands">77. Vương quốc Hà Lan</option>
+<option value="north_macedonia">78. Cộng hòa Bắc Macedonia</option>
+<option value="norway">79. Vương quốc Na Uy</option>
+<option value="poland">80. Cộng hòa Ba Lan</option>
+<option value="portugal">81. Cộng hòa Bồ Đào Nha</option>
+<option value="romania">82. Cộng hòa Romania</option>
+<option value="russia">83. Liên bang Nga</option>
+<option value="san_marino">84. Cộng hòa San Marino</option>
+<option value="serbia">85. Cộng hòa Serbia</option>
+<option value="slovakia">86. Cộng hòa Slovakia</option>
+<option value="slovenia">87. Cộng hòa Slovenia</option>
+<option value="spain">88. Vương quốc Tây Ban Nha</option>
+<option value="sweden">89. Vương quốc Thụy Điển</option>
+<option value="switzerland">90. Thụy Sĩ</option>
+<option value="ukraine">91. Cộng hòa Ukraine</option>
+<option value="united_kingdom">92. Vương quốc Anh</option>
+<option value="vatican">93. Thành Vatican</option>
+
+
+
+<option value="algeria">94. Cộng hòa Algeria</option>
+<option value="angola">95. Cộng hòa Angola</option>
+<option value="benin">96. Cộng hòa Benin</option>
+<option value="botswana">97. Cộng hòa Botswana</option>
+<option value="burkina_faso">98. Cộng hòa Burkina Faso</option>
+<option value="burundi">99. Cộng hòa Burundi</option>
+<option value="cape_verde">100. Cộng hòa Cabo Verde</option>
+<option value="cameroon">101. Cộng hòa Cameroon</option>
+<option value="central_african_republic">102. Cộng hòa Trung Phi</option>
+<option value="chad">103. Cộng hòa Chad</option>
+<option value="comoros">104. Liên bang Comoros</option>
+<option value="congo_brazzaville">105. Cộng hòa Congo</option>
+<option value="democratic_republic_of_congo">106. Cộng hòa Dân chủ Congo</option>
+<option value="djibouti">107. Cộng hòa Djibouti</option>
+<option value="egypt">108. Cộng hòa Ả Rập Ai Cập</option>
+<option value="equatorial_guinea">109. Cộng hòa Guinea Xích Đạo</option>
+<option value="eritrea">110. Cộng hòa Eritrea</option>
+<option value="eswatini">111. Cộng hòa Eswatini</option>
+<option value="ethiopia">112. Cộng hòa Liên bang Dân chủ Ethiopia</option>
+<option value="gabon">113. Cộng hòa Gabon</option>
+<option value="gambia">114. Cộng hòa Gambia</option>
+<option value="ghana">115. Cộng hòa Ghana</option>
+<option value="guinea">116. Cộng hòa Guinea</option>
+<option value="guinea_bissau">117. Cộng hòa Guinea-Bissau</option>
+<option value="ivory_coast">118. Cộng hòa Bờ Biển Ngà</option>
+<option value="kenya">119. Cộng hòa Kenya</option>
+<option value="lesotho">120. Cộng hòa Lesotho</option>
+<option value="liberia">121. Cộng hòa Liberia</option>
+<option value="libya">122. Cộng hòa Libya</option>
+<option value="madagascar">123. Cộng hòa Madagascar</option>
+<option value="malawi">124. Cộng hòa Malawi</option>
+<option value="mali">125. Cộng hòa Mali</option>
+<option value="mauritania">126. Cộng hòa Mauritania</option>
+<option value="mauritius">127. Cộng hòa Mauritius</option>
+<option value="morocco">128. Vương quốc Ma-rốc</option>
+<option value="mozambique">129. Cộng hòa Mozambique</option>
+<option value="namibia">130. Cộng hòa Namibia</option>
+<option value="niger">131. Cộng hòa Niger</option>
+<option value="nigeria">132. Cộng hòa Liên bang Nigeria</option>
+<option value="rwanda">133. Cộng hòa Rwanda</option>
+<option value="sao_tome_principe">134. Cộng hòa São Tomé và Príncipe</option>
+<option value="senegal">135. Cộng hòa Senegal</option>
+<option value="seychelles">136. Cộng hòa Seychelles</option>
+<option value="sierra_leone">137. Cộng hòa Sierra Leone</option>
+<option value="somalia">138. Cộng hòa Somalia</option>
+<option value="south_africa">139. Cộng hòa Nam Phi</option>
+<option value="south_sudan">140. Cộng hòa Nam Sudan</option>
+<option value="sudan">141. Cộng hòa Sudan</option>
+<option value="tanzania">142. Cộng hòa Liên bang Tanzania</option>
+<option value="togo">143. Cộng hòa Togo</option>
+<option value="tunisia">144. Cộng hòa Tunisia</option>
+<option value="uganda">145. Cộng hòa Uganda</option>
+<option value="zambia">146. Cộng hòa Zambia</option>
+<option value="zimbabwe">147. Cộng hòa Zimbabwe</option>
+
+
+
+<option value="canada">148. Vương quốc Canada</option>
+<option value="usa">149. Hợp Chúng Quốc Hoa Kỳ</option>
+<option value="mexico">150. Hợp Chúng Quốc Mexico</option>
+<option value="belize">151. Belize</option>
+<option value="guatemala">152. Cộng hòa Guatemala</option>
+<option value="el_salvador">153. Cộng hòa El Salvador</option>
+<option value="honduras">154. Cộng hòa Honduras</option>
+<option value="nicaragua">155. Cộng hòa Nicaragua</option>
+<option value="costa_rica">156. Cộng hòa Costa Rica</option>
+<option value="panama">157. Cộng hòa Panama</option>
+<option value="bahamas">158. Thịnh vượng chung Bahamas</option>
+<option value="cuba">159. Cộng hòa Cuba</option>
+<option value="jamaica">160. Jamaica</option>
+<option value="haiti">161. Cộng hòa Haiti</option>
+<option value="dominican_republic">162. Cộng hòa Dominica</option>
+<option value="antigua_barbuda">163. Antigua và Barbuda</option>
+<option value="saint_kitts_nevis">164. Saint Kitts và Nevis</option>
+<option value="dominica">165. Cộng hòa Dominica (quốc đảo)</option>
+<option value="saint_lucia">166. Saint Lucia</option>
+<option value="saint_vincent_grenadines">167. Saint Vincent và Grenadines</option>
+<option value="barbados">168. Barbados</option>
+<option value="grenada">169. Grenada</option>
+<option value="trinidad_tobago">170. Trinidad và Tobago</option>
+<option value="colombia">171. Cộng hòa Colombia</option>
+<option value="venezuela">172. Cộng hòa Venezuela</option>
+<option value="ecuador">173. Cộng hòa Ecuador</option>
+<option value="peru">174. Cộng hòa Peru</option>
+<option value="bolivia">175. Cộng hòa Bolivia</option>
+<option value="paraguay">176. Cộng hòa Paraguay</option>
+<option value="chile">177. Cộng hòa Chile</option>
+<option value="argentina">178. Cộng hòa Argentina</option>
+<option value="brazil">179. Cộng hòa Liên bang Brazil</option>
+
+
+
+<option value="australia">180. Khối thịnh vượng chung Australia</option>
+<option value="new_zealand">181. New Zealand</option>
+<option value="papua_new_guinea">182. Papua New Guinea</option>
+<option value="fiji">183. Cộng hòa Fiji</option>
+<option value="solomon_islands">184. Quần đảo Solomon</option>
+<option value="vanuatu">185. Cộng hòa Vanuatu</option>
+<option value="samoa">186. Samoa</option>
+<option value="kiribati">187. Cộng hòa Kiribati</option>
+<option value="marshall_islands">188. Quần đảo Marshall</option>
+<option value="palau">189. Cộng hòa Palau</option>
+<option value="micronesia">190. Liên bang Micronesia</option>
+<option value="nauru">191. Cộng hòa Nauru</option>
+<option value="tuvalu">192. Tuvalu</option>
+<option value="tonga">193. Vương quốc Tonga</option>
+<option value="sydney">194. Quần đảo Cook</option>
+<option value="niue">195. Niue</option>
 
 </datalist>
 
@@ -1589,7 +1364,31 @@ left-group {
                     <option value="g7">Khối G7</option>
                     <option value="warsaw">Hiệp ước Warsaw (HISTORY)</option>
                     <option value="mena">Liên minh Trung Đông - Bắc Phi (MENA)</option>
-                    <option value="asia">Châu Á</option>
+                    <option value="saarc">Liên minh Nam Á (SAARC)</option>
+    <option value="caricom">Khối CARICOM</option>
+    <option value="pif">Diễn đàn Thái Bình Dương (PIF)</option>
+    <option value="gcc">Hội đồng Hợp tác vùng Vịnh (GCC)</option>
+    <option value="bimstec">Liên minh BIMSTEC</option>
+    <option value="g20">G20</option>
+<option value="oic">OIC - Tổ chức Hợp tác Hồi giáo</option>
+<option value="ecowas">ECOWAS - Cộng đồng Kinh tế Tây Phi</option>
+<option value="unasur">UNASUR / PROSUR - Liên minh Nam Mỹ</option>
+<option value="anzus">ANZUS - Mỹ, Úc, New Zealand</option>
+<option value="cptpp">CPTPP - Hiệp định xuyên Thái Bình Dương</option>
+<option value="apec">APEC - Hợp tác Kinh tế Châu Á - Thái Bình Dương</option>
+<option value="eaeu">EAEU - Liên minh Kinh tế Á-Âu</option>
+<option value="g77">G77 - Nhóm 77 nước đang phát triển</option>
+<option value="g15">G15 - Nhóm 15 nước đang phát triển</option>
+<option value="oecd">OECD - Tổ chức Hợp tác và Phát triển Kinh tế</option>
+<option value="nordic_council">Hội đồng Bắc Âu (Nordic Council)</option>
+<option value="csto">CSTO - Tổ chức Hiệp ước An ninh Tập thể</option>
+<option value="quad">QUAD - Bộ tứ Ấn Độ Dương - Thái Bình Dương</option>
+<option value="ici">ICI - Istanbul Cooperation Initiative</option>
+    </optgroup>
+
+
+    <optgroup label="🌏 CÁC CHÂU LỤC"></optgroup>
+        <option value="asia">Châu Á</option>
         <option value="europe">Châu Âu</option>
         <option value="africa">Châu Phi</option>
         <option value="americas">Châu Mỹ</option>
@@ -1646,11 +1445,11 @@ left-group {
                     
 </select>
             </div>
-            <button id="screenshot-btn">📸 CHỤP ẢNH</button>
+            <button id="screenshot-btn"></button>
         </div>
     <div class="timeline-container">
-        <input type="number" id="year-input" value="1784">
-        <input type="range" id="slider" min="1784" max="2025" value="1784">
+        <input type="number" id="year-input">
+        
         <div id="event-val">...</div>
     </div>
         
@@ -1662,12 +1461,38 @@ left-group {
 
 
 
-    <button id="toggle-keyframe" onclick="toggleTimeline()">🎬 Keyframe</button>
+
+
+
+
+
+<!-- ĐỊA HÌNH - ĐÃ THÊM BIỂN & ĐẠI DƯƠNG -->
+<div style="display:flex; gap:8px; align-items:center;">
+    <select id="terrain-select" onchange="switchTerrain(this.value)" 
+            style="background:rgba(30,30,30,0.9); color:#ffdd00; border:2px solid #ffdd00; padding:8px 12px; border-radius:8px; font-weight:bold;">
+        <option value="none">🌍 Địa hình: Tắt tất cả</option>
+        <option value="mountain">⛰️ Dãy núi</option>
+        <option value="desert">🏜️ Sa mạc / Hoang mạc</option>
+        <option value="ocean">🌊 Biển và Đại dương</option>
+        <option value="maritime">🚢 Dòng biển</option>  <!-- Thêm option mới cho Dòng biển -->
+    </select>
+
+    <!-- 2 nút con (ẩn mặc định, hiện khi chọn "Biển và Đại dương") -->
+    <div id="ocean-sub" style="display:none; gap:8px;">
+        <button onclick="toggleOceanLayer('sea')" style="background:#0066cc; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">🌊 Biển</button>
+        <button onclick="toggleOceanLayer('ocean')" style="background:#003366; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">🌐 Đại dương</button>
+    </div>
+</div>
+
+
+
+
+
 
 
 
     <script>
-
+let activeClimateGroup = null;
 
 
 
@@ -1681,138 +1506,211 @@ left-group {
 
 
         const countryCoords = {
-    "vietnam": { center: [16.4637, 107.5908], zoom: 6, adminName: "Vietnam" },
-    "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
-    "china": { center: [35.8617, 104.1954], zoom: 4, adminName: "China" },
-    "cuba": { center: [21.5218, -77.7812], zoom: 6, adminName: "Cuba" },
-    "russia": { center: [61.524, 105.3188], zoom: 3, adminName: "Russia" },
-    "usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
-    "france": { center: [46.2276, 2.2137], zoom: 6, adminName: "France" },
-    "japan": { center: [36.2048, 138.2529], zoom: 5, adminName: "Japan" },
-    "south_korea": { center: [35.9078, 127.7669], zoom: 7, adminName: "South Korea" },
-    "india": { center: [20.5937, 78.9629], zoom: 4, adminName: "India" },
-    "brazil": { center: [-14.235, -51.9253], zoom: 4, adminName: "Brazil" },
-    "united_kingdom": { center: [55.3781, -3.436], zoom: 5, adminName: "United Kingdom" },
-    "canada": { center: [56.1304, -106.3468], zoom: 3, adminName: "Canada" },
-    "australia": { center: [-25.2744, 133.7751], zoom: 4, adminName: "Australia" },
-    "italy": { center: [41.8719, 12.5674], zoom: 6, adminName: "Italy" },
-    "spain": { center: [40.4637, -3.7492], zoom: 6, adminName: "Spain" },
-    "mexico": { center: [23.6345, -102.5528], zoom: 5, adminName: "Mexico" },
-    "indonesia": { center: [-0.7893, 113.9213], zoom: 4, adminName: "Indonesia" },
-    "thailand": { center: [15.87, 100.9925], zoom: 6, adminName: "Thailand" },
-    "south_africa": { center: [-30.5595, 22.9375], zoom: 5, adminName: "South Africa" },
-    "turkey": { center: [38.9637, 35.2433], zoom: 5, adminName: "Turkey" },
-    "saudi_arabia": { center: [23.8859, 45.0792], zoom: 5, adminName: "Saudi Arabia" },
-    "argentina": { center: [-38.4161, -63.6167], zoom: 4, adminName: "Argentina" },
-    "egypt": { center: [26.8206, 30.8025], zoom: 6, adminName: "Egypt" },
-    "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
-    "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
-    "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" },
-    "Laos": { center: [19.8563, 102.4955], zoom: 6, adminName: "Lao People's Democratic Republic" },
-    "Cambodia": { center: [12.5657, 104.991], zoom: 6, adminName: "Kingdom of Cambodia" },
-    "myanmar": { center: [21.9162, 95.956], zoom: 6, adminName: "Myanmar" },
-    "philippines": { center: [12.8797, 121.7740], zoom: 5, adminName: "Philippines" },
-    "malaysia": { center: [4.2105, 101.9758], zoom: 6, adminName: "Malaysia" },
-    "brunei": { center: [4.5353, 114.7277], zoom: 6, adminName: "Brunei" },
-    "singapore": { center: [1.3521, 103.8198], zoom: 6, adminName: "Singapore" },
-    "timor_leste": { center: [-8.8742, 125.7275], zoom: 7, adminName: "Democratic Republic of Timor-Leste" },
-    "bangladesh": { center: [23.685, 90.3563], zoom: 6, adminName: "People's Republic of Bangladesh" },
-    "nepal": { center: [28.3949, 84.1240], zoom: 6, adminName: "Nepal" },
-    "pakistan": { center: [30.3753, 69.3451], zoom: 5, adminName: "Pakistan" },
-    "afghanistan": { center: [33.9391, 67.7099], zoom: 5, adminName: "Afghanistan" },
-    "sri_lanka": { center: [7.8731, 80.7718], zoom: 6, adminName: "Sri Lanka" },
-    "kazakhstan": { center: [48.0196, 66.9237], zoom: 4, adminName: "Kazakhstan" },
-    "uzbekistan": { center: [41.3775, 64.5853], zoom: 5, adminName: "Uzbekistan" },
-    "turkmenistan": { center: [38.9697, 59.5563], zoom: 5, adminName: "Turkmenistan" },
-    "tajikistan": { center: [38.8610, 71.2761], zoom: 5, adminName: "Tajikistan" },
-    "kyrgyzstan": { center: [41.2044, 74.7661], zoom: 5, adminName: "Kyrgyzstan" },
-    "mongolia": { center: [46.8625, 103.8467], zoom: 4, adminName: "Mongolia" },
-    "bhutan": { center: [27.5000, 90.5000], zoom: 6, adminName: "Bhutan" },
-    "taiwan": { center: [23.6978, 120.9605], zoom: 7, adminName: "Taiwan" },
-    "ireland": { center: [53.1424, -7.6921], zoom: 6, adminName: "Ireland" },
-    "Denmark": { center: [56.2639, 9.5018], zoom: 6, adminName: "Denmark" },
-    "Norway": { center: [60.472, 8.4689], zoom: 6, adminName: "Norway" },
-    "Sweden": { center: [60.1282, 18.6435], zoom: 6, adminName: "Sweden" },
-    "Finland": { center: [61.9241, 25.7482], zoom: 6, adminName: "Finland" },
-    "Iceland": { center: [64.9631, -19.0208], zoom: 6, adminName: "Iceland" },
-    "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
-    "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
-    "Belgium": { center: [50.5039, 4.4699], zoom: 6, adminName: "Belgium" },
-    "bulgaria": { center: [42.7339, 25.4858], zoom: 6, adminName: "Bulgaria" },
-    "croatia": { center: [45.1, 15.2], zoom: 6, adminName: "Croatia" },
-    "greece": { center: [39.0742, 21.8243], zoom: 6, adminName: "Greece" },
-    "hungary": { center: [47.1625, 19.5033], zoom: 6, adminName: "Hungary" },
-    "portugal": { center: [39.3999, -8.2245], zoom: 6, adminName: "Portugal" },
-    "romania": { center: [45.9432, 24.9668], zoom: 6, adminName: "Romania" },
-    "serbia": { center: [44.0165, 21.0059], zoom: 6, adminName: "Serbia" },
-    "switzerland": { center: [46.8182, 8.2275], zoom: 6, adminName: "Switzerland" },
-    "austria": { center: [47.5162, 14.5501], zoom: 6, adminName: "Austria" },
-    "czech_republic": { center: [49.8175, 15.473], zoom: 6, adminName: "Czech Republic" },
-    "slovakia": { center: [48.669, 19.699], zoom: 6, adminName: "Slovakia" },
-    "slovenia": { center: [46.1512, 14.9955], zoom: 6, adminName: "Slovenia" },
-    "lithuania": { center: [55.1694, 23.8813], zoom: 6, adminName: "Lithuania" },
-    "latvia": { center: [56.8796, 24.6032], zoom: 6, adminName: "Latvia" },
-    "estonia": { center: [58.5953, 25.0136], zoom: 6, adminName: "Estonia" },
-    "croatia": { center: [45.1, 15.2], zoom: 6, adminName: "Croatia" },
-    "bosnia_herzegovina": { center: [43.9159, 17.6791], zoom: 6, adminName: "Bosnia and Herzegovina" },
-    "albania": { center: [41.1533, 20.1683], zoom: 6, adminName: "Albania" },
-    "macedonia": { center: [41.6086, 21.7453], zoom: 6, adminName: "North Macedonia" },
-    "montenegro": { center: [42.7087, 19.3744], zoom: 6, adminName: "Montenegro" },
-    "north_macedonia": { center: [41.6086, 21.7453], zoom: 6, adminName: "North Macedonia" },
-    "kosovo": { center: [42.6026, 20.903], zoom: 6, adminName: "Kosovo" },
-    "malta": { center: [35.9375, 14.3754], zoom: 8, adminName: "Malta" },
-    "cyprus": { center: [35.1264, 33.4299], zoom: 7, adminName: "Cyprus" },
-    "luxembourg": { center: [49.8153, 6.1296], zoom: 8, adminName: "Luxembourg" },
-    "monaco": { center: [43.7384, 7.4246], zoom: 10, adminName: "Monaco" },
-    "andorra": { center: [42.5063, 1.5218], zoom: 9, adminName: "Andorra" },
-    "san_marino": { center: [43.9333, 12.45], zoom: 10, adminName: "San Marino" },
-    "vatican_city": { center: [41.9029, 12.4534], zoom: 12, adminName: "Vatican City" },
-    "liechtenstein": { center: [47.166, 9.5554], zoom: 9, adminName: "Liechtenstein" },
-    "maldives": { center: [3.2028, 73.2207], zoom: 7, adminName: "Maldives" },
-    "seychelles": { center: [-4.6796, 55.492], zoom: 7, adminName: "Seychelles" },
-    "mauritius": { center: [-20.3484, 57.5522], zoom: 7, adminName: "Mauritius" },
-    "comoros": { center: [-11.6455, 43.3333], zoom: 7, adminName: "Comoros" },
-    "madagascar": { center: [-18.7669, 46.8691], zoom: 6, adminName: "Madagascar" },
-    "mozambique": { center: [-18.6657, 35.5296], zoom: 6, adminName: "Mozambique" },
-    "zimbabwe": { center: [-19.0154, 29.1549], zoom: 6, adminName: "Zimbabwe" },
-    "zambia": { center: [-13.1339, 27.8493], zoom: 6, adminName: "Zambia" },
-    "malawi": { center: [-13.2543, 34.3015], zoom: 6, adminName: "Malawi" },
-    "tanzania": { center: [-6.369, 34.8888], zoom: 6, adminName: "Tanzania" },
-    "kenya": { center: [-1.2921, 36.8219], zoom: 6, adminName: "Kenya" },
-    "uganda": { center: [1.3733, 32.2903], zoom: 6, adminName: "Uganda" },
-    "rwanda": { center: [-1.9403, 29.8739], zoom: 6, adminName: "Rwanda" },
-    "burundi": { center: [-3.3731, 29.9189], zoom: 6, adminName: "Burundi" },
-    "south_sudan": { center: [6.877, 31.307], zoom: 6, adminName: "South Sudan" },
-    "ethiopia": { center: [9.145, 40.4897], zoom: 6, adminName: "Ethiopia" },
-    "somalia": { center: [5.1521, 46.1996], zoom: 6, adminName: "Somalia"  },
-    "djibouti": { center: [11.8251, 42.5903], zoom: 7, adminName: "Djibouti"  },
-    "eritrea": { center: [15.1794, 39.7823], zoom: 6, adminName: "Eritrea"  },
-    "sudan": { center: [12.8628, 30.2176], zoom: 6, adminName: "Sudan"  },
-    "chad": { center: [15.4542, 18.7322], zoom: 6, adminName: "Chad"  },
-    "niger": { center: [17.6078, 8.0817], zoom: 6, adminName: "Niger"  },
-    "mali": { center: [17.5707, -3.9962], zoom: 6, adminName: "Mali"  },
-    "burkina_faso": { center: [12.2383, -1.5616], zoom: 6, adminName: "Burkina Faso"  },
-    "ghana": { center: [7.9465, -1.0232], zoom: 6, adminName: "Ghana"  },
-    "ivory_coast": { center: [7.539989, -5.54708], zoom: 6, adminName: "Ivory Coast"  },
-    "senegal": { center: [14.4974, -14.4524], zoom: 6, adminName: "Senegal" },
-    "gambia": { center: [13.4432, -15.3101], zoom: 7, adminName: "Gambia"  },
-    "guinea": { center: [9.9456, -9.6966], zoom: 6, adminName: "Guinea"  },
-    "sierra_leone": { center: [8.4606, -11.7799], zoom: 6, adminName: "Sierra Leone"  },
-    "liberia": { center: [6.4281, -9.4295], zoom: 6, adminName: "Liberia"  },
-    "ghana": { center: [7.9465, -1.0232], zoom: 6, adminName: "Ghana" },
-    "togo": { center: [8.6195, 0.8248], zoom: 6, adminName: "Togo"  },
-    "benin": { center: [9.3077, 2.3158], zoom: 6, adminName: "Benin" },
-    "nigeria": { center: [9.082, 8.6753], zoom: 6, adminName: "Nigeria" },
-    "cameroon": { center: [7.3697, 12.3547], zoom: 6, adminName: "Cameroon" },
-    "central_african_republic": { center: [6.6111, 20.9394], zoom: 6, adminName: "Central African Republic"  },
-    "congo_brazzaville": { center: [-0.228, 15.8277], zoom: 6, adminName: "Congo-Brazzaville"  },
-    "congo_kinshasa": { center: [-4.0383, 21.7587], zoom: 6, adminName: "Congo-Kinshasa"  },
-    "angola": { center: [-11.2027, 17.8739], zoom: 6, adminName: "Angola"  },
-    "namibia": { center: [-22.9576, 18.4904], zoom: 6, adminName: "Namibia"  },
-    "botswana": { center: [-22.3285, 24.6849], zoom: 6, adminName: "Botswana" },
-    "lesotho": { center: [-29.6099, 28.2336], zoom: 7, adminName: "Lesotho"  },
-    "swaziland": { center: [-26.5225, 31.4659], zoom: 7, adminName: "Eswatini"  },
-    "south_africa": { center: [-30.5595, 22.9375], zoom: 6, adminName: "South Africa" },
+      // ===== ASIA =====
+  "afghanistan": { center: [33.9391, 67.7099], zoom: 5, adminName: "Afghanistan" },
+  "armenia": { center: [40.0691, 45.0382], zoom: 7, adminName: "Armenia" },
+  "azerbaijan": { center: [40.1431, 47.5769], zoom: 6, adminName: "Azerbaijan" },
+  "bahrain": { center: [25.9304, 50.6378], zoom: 8, adminName: "Bahrain" },
+  "bangladesh": { center: [23.685, 90.3563], zoom: 6, adminName: "Bangladesh" },
+  "bhutan": { center: [27.5142, 90.4336], zoom: 7, adminName: "Bhutan" },
+  "brunei": { center: [4.5353, 114.7277], zoom: 7, adminName: "Brunei" },
+  "cambodia": { center: [12.5657, 104.991], zoom: 6, adminName: "Cambodia" },
+  "china": { center: [35.8617, 104.1954], zoom: 4, adminName: "China" },
+  "cyprus": { center: [35.1264, 33.4299], zoom: 7, adminName: "Cyprus" },
+  "georgia": { center: [42.3154, 43.3569], zoom: 7, adminName: "Georgia" },
+  "india": { center: [20.5937, 78.9629], zoom: 4, adminName: "India" },
+  "indonesia": { center: [-0.7893, 113.9213], zoom: 4, adminName: "Indonesia" },
+  "iran": { center: [32.4279, 53.688], zoom: 5, adminName: "Iran" },
+  "iraq": { center: [33.2232, 43.6793], zoom: 6, adminName: "Iraq" },
+  "israel": { center: [31.0461, 34.8516], zoom: 7, adminName: "Israel" },
+  "japan": { center: [36.2048, 138.2529], zoom: 5, adminName: "Japan" },
+  "jordan": { center: [30.5852, 36.2384], zoom: 6, adminName: "Jordan" },
+  "kazakhstan": { center: [48.0196, 66.9237], zoom: 4, adminName: "Kazakhstan" },
+  "kuwait": { center: [29.3117, 47.4818], zoom: 7, adminName: "Kuwait" },
+  "kyrgyzstan": { center: [41.2044, 74.7661], zoom: 6, adminName: "Kyrgyzstan" },
+  "laos": { center: [19.8563, 102.4955], zoom: 6, adminName: "Laos" },
+  "lebanon": { center: [33.8547, 35.8623], zoom: 7, adminName: "Lebanon" },
+  "malaysia": { center: [4.2105, 101.9758], zoom: 6, adminName: "Malaysia" },
+  "maldives": { center: [3.2028, 73.2207], zoom: 7, adminName: "Maldives" },
+  "mongolia": { center: [46.8625, 103.8467], zoom: 4, adminName: "Mongolia" },
+  "myanmar": { center: [21.9162, 95.956], zoom: 6, adminName: "Myanmar" },
+  "nepal": { center: [28.3949, 84.124], zoom: 7, adminName: "Nepal" },
+  "north_korea": { center: [40.3399, 127.5101], zoom: 6, adminName: "North Korea" },
+  "oman": { center: [21.4735, 55.9754], zoom: 6, adminName: "Oman" },
+  "pakistan": { center: [30.3753, 69.3451], zoom: 5, adminName: "Pakistan" },
+  "philippines": { center: [12.8797, 121.774], zoom: 5, adminName: "Philippines" },
+  "qatar": { center: [25.3548, 51.1839], zoom: 7, adminName: "Qatar" },
+  "saudi_arabia": { center: [23.8859, 45.0792], zoom: 5, adminName: "Saudi Arabia" },
+  "singapore": { center: [1.3521, 103.8198], zoom: 8, adminName: "Singapore" },
+  "south_korea": { center: [35.9078, 127.7669], zoom: 7, adminName: "South Korea" },
+  "sri_lanka": { center: [7.8731, 80.7718], zoom: 7, adminName: "Sri Lanka" },
+  "syria": { center: [34.8021, 38.9968], zoom: 6, adminName: "Syria" },
+  "taiwan": { center: [23.6978, 120.9605], zoom: 7, adminName: "Taiwan" },
+  "tajikistan": { center: [38.861, 71.2761], zoom: 6, adminName: "Tajikistan" },
+  "thailand": { center: [15.87, 100.9925], zoom: 6, adminName: "Thailand" },
+  "timor_leste": { center: [-8.8742, 125.7275], zoom: 7, adminName: "Timor-Leste" },
+  "turkey": { center: [38.9637, 35.2433], zoom: 5, adminName: "Turkey" },
+  "turkmenistan": { center: [38.9697, 59.5563], zoom: 6, adminName: "Turkmenistan" },
+  "uae": { center: [23.4241, 53.8478], zoom: 6, adminName: "United Arab Emirates" },
+  "uzbekistan": { center: [41.3775, 64.5853], zoom: 6, adminName: "Uzbekistan" },
+  "vietnam": { center: [16.4637, 107.5908], zoom: 6, adminName: "Vietnam" },
+  "yemen": { center: [15.5527, 48.5164], zoom: 6, adminName: "Yemen" },
+
+  // ===== EUROPE =====
+  "albania": { center: [41.1533, 20.1683], zoom: 7, adminName: "Albania" },
+  "andorra": { center: [42.5063, 1.5218], zoom: 9, adminName: "Andorra" },
+  "austria": { center: [47.5162, 14.5501], zoom: 6, adminName: "Austria" },
+  "belarus": { center: [53.7098, 27.9534], zoom: 6, adminName: "Belarus" },
+  "belgium": { center: [50.5039, 4.4699], zoom: 7, adminName: "Belgium" },
+  "bosnia_herzegovina": { center: [43.9159, 17.6791], zoom: 7, adminName: "Bosnia and Herzegovina" },
+  "bulgaria": { center: [42.7339, 25.4858], zoom: 6, adminName: "Bulgaria" },
+  "croatia": { center: [45.1, 15.2], zoom: 6, adminName: "Croatia" },
+  "czech_republic": { center: [49.8175, 15.473], zoom: 6, adminName: "Czech Republic" },
+  "denmark": { center: [56.2639, 9.5018], zoom: 6, adminName: "Denmark" },
+  "estonia": { center: [58.5953, 25.0136], zoom: 7, adminName: "Estonia" },
+  "finland": { center: [61.9241, 25.7482], zoom: 6, adminName: "Finland" },
+  "france": { center: [46.2276, 2.2137], zoom: 6, adminName: "France" },
+  "germany": { center: [51.1657, 10.4515], zoom: 6, adminName: "Germany" },
+  "greece": { center: [39.0742, 21.8243], zoom: 6, adminName: "Greece" },
+  "hungary": { center: [47.1625, 19.5033], zoom: 6, adminName: "Hungary" },
+  "iceland": { center: [64.9631, -19.0208], zoom: 6, adminName: "Iceland" },
+  "ireland": { center: [53.1424, -7.6921], zoom: 6, adminName: "Ireland" },
+  "italy": { center: [41.8719, 12.5674], zoom: 6, adminName: "Italy" },
+  "latvia": { center: [56.8796, 24.6032], zoom: 7, adminName: "Latvia" },
+  "lithuania": { center: [55.1694, 23.8813], zoom: 7, adminName: "Lithuania" },
+  "luxembourg": { center: [49.8153, 6.1296], zoom: 8, adminName: "Luxembourg" },
+  "malta": { center: [35.9375, 14.3754], zoom: 8, adminName: "Malta" },
+  "moldova": { center: [47.4116, 28.3699], zoom: 7, adminName: "Moldova" },
+  "monaco": { center: [43.7384, 7.4246], zoom: 10, adminName: "Monaco" },
+  "montenegro": { center: [42.7087, 19.3744], zoom: 7, adminName: "Montenegro" },
+  "netherlands": { center: [52.1326, 5.2913], zoom: 6, adminName: "Netherlands" },
+  "north_macedonia": { center: [41.6086, 21.7453], zoom: 7, adminName: "North Macedonia" },
+  "norway": { center: [60.472, 8.4689], zoom: 5, adminName: "Norway" },
+  "poland": { center: [51.9194, 19.1451], zoom: 6, adminName: "Poland" },
+  "portugal": { center: [39.3999, -8.2245], zoom: 6, adminName: "Portugal" },
+  "romania": { center: [45.9432, 24.9668], zoom: 6, adminName: "Romania" },
+  "russia": { center: [61.524, 105.3188], zoom: 3, adminName: "Russia" },
+  "san_marino": { center: [43.9333, 12.45], zoom: 10, adminName: "San Marino" },
+  "serbia": { center: [44.0165, 21.0059], zoom: 6, adminName: "Serbia" },
+  "slovakia": { center: [48.669, 19.699], zoom: 6, adminName: "Slovakia" },
+  "slovenia": { center: [46.1512, 14.9955], zoom: 7, adminName: "Slovenia" },
+  "spain": { center: [40.4637, -3.7492], zoom: 6, adminName: "Spain" },
+  "sweden": { center: [60.1282, 18.6435], zoom: 5, adminName: "Sweden" },
+  "switzerland": { center: [46.8182, 8.2275], zoom: 6, adminName: "Switzerland" },
+  "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
+  "united_kingdom": { center: [55.3781, -3.436], zoom: 5, adminName: "United Kingdom" },
+  "vatican_city": { center: [41.9029, 12.4534], zoom: 12, adminName: "Vatican City" },
+
+  
+// ===== AMERICAS =====
+"antigua_barbuda": { center: [17.0608, -61.7964], zoom: 8, adminName: "Antigua and Barbuda" },
+"argentina": { center: [-38.4161, -63.6167], zoom: 4, adminName: "Argentina" },
+"bahamas": { center: [25.0343, -77.3963], zoom: 7, adminName: "Bahamas" },
+"barbados": { center: [13.1939, -59.5432], zoom: 9, adminName: "Barbados" },
+"belize": { center: [17.1899, -88.4976], zoom: 7, adminName: "Belize" },
+"bolivia": { center: [-16.2902, -63.5887], zoom: 5, adminName: "Bolivia" },
+"brazil": { center: [-14.235, -51.9253], zoom: 4, adminName: "Brazil" },
+"canada": { center: [56.1304, -106.3468], zoom: 3, adminName: "Canada" },
+"chile": { center: [-35.6751, -71.543], zoom: 4, adminName: "Chile" },
+"colombia": { center: [4.5709, -74.2973], zoom: 5, adminName: "Colombia" },
+"costa_rica": { center: [9.7489, -83.7534], zoom: 7, adminName: "Costa Rica" },
+"cuba": { center: [21.5218, -77.7812], zoom: 6, adminName: "Cuba" },
+"dominica": { center: [15.415, -61.371], zoom: 9, adminName: "Dominica" },
+"dominican_republic": { center: [18.7357, -70.1627], zoom: 7, adminName: "Dominican Republic" },
+"ecuador": { center: [-1.8312, -78.1834], zoom: 6, adminName: "Ecuador" },
+"el_salvador": { center: [13.7942, -88.8965], zoom: 7, adminName: "El Salvador" },
+"grenada": { center: [12.1165, -61.679], zoom: 9, adminName: "Grenada" },
+"guatemala": { center: [15.7835, -90.2308], zoom: 7, adminName: "Guatemala" },
+"guyana": { center: [4.8604, -58.9302], zoom: 6, adminName: "Guyana" },
+"haiti": { center: [18.9712, -72.2852], zoom: 7, adminName: "Haiti" },
+"honduras": { center: [15.2, -86.2419], zoom: 7, adminName: "Honduras" },
+"jamaica": { center: [18.1096, -77.2975], zoom: 7, adminName: "Jamaica" },
+"mexico": { center: [23.6345, -102.5528], zoom: 5, adminName: "Mexico" },
+"nicaragua": { center: [12.8654, -85.2072], zoom: 7, adminName: "Nicaragua" },
+"panama": { center: [8.538, -80.7821], zoom: 7, adminName: "Panama" },
+"paraguay": { center: [-23.4425, -58.4438], zoom: 6, adminName: "Paraguay" },
+"peru": { center: [-9.19, -75.0152], zoom: 5, adminName: "Peru" },
+"saint_kitts_nevis": { center: [17.3578, -62.783], zoom: 9, adminName: "Saint Kitts and Nevis" },
+"saint_lucia": { center: [13.9094, -60.9789], zoom: 9, adminName: "Saint Lucia" },
+"saint_vincent_grenadines": { center: [12.9843, -61.2872], zoom: 9, adminName: "Saint Vincent and the Grenadines" },
+"suriname": { center: [3.9193, -56.0278], zoom: 6, adminName: "Suriname" },
+"trinidad_tobago": { center: [10.6918, -61.2225], zoom: 8, adminName: "Trinidad and Tobago" },
+"usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
+"uruguay": { center: [-32.5228, -55.7658], zoom: 6, adminName: "Uruguay" },
+"venezuela": { center: [6.4238, -66.5897], zoom: 5, adminName: "Venezuela" },
+
+// ===== AFRICA =====
+"algeria": { center: [28.0339, 1.6596], zoom: 5, adminName: "Algeria" },
+"angola": { center: [-11.2027, 17.8739], zoom: 6, adminName: "Angola" },
+"benin": { center: [9.3077, 2.3158], zoom: 6, adminName: "Benin" },
+"botswana": { center: [-22.3285, 24.6849], zoom: 6, adminName: "Botswana" },
+"burkina_faso": { center: [12.2383, -1.5616], zoom: 6, adminName: "Burkina Faso" },
+"burundi": { center: [-3.3731, 29.9189], zoom: 6, adminName: "Burundi" },
+"cabo_verde": { center: [16.5388, -23.0418], zoom: 7, adminName: "Cabo Verde" },
+"cameroon": { center: [7.3697, 12.3547], zoom: 6, adminName: "Cameroon" },
+"central_african_republic": { center: [6.6111, 20.9394], zoom: 6, adminName: "Central African Republic" },
+"chad": { center: [15.4542, 18.7322], zoom: 6, adminName: "Chad" },
+"comoros": { center: [-11.6455, 43.3333], zoom: 7, adminName: "Comoros" },
+"congo_brazzaville": { center: [-0.228, 15.8277], zoom: 6, adminName: "Congo" },
+"congo_kinshasa": { center: [-4.0383, 21.7587], zoom: 5, adminName: "Democratic Republic of the Congo" },
+"ivory_coast": { center: [7.539989, -5.54708], zoom: 6, adminName: "Ivory Coast" },
+"djibouti": { center: [11.8251, 42.5903], zoom: 7, adminName: "Djibouti" },
+"egypt": { center: [26.8206, 30.8025], zoom: 6, adminName: "Egypt" },
+"equatorial_guinea": { center: [1.6508, 10.2679], zoom: 7, adminName: "Equatorial Guinea" },
+"eritrea": { center: [15.1794, 39.7823], zoom: 6, adminName: "Eritrea" },
+"ethiopia": { center: [9.145, 40.4897], zoom: 6, adminName: "Ethiopia" },
+"gabon": { center: [-0.8037, 11.6094], zoom: 6, adminName: "Gabon" },
+"gambia": { center: [13.4432, -15.3101], zoom: 7, adminName: "Gambia" },
+"ghana": { center: [7.9465, -1.0232], zoom: 6, adminName: "Ghana" },
+"guinea": { center: [9.9456, -9.6966], zoom: 6, adminName: "Guinea" },
+"guinea_bissau": { center: [11.8037, -15.1804], zoom: 7, adminName: "Guinea-Bissau" },
+"kenya": { center: [-1.2921, 36.8219], zoom: 6, adminName: "Kenya" },
+"lesotho": { center: [-29.6099, 28.2336], zoom: 7, adminName: "Lesotho" },
+"liberia": { center: [6.4281, -9.4295], zoom: 6, adminName: "Liberia" },
+"libya": { center: [26.3351, 17.2283], zoom: 5, adminName: "Libya" },
+"madagascar": { center: [-18.7669, 46.8691], zoom: 6, adminName: "Madagascar" },
+"malawi": { center: [-13.2543, 34.3015], zoom: 6, adminName: "Malawi" },
+"mali": { center: [17.5707, -3.9962], zoom: 5, adminName: "Mali" },
+"mauritania": { center: [21.0079, -10.9408], zoom: 6, adminName: "Mauritania" },
+"mauritius": { center: [-20.3484, 57.5522], zoom: 7, adminName: "Mauritius" },
+"morocco": { center: [31.7917, -7.0926], zoom: 6, adminName: "Morocco" },
+"mozambique": { center: [-18.6657, 35.5296], zoom: 6, adminName: "Mozambique" },
+"namibia": { center: [-22.9576, 18.4904], zoom: 6, adminName: "Namibia" },
+"niger": { center: [17.6078, 8.0817], zoom: 6, adminName: "Niger" },
+"nigeria": { center: [9.082, 8.6753], zoom: 6, adminName: "Nigeria" },
+"rwanda": { center: [-1.9403, 29.8739], zoom: 7, adminName: "Rwanda" },
+"sao_tome_principe": { center: [0.1864, 6.6131], zoom: 8, adminName: "Sao Tome and Principe" },
+"senegal": { center: [14.4974, -14.4524], zoom: 6, adminName: "Senegal" },
+"seychelles": { center: [-4.6796, 55.492], zoom: 7, adminName: "Seychelles" },
+"sierra_leone": { center: [8.4606, -11.7799], zoom: 6, adminName: "Sierra Leone" },
+"somalia": { center: [5.1521, 46.1996], zoom: 6, adminName: "Somalia" },
+"south_africa": { center: [-30.5595, 22.9375], zoom: 5, adminName: "South Africa" },
+"south_sudan": { center: [6.877, 31.307], zoom: 6, adminName: "South Sudan" },
+"sudan": { center: [12.8628, 30.2176], zoom: 6, adminName: "Sudan" },
+"tanzania": { center: [-6.369, 34.8888], zoom: 6, adminName: "Tanzania" },
+"togo": { center: [8.6195, 0.8248], zoom: 6, adminName: "Togo" },
+"tunisia": { center: [33.8869, 9.5375], zoom: 6, adminName: "Tunisia" },
+"uganda": { center: [1.3733, 32.2903], zoom: 6, adminName: "Uganda" },
+"zambia": { center: [-13.1339, 27.8493], zoom: 6, adminName: "Zambia" },
+"zimbabwe": { center: [-19.0154, 29.1549], zoom: 6, adminName: "Zimbabwe" },
+
+// ===== OCEANIA =====
+"australia": { center: [-25.2744, 133.7751], zoom: 4, adminName: "Australia" },
+"fiji": { center: [-17.7134, 178.065], zoom: 6, adminName: "Fiji" },
+"kiribati": { center: [-3.3704, -168.734], zoom: 5, adminName: "Kiribati" },
+"marshall_islands": { center: [7.1315, 171.1845], zoom: 6, adminName: "Marshall Islands" },
+"micronesia": { center: [7.4256, 150.5508], zoom: 6, adminName: "Micronesia" },
+"nauru": { center: [-0.5228, 166.9315], zoom: 10, adminName: "Nauru" },
+"new_zealand": { center: [-40.9006, 174.886], zoom: 5, adminName: "New Zealand" },
+"palau": { center: [7.515, 134.5825], zoom: 7, adminName: "Palau" },
+"papua_new_guinea": { center: [-6.3149, 143.9555], zoom: 5, adminName: "Papua New Guinea" },
+"samoa": { center: [-13.759, -172.1046], zoom: 7, adminName: "Samoa" },
+"solomon_islands": { center: [-9.6457, 160.1562], zoom: 6, adminName: "Solomon Islands" },
+"tonga": { center: [-21.1789, -175.1982], zoom: 7, adminName: "Tonga" },
+"tuvalu": { center: [-7.1095, 177.6493], zoom: 8, adminName: "Tuvalu" },
+"vanuatu": { center: [-15.3767, 166.9592], zoom: 6, adminName: "Vanuatu" }
+
+    
 };
 
 
@@ -1823,32 +1721,65 @@ const map = L.map('map', {
     center: [20, 0],
     zoom: 3,
     minZoom: 2,
-    preferCanvas: true,
+    preferCanvas: false, // TẮT CANVAS ĐỂ CSS ANIMATION HOẠT ĐỘNG
 
     // --- CỤM NÀY GIÚP ZOOM NHIỀU NẤC, KHÔNG BỊ QUÁ TRỚN ---
-    zoomSnap: 0.1,        // Chia nhỏ nấc zoom (bình thường là 1, giờ là 0.1)
-    zoomDelta: 0.1,       // Mỗi nấc lăn chuột chỉ nhảy 0.1 (zoom rất chậm và mịn)
+    zoomSnap: 0.4,        // Chia nhỏ nấc zoom (bình thường là 1, giờ là 0.1)
+    zoomDelta: 0.4,       // Mỗi nấc lăn chuột chỉ nhảy 0.1 (zoom rất chậm và mịn)
     wheelPxPerZoomLevel: 150, // Lăn chuột nhiều hơn mới nhảy 1 level (chống vọt)
     wheelDebounceTime: 10     // Phản hồi chuột nhanh hơn
 });
 
-// --- ĐƯA ATHE TRỞ LẠI MẶT ĐẤT (HẾT TRẮNG XÓA) ---
-// 1. Layer vệ tinh 3D mượt mà (Thay cho cái Thụy Sĩ bị giới hạn)
-var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+// ...existing code...
+
+// base layers
+const darkTerrainLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+});
+
+const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri',
     maxZoom: 19
-}).addTo(map);
+});
 
-// 2. Layer đổ bóng địa hình (Tạo khối núi 3D đổ bóng rầm rập)
+// khởi tạo map với dark terrain mặc định
+let currentBase = 'dark';
+darkTerrainLayer.addTo(map);
+
+// 2. Layer đổ bóng địa hình (Tạo khối núi 3D)
 var hillshadeLayer = L.tileLayer('https://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
-    opacity: 0.4,
+    opacity: 0.5, 
     maxZoom: 15
 }).addTo(map);
 
-// 3. Layer biên giới mảnh (Định hình bản đồ cho chuyên nghiệp)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-    opacity: 0.5
+// 3. Layer biên giới và nhãn (Dùng nhãn sáng để nổi bật trên nền tối)
+const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+    opacity: 1.0 // Tăng độ đậm nhãn
 }).addTo(map);
+
+// hàm chuyển đổi
+function toggleBaseMap() {
+    const mapElement = document.getElementById('map');
+    if (currentBase === 'dark') {
+        map.removeLayer(darkTerrainLayer);
+        satelliteLayer.addTo(map);
+        satelliteLayer.bringToBack(); 
+        currentBase = 'satellite';
+        
+        mapElement.style.filter = "brightness(1) contrast(1.1)";
+        console.log('Chuyển sang Satellite');
+    } else {
+        map.removeLayer(satelliteLayer);
+        darkTerrainLayer.addTo(map);
+        darkTerrainLayer.bringToBack();
+        currentBase = 'dark';
+        
+        // GIẢM ĐỘ TỐI: Để nhìn rõ hơn nhưng vẫn giữ phong cách Cinematic
+        mapElement.style.filter = "brightness(1.1) contrast(1.3) saturate(0.5)";
+        console.log('Chuyển sang Dark Relief Map');
+    }
+}
 
 
 
@@ -2009,8 +1940,21 @@ if(mainSlider) {
 }
 
         // --- KHAI BÁO BIẾN TOÀN CỤC ---
-        let geojsonLayer;
-        let worldDataCache = null;
+let worldDataCache = null;
+const warZones = {
+    "Palestine": { status: "Đang chiến tranh", enemies: ["Israel"] },
+    "Israel": { status: "Đang chiến tranh", enemies: ["Palestine", "Lebanon", "Iran"] },
+    "Ukraine": { status: "Đang chiến tranh", enemies: ["Russia"] },
+    "Russia": { status: "Đang chiến tranh", enemies: ["Ukraine"] },
+    "Russian Federation": { status: "Đang chiến tranh", enemies: ["Ukraine"] },
+    "Iran": { status: "Căng thẳng quân sự", enemies: ["Israel", "USA"] },
+    "Syria": { status: "Nội chiến / Xung đột", enemies: ["Các nhóm phiến quân", "Israel"] },
+    "Yemen": { status: "Nội chiến", enemies: ["Houthi", "Saudi Arabia"] },
+    "Lebanon": { status: "Xung đột biên giới", enemies: ["Israel"] },
+    "Sudan": { status: "Nội chiến", enemies: ["RSF", "SAF"] },
+    "Myanmar": { status: "Nội chiến", enemies: ["Quân đội chính phủ", "Các nhóm vũ trang sắc tộc"] }
+};
+let showPoliticalStatus = true;
         let atheRailway = L.layerGroup().addTo(map);
         let customColoredCountries = {}; 
         let activeAlliance = null;
@@ -2033,89 +1977,145 @@ if(mainSlider) {
             });
         }
 
-        async function fetchBorders() {
-            try {
-                const response = await fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson');
-                worldDataCache = await response.json();
-                renderBorders(document.getElementById('year-input').value);
-            } catch (err) {
-                console.warn("Lỗi tải biên giới.");
-            }
-        }
+        // ...existing code...
 
-        function renderBorders(year) {
-    if (!worldDataCache) return;
+// Sửa hàm fetchBorders để chỉ tải dữ liệu, không render ngay
+async function fetchBorders() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson');
+        worldDataCache = await response.json();
+        console.log("Đã tải biên giới quốc gia thành công");
+    } catch (err) {
+        console.warn("Lỗi tải biên giới:", err);
+    }
+}
+
+// Trong window.addEventListener('load', ...), gọi fetchBorders rồi renderBorders
+window.addEventListener('load', async () => {
+    await fetchBorders();
+    renderBorders(0);  // Render biên giới ngay khi load xong, với year mặc định 0
+    // ...existing code...
+});
+
+// ...existing code...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//FUNCTION RENDER BORDER YEAR
+
+
+
+// ====================== RENDER BORDERS - ĐÃ FIX HOÀN CHỈNH (Cả 2 nút đều bấm được nhiều lần) ======================
+
+
+// ====================== RENDER BORDERS - FINAL FIX (Cả 2 nút hoạt động ổn định) ======================
+let geojsonLayer = null;
+
+function renderBorders(year) {
     if (geojsonLayer) map.removeLayer(geojsonLayer);
-
-    const selectedCountry = document.getElementById('country-select').value.toLowerCase();
 
     geojsonLayer = L.geoJSON(worldDataCache, {
         style: (feature) => {
             const name = feature.properties.ADMIN || feature.properties.name || "";
+            const selected = (document.getElementById('country-select')?.value || "").toLowerCase();
+            
+            // 1. Kiểm tra trạng thái
+            const isHighlighted = (selected && countryCoords[selected] && name === countryCoords[selected].adminName) || 
+                                  (activeAlliance && activeAlliance.includes(name));
+            const isWarZone = showPoliticalStatus && (warZones[name] !== undefined); // Chỉ hiện khi showPoliticalStatus = true
+            const isClimate = activeClimateGroup && activeClimateGroup.countries.includes(name);
 
-            // --- 1. ƯU TIÊN NHUỘM MÀU KHÍ HẬU (Hải dương, Gió mùa...) ---
-            if (activeClimateGroup && activeClimateGroup.countries.includes(name)) {
+            // 2. Ưu tiên hiển thị: CHIẾN TRANH > KHÍ HẬU > HIGHLIGHT > MẶC ĐỊNH
+            if (isWarZone) {
                 return {
-                    fillColor: activeClimateGroup.color,
-                    fillOpacity: 0.7,
-                    color: "#ffffff",
-                    weight: 1.5,
-                    dashArray: "",
-                    interactive: true
+                    color: "#ff0000",
+                    weight: 3,
+                    fillColor: "#ff0000",
+                    fillOpacity: 0.4,
+                    className: 'war-zone-blink'
                 };
             }
 
-            // --- 2. LOGIC CŨ CỦA BẠN ---
-            let isHighlighted = false;
-            let isCustom = customColoredCountries[name];
-
-            if (activeAlliance && activeAlliance.includes(name)) {
-                isHighlighted = true;
-            } else if (selectedCountry && countryCoords[selectedCountry]) {
-                const targetAdmin = countryCoords[selectedCountry].adminName;
-                if (name === targetAdmin || (selectedCountry === "vietnam" && (name === "Vietnam" || name === "Viet Nam"))) {
-                    isHighlighted = true;
-                }
+            if (isClimate) {
+                return { fillColor: activeClimateGroup.color, fillOpacity: 0.65, color: "#fff", weight: 1.8 };
             }
 
             return {
-                color: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "#00FF00"),
-                weight: (isHighlighted || isCustom) ? 3 : 1,
-                fillColor: isHighlighted ? "#ff0000" : (isCustom ? "#ffcc00" : "transparent"),
-                fillOpacity: (isHighlighted || isCustom) ? 0.4 : 0.05,
-                dashArray: (isHighlighted || isCustom) ? "" : "3, 3",
-                interactive: true 
+                color: isHighlighted ? "#ff0000" : "#32CD32",
+                weight: isHighlighted ? 3 : 0.5,
+                fillColor: isHighlighted ? "#ff0000" : "transparent",
+                fillOpacity: isHighlighted ? 0.35 : 0.08,
+                dashArray: isHighlighted ? "" : "3,3"
             };
         },
-        onEachFeature: (feature, layer) => {
-    layer.on('click', function (e) {
-        const countryName = feature.properties.ADMIN || feature.properties.name;
-        
-        // Tạo nội dung Popup mới có thêm nút thông tin
-        const popupContent = `
-            <div style="color:black; font-family:Arial; padding:5px; min-width:150px;">
-                <b style="font-size:16px; color:#d32f2f;">${countryName}</b><br>
-                <div style="margin-top:10px;">
-                    <button onclick="fetchWiki('${countryName}')" style="width:100%; cursor:pointer; background:#00FF00; border:none; border-radius:4px; padding:5px; font-weight:bold; margin-bottom:5px;">🌐 WIKIPEDIA</button>
-                    <button onclick="showCountryDetails('${countryName}')" style="width:100%; cursor:pointer; background:#ffcc00; border:none; border-radius:4px; padding:5px; font-weight:bold;">🏛️ THỦ ĐÔ & BANG</button>
-                </div>
-            </div>
-        `;
-        
-        L.popup().setLatLng(e.latlng).setContent(popupContent).openOn(map);
-    });
 
-            layer.on('dblclick', function (e) {
-                const countryName = feature.properties.ADMIN || feature.properties.name;
-                customColoredCountries[countryName] = !customColoredCountries[countryName];
-                renderBorders(document.getElementById('year-input').value);
-                L.DomEvent.stopPropagation(e);
-            });
+        onEachFeature: (feature, layer) => {
+            const countryName = feature.properties.ADMIN || feature.properties.name || "Unknown";
+
+            // SỬ DỤNG HÀM TOÀN CỤC ĐỂ TRÁNH LỖI SCOPE KHI POPUP MỞ LẦN 2
+            window.handleWikiClick = function(name) {
+                console.log("Wiki click:", name);
+                fetchWiki(name);
+            };
+            window.handleDetailsClick = function(name) {
+                console.log("Details click:", name);
+                showCountryDetails(name);
+            };
+
+            const popupHTML = `
+                <div style="min-width:220px; padding:10px; background:#1a1a1a; border-radius:8px; color:white; font-family:Segoe UI;">
+                    <b style="font-size:16px; color:#ff4444;">${countryName}</b><br><br>
+                    <button onclick="window.handleWikiClick('${countryName.replace(/'/g, "\\'")}')" 
+                            style="width:100%; padding:8px; background:#333; color:white; border:1px solid #444; border-radius:4px; cursor:pointer; margin-bottom:5px;">🌐 WIKIPEDIA</button>
+                    <button onclick="window.handleDetailsClick('${countryName.replace(/'/g, "\\'")}')" 
+                            style="width:100%; padding:8px; background:#333; color:white; border:1px solid #444; border-radius:4px; cursor:pointer;">🏛️ THỦ ĐÔ & BANG</button>
+                </div>
+            `;
+
+            layer.bindPopup(popupHTML, { closeButton: true, offset: [0, -8] });
         }
     }).addTo(map);
-    
+
     if (geojsonLayer) geojsonLayer.bringToBack();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // --- DANH SÁCH TỌA ĐỘ KHU VỰC (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) ---
         const regionCoords = {
@@ -2133,6 +2133,27 @@ if(mainSlider) {
             'mercosur': { center: [-15.0, -60.0], zoom: 3, countries: ["Argentina", "Brazil", "Paraguay", "Uruguay", "Venezuela"] },
             'mena': { center: [25.0, 10.0], zoom: 3, countries: ["Algeria", "Bahrain", "Djibouti", "Egypt", "Iran", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya", "Morocco", "Oman", "Qatar", "Saudi Arabia", "Syria", "Tunisia", "United Arab Emirates", "Yemen"] },
             'g7': { center: [45.0, -10.0], zoom: 2, countries: ["Canada", "France", "Germany", "Italy", "Japan", "United Kingdom", "United States of America"] },
+            'saarc': { center: [27.0, 80.0], zoom: 3, countries: ["Afghanistan","Bangladesh","Bhutan","India","Maldives","Nepal","Pakistan","Sri Lanka"] },
+'caricom': { center: [15.0, -61.0], zoom: 4, countries: ["Antigua and Barbuda","Bahamas","Barbados","Belize","Dominica","Grenada","Guyana","Haiti","Jamaica","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Suriname","Trinidad and Tobago"] },
+'pif': { center: [-15.0, -165.0], zoom: 3, countries: ["Australia","Cook Islands","Fiji","French Polynesia","Kiribati","Marshall Islands","Micronesia","Nauru","New Caledonia","New Zealand","Niue","Papua New Guinea","Samoa","Solomon Islands","Tonga","Tuvalu","Vanuatu"] },
+'gcc': { center: [26.0, 50.0], zoom: 4, countries: ["Bahrain","Kuwait","Oman","Qatar","Saudi Arabia","United Arab Emirates"] },
+'bimstec': { center: [20.0, 90.0], zoom: 3, countries: ["Bangladesh","Bhutan","India","Myanmar","Nepal","Sri Lanka","Thailand"] },
+'g20': { center: [20.0, 0.0], zoom: 2, countries: ["Argentina","Australia","Brazil","Canada","China","France","Germany","India","Indonesia","Italy","Japan","Mexico","Russia","Saudi Arabia","South Africa","South Korea","Turkey","United Kingdom","United States"] },
+'oic': { center: [25.0, 40.0], zoom: 2, countries: ["Afghanistan","Albania","Algeria","Azerbaijan","Bahrain","Bangladesh","Benin","Brunei","Burkina Faso","Cameroon","Chad","Comoros","Cote d'Ivoire","Djibouti","Egypt","Gambia","Guinea","Guinea-Bissau","Indonesia","Iran","Iraq","Jordan","Kazakhstan","Kuwait","Kyrgyzstan","Lebanon","Libya","Malaysia","Maldives","Mali","Mauritania","Morocco","Niger","Nigeria","Oman","Pakistan","Palestine","Qatar","Saudi Arabia","Senegal","Sierra Leone","Somalia","Sudan","Suriname","Syria","Tajikistan","Togo","Tunisia","Turkey","Turkmenistan","Uganda","United Arab Emirates","Uzbekistan","Yemen"] },
+'ecowas': { center: [8.0, -10.0], zoom: 3, countries: ["Benin","Burkina Faso","Cape Verde","Côte d'Ivoire","Gambia","Ghana","Guinea","Guinea-Bissau","Liberia","Mali","Niger","Nigeria","Senegal","Sierra Leone","Togo"] },
+'unasur': { center: [-15.0, -60.0], zoom: 3, countries: ["Argentina","Bolivia","Brazil","Chile","Colombia","Ecuador","Guyana","Paraguay","Peru","Suriname","Uruguay","Venezuela"] },
+'anzus': { center: [-25.0, 135.0], zoom: 3, countries: ["Australia","New Zealand","United States"] },
+'cptpp': { center: [10.0, 150.0], zoom: 3, countries: ["Australia","Brunei","Canada","Chile","Japan","Malaysia","Mexico","New Zealand","Peru","Singapore","Vietnam"] },
+'apec': { center: [20.0, 160.0], zoom: 2, countries: ["Australia","Brunei","Canada","Chile","China","Hong Kong","Indonesia","Japan","South Korea","Malaysia","Mexico","New Zealand","Papua New Guinea","Peru","Philippines","Russia","Singapore","Taiwan","Thailand","United States","Vietnam"] },
+'eaeu': { center: [50.0, 60.0], zoom: 3, countries: ["Armenia","Belarus","Kazakhstan","Kyrgyzstan","Russia"] },
+'g77': { center: [10.0, -20.0], zoom: 2, countries: ["Afghanistan","Albania","Algeria","Angola","Antigua and Barbuda","Argentina","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Cuba","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Eswatini","Ethiopia","Fiji","Gabon","Gambia","Ghana","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","India","Indonesia","Iran","Iraq","Jamaica","Jordan","Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Lebanon","Lesotho","Liberia","Libya","Madagascar","Malawi","Malaysia","Maldives","Mali","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Nicaragua","Niger","Nigeria","North Macedonia","Oman","Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Qatar","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","Sao Tome and Principe","Saudi Arabia","Senegal","Seychelles","Sierra Leone","Singapore","Solomon Islands","Somalia","South Africa","South Sudan","Sri Lanka","Sudan","Suriname","Syria","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","Uruguay","Uzbekistan","Vanuatu","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"] },
+'ici': { center: [10.0, 20.0], zoom: 2, countries: ["Canada","France","Germany","Italy","Japan","United Kingdom","United States"] }, // International Criminal Institutions (ví dụ G7)  
+'quad': { center: [20.0, 130.0], zoom: 3, countries: ["United States","Japan","India","Australia"] },
+'csto': { center: [50.0, 70.0], zoom: 3, countries: ["Russia","Belarus","Kazakhstan","Armenia","Kyrgyzstan","Tajikistan"] },
+'nordic_council': { center: [65.0, 20.0], zoom: 3, countries: ["Denmark","Finland","Iceland","Norway","Sweden"] },
+'oecd': { center: [30.0, 10.0], zoom: 2, countries: ["Australia","Austria","Belgium","Canada","Chile","Colombia","Czech Republic","Denmark","Estonia","Finland","France","Germany","Greece","Hungary","Iceland","Ireland","Israel","Italy","Japan","Korea","Latvia","Lithuania","Luxembourg","Mexico","Netherlands","New Zealand","Norway","Poland","Portugal","Slovakia","Slovenia","Spain","Sweden","Switzerland","Turkey","United Kingdom","United States"] },
+'g15': { center: [0.0, 20.0], zoom: 2, countries: ["Algeria","Argentina","Brazil","Chile","Egypt","India","Indonesia","Iran","Jamaica","Kenya","Malaysia","Mexico","Nigeria","Panama","Peru","Senegal","Sri Lanka","Trinidad and Tobago","Venezuela","Zambia","Zimbabwe"] },
+
         
         // --- CÁC KHU VỰC TOÀN CHÂU ---
             'asia': { center: [30.0, 90.0], zoom: 3, countries: ["Taiwan", "Russia", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei Darussalam", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen"] },
@@ -2252,48 +2273,12 @@ function takeScreenshot() {
 // Gắn cho nút chụp
 document.getElementById('screenshot-btn').onclick = takeScreenshot;
 
-// Gắn phím C chụp ảnh
-window.addEventListener('keydown', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-    if (e.code === "Space") {
-        e.preventDefault();
-        isPlaying ? stopAnimation() : playAnimation();
-    }
-
-    if (e.key.toLowerCase() === 'h') {
-        document.body.classList.toggle('cinematic-mode');
-    }
-
-    // Phím C chụp ảnh
-    if (e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        takeScreenshot();
-    }
-});
 
 // Gắn sự kiện click nút chụp
 document.getElementById('screenshot-btn').onclick = takeScreenshot;
 
-// Gắn phím C chụp ảnh (bất kỳ lúc nào)
-window.addEventListener('keydown', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-    if (e.code === "Space") {
-        e.preventDefault();
-        isPlaying ? stopAnimation() : playAnimation();
-    }
-
-    if (e.key.toLowerCase() === 'h') {
-        document.body.classList.toggle('cinematic-mode');
-    }
-
-    // Phím C chụp ảnh
-    if (e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        takeScreenshot();
-    }
-});
 
         map.on('zoomend', updateLabels);
         // --- LOGIC ẨN/HIỆN PANEL ĐIỀU KHIỂN ---
@@ -2303,18 +2288,14 @@ let isHidden = false;
 
 toggleBtn.onclick = function() {
     if (!isHidden) {
-        // Ẩn xuống: dịch chuyển xuống 85% chiều cao của nó, chỉ để lại cái nút
-        uiPanel.style.transform = 'translateX(-50%) translateY(85%)';
-        toggleBtn.innerHTML = '▲'; // Đổi mũi tên chỉ lên
+        uiPanel.style.display = 'none';  // Ẩn panel hoàn toàn
+        toggleBtn.innerHTML = '▲';
     } else {
-        // Hiện lên: quay về vị trí cũ
-        uiPanel.style.transform = 'translateX(-50%) translateY(0)';
-        toggleBtn.innerHTML = '▼'; // Đổi mũi tên chỉ xuống
+        uiPanel.style.display = 'block';  // Hiện panel lại
+        toggleBtn.innerHTML = '▼';
     }
     isHidden = !isHidden;
-    // 1. Khai báo một cái "khay" để chứa các đường khí hậu
-let climateLayerGroup = L.layerGroup().addTo(map); 
-
+};
 function toggleClimateLayer(mode) {
     const subMenu = document.getElementById('climate-subtype');
     if (climateLayerGroup) climateLayerGroup.clearLayers();
@@ -2381,7 +2362,7 @@ function toggleClimateLayer(mode) {
     }
     renderBorders(document.getElementById('year-input').value);
 }
-};
+
 function renderClimateSubtype(type) {
     if (type === "none") {
         activeClimateGroup = null;
@@ -2391,35 +2372,7 @@ function renderClimateSubtype(type) {
     renderBorders(document.getElementById('year-input').value);
 }
 
-async function showCountryDetails(name) {
-    // Nếu đang hiện ranh giới rồi thì xóa đi để đổi nước khác
-    if (provinceLayer) map.removeLayer(provinceLayer);
 
-    // Thông báo cho người dùng
-    console.log("Đang tải dữ liệu chi tiết cho: " + name);
-
-    // Ở đây chúng ta sẽ dùng một kỹ thuật gọi là "Filter" (Lọc)
-    // Nếu bạn có file GeoJSON chi tiết của nước đó, hãy nạp vào đây.
-    // Dưới đây là ví dụ vẽ ranh giới chi tiết hơn nếu có dữ liệu:
-    
-    provinceLayer = L.geoJSON(worldDataCache, {
-        filter: (feature) => {
-            // Chỉ hiện ranh giới của quốc gia đang chọn
-            const countryName = feature.properties.ADMIN || feature.properties.name;
-            return countryName === name;
-        },
-        style: {
-            color: "#00ffff", // Màu xanh neon cho ranh giới bang
-            weight: 2,
-            fillOpacity: 0.1,
-            dashArray: "5, 5" // Đường nét đứt để phân biệt với biên giới quốc gia
-        }
-    }).addTo(map);
-
-    // Tự động zoom vào quốc gia đó để xem cho rõ
-    const bounds = provinceLayer.getBounds();
-    map.fitBounds(bounds);
-}
 
 function toggleResources() {
     if (map.hasLayer(resourceLayerGroup)) {
@@ -2489,6 +2442,15 @@ function toggleCustomPanel() {
 // ==========================================
 const RAW_LOCATION_DATA = {
     "Russia": {
+
+
+
+
+
+
+
+
+
         "forests": [
             { lat: 64.5, lng: 40.5, name: "Lâm trường Arkhangelsk" }, { lat: 61.7, lng: 34.3, name: "Rừng Karelia 1" },
             { lat: 62.5, lng: 33.0, name: "Rừng Karelia 2" }, { lat: 66.0, lng: 33.0, name: "Rừng Murmansk" },
@@ -2518,16 +2480,74 @@ const RAW_LOCATION_DATA = {
             { lat: 66.0, lng: 123.0, name: "Rừng Zhigansk" }, { lat: 68.0, lng: 130.0, name: "Verkhoyansk" },
             { lat: 53.0, lng: 158.5, name: "Rừng Kamchatka South" }, { lat: 56.0, lng: 160.0, name: "Rừng Kamchatka Central" }
         ],
+
+
+
+
+
+
+
+
+
+
+
         "animals": [
-            { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
-            { lat: 64.2, lng: 103.5, name: "Đàn sói săn mồi", icon: "🐺", cat: "wolf" },
-            { lat: 65.8, lng: 106.0, name: "Sói tuyết Yakutia", icon: "🐺", cat: "wolf" },
-            { lat: 63.5, lng: 101.0, name: "Sói xám hoang dã", icon: "🐺", cat: "wolf" },
-            { lat: 60.0, lng: 85.0, name: "Gấu nâu Siberia", icon: "🐻", cat: "bear" },
-            { lat: 68.0, lng: 130.0, name: "Gấu trắng Bắc Cực", icon: "🐻‍❄️", cat: "bear" },
-            { lat: 45.0, lng: 136.0, name: "Hổ Amur", icon: "🐅", cat: "tiger" },
-            { lat: 46.5, lng: 137.5, name: "Hổ Viễn Đông", icon: "🐅", cat: "tiger" }
-        ],
+    // ===== 🐺 SÓI =====
+    { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
+    { lat: 64.2, lng: 103.5, name: "Đàn sói săn mồi", icon: "🐺", cat: "wolf" },
+    { lat: 65.8, lng: 106.0, name: "Sói tuyết Yakutia", icon: "🐺", cat: "wolf" },
+    { lat: 63.5, lng: 101.0, name: "Sói xám hoang dã", icon: "🐺", cat: "wolf" },
+    { lat: 67.2, lng: 120.0, name: "Sói Bắc Siberia", icon: "🐺", cat: "wolf" },
+
+    // ===== 🐻 GẤU =====
+    { lat: 60.0, lng: 85.0, name: "Gấu nâu Siberia", icon: "🐻", cat: "bear" },
+    { lat: 61.5, lng: 90.0, name: "Gấu rừng Taiga", icon: "🐻", cat: "bear" },
+    { lat: 68.0, lng: 130.0, name: "Gấu trắng Bắc Cực", icon: "🐻‍❄️", cat: "bear" },
+    { lat: 72.0, lng: 140.0, name: "Gấu Bắc Cực săn hải cẩu", icon: "🐻‍❄️", cat: "bear" },
+
+    // ===== 🐅 HỔ =====
+    { lat: 45.0, lng: 136.0, name: "Hổ Amur", icon: "🐅", cat: "tiger" },
+    { lat: 46.5, lng: 137.5, name: "Hổ Viễn Đông", icon: "🐅", cat: "tiger" },
+    { lat: 44.5, lng: 135.0, name: "Hổ Siberia săn mồi", icon: "🐅", cat: "tiger" },
+
+    // ===== 🦌 HƯƠU / TUẦN LỘC =====
+    { lat: 66.0, lng: 110.0, name: "Tuần lộc Siberia", icon: "🦌", cat: "deer" },
+    { lat: 67.5, lng: 115.0, name: "Đàn tuần lộc di cư", icon: "🦌", cat: "deer" },
+    { lat: 58.0, lng: 95.0, name: "Hươu đỏ Nga", icon: "🦌", cat: "deer" },
+
+    // ===== 🦊 CÁO =====
+    { lat: 62.0, lng: 100.0, name: "Cáo đỏ Siberia", icon: "🦊", cat: "fox" },
+    { lat: 70.0, lng: 135.0, name: "Cáo Bắc Cực", icon: "🦊", cat: "fox" },
+
+    // ===== 🐰 THỎ =====
+    { lat: 59.0, lng: 92.0, name: "Thỏ rừng Siberia", icon: "🐰", cat: "rabbit" },
+
+    // ===== 🐗 LỢN RỪNG =====
+    { lat: 55.0, lng: 110.0, name: "Lợn rừng Nga", icon: "🐗", cat: "boar" },
+
+    // ===== 🐆 LINH MIÊU =====
+    { lat: 60.5, lng: 100.5, name: "Linh miêu Eurasia", icon: "🐆", cat: "lynx" },
+
+    // ===== 🐃 BÒ RỪNG / BISON =====
+    { lat: 54.5, lng: 30.0, name: "Bò rừng châu Âu (Bison)", icon: "🐃", cat: "bison" },
+
+    // ===== 🐦 ĐẠI BÀNG =====
+    { lat: 62.5, lng: 105.5, name: "Đại bàng vàng", icon: "🦅", cat: "eagle" },
+
+    // ===== 🐟 SINH VẬT BIỂN =====
+    { lat: 69.0, lng: 33.0, name: "Hải cẩu Bắc Cực", icon: "🦭", cat: "seal" },
+    { lat: 70.5, lng: 40.0, name: "Cá voi xám", icon: "🐋", cat: "whale" }
+],
+
+
+
+
+
+
+
+
+
+
         "minerals": [
             { lat: 56.8, lng: 60.6, name: "Mỏ Sắt Ekaterinburg", icon: "⛓️", cat: "iron" },
             { lat: 57.5, lng: 59.5, name: "Mỏ Đồng Nizhny Tagil", icon: "🟠", cat: "iron" },
@@ -2976,6 +2996,22 @@ function drawRailways() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ==========================================
 // 4. HÀM ĐIỀU KHIỂN GIAO DIỆN & PHÍM TẮT
 // ==========================================
@@ -3083,25 +3119,6 @@ function clearCustomColors() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //ĐƯỜNG SẮT
 
 
@@ -3114,34 +3131,6 @@ function drawRailways() {
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3178,6 +3167,127 @@ function drawMaritime() {
         });
     }
 }
+
+
+function generateAgriData() {
+
+    // Vành đai Cà phê
+    const coffeeHubs = [
+        { lat: 14.5, lng: 108.0 },
+        { lat: -15.0, lng: -45.0 }
+    ];
+
+    coffeeHubs.forEach(h => {
+        for (let i = 0; i < 30; i++) {
+            economyData.push({
+                lat: h.lat,
+                lng: h.lng,
+                cat: "coffee",
+                name: "Trang trại Cà phê",
+                icon: "☕"
+            });
+        }
+    });
+
+
+    // Vựa lúa
+    const riceHubs = [
+        { lat: 10.5, lng: 105.5 },
+        { lat: 21.0, lng: 106.0 }
+    ];
+
+    riceHubs.forEach(h => {
+        for (let i = 0; i < 30; i++) {
+            economyData.push({
+                lat: h.lat,
+                lng: h.lng,
+                cat: "crop",
+                name: "Cánh đồng lúa nước",
+                icon: "🌾"
+            });
+        }
+    });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3229,12 +3339,6 @@ function generateAutomotiveData() {
 
 
 
-
-
-
-
-
-
 //CÔNG NGHIỆP NẶNG
 
 
@@ -3266,95 +3370,61 @@ function generateHeavyIndustryData() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// --- 2. HÀM NÔNG NGHIỆP ---
-
-function generateAgriData() {
-    // Vành đai Cà phê
-    const coffeeHubs = [{lat: 14.5, lng: 108.0}, {lat: -15.0, lng: -45.0}];
-    coffeeHubs.forEach(h => {
-        for(let i=0; i<30; i++) {
-            economyData.push({lat: h.lat+(Math.random()-0.5)*3, lng: h.lng+(Math.random()-0.5)*3, cat: "coffee", name: "Trang trại Cà phê", icon: "☕"});
-        }
-    });
-    // Vựa lúa
-    const riceHubs = [{lat: 10.5, lng: 105.5}, {lat: 21.0, lng: 106.0}];
-    riceHubs.forEach(h => {
-        for(let i=0; i<30; i++) {
-            economyData.push({lat: h.lat+(Math.random()-0.5)*2, lng: h.lng+(Math.random()-0.5)*2, cat: "crop", name: "Cánh đồng lúa nước", icon: "🌾"});
-        }
-    });
-} // <--- Phải có ngoặc đóng ở đây!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //THỦY ĐIỆN
 
 
 function generateEnergyData() {
     const energyHubs = [
-        // THỦY ĐIỆN & NHIỆT ĐIỆN -> Dùng chung cat: "power_plant"
-        { lat: 20.84, lng: 105.15, name: "Thủy điện Hòa Bình", icon: "💧", cat: "power_plant", details: "Công trình thủy điện lớn nhất VN thế kỷ 20. Công suất: 1.920 MW." },
-        { lat: 21.38, lng: 102.83, name: "Thủy điện Sơn La", icon: "💧", cat: "power_plant", details: "Nhà máy thủy điện lớn nhất Đông Nam Á." },
-        { lat: 21.07, lng: 107.35, name: "Nhiệt điện Mông Dương", icon: "🔥", cat: "power_plant", details: "Sử dụng công nghệ nhiệt điện than hiện đại tại Quảng Ninh." },
-        { lat: 10.55, lng: 107.24, name: "Trung tâm Điện lực Phú Mỹ", icon: "🔥", cat: "power_plant", details: "Cụm nhà máy điện khí lớn nhất Việt Nam." }
+
+        // ===== 🇻🇳 VIỆT NAM =====
+        { lat: 20.84, lng: 105.15, name: "Thủy điện Hòa Bình", icon: "💧", cat: "power_plant", country: "vietnam", details: "Công suất 1.920 MW." },
+        { lat: 21.38, lng: 102.83, name: "Thủy điện Sơn La", icon: "💧", cat: "power_plant", country: "vietnam", details: "Lớn nhất Đông Nam Á." },
+        { lat: 21.07, lng: 107.35, name: "Nhiệt điện Mông Dương", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Nhiệt điện than hiện đại." },
+        { lat: 10.55, lng: 107.24, name: "Phú Mỹ Power Complex", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Trung tâm điện khí lớn." },
+        { lat: 11.93, lng: 108.44, name: "Điện gió Đắk Lắk", icon: "🌬️", cat: "renewable", country: "vietnam", details: "Năng lượng gió Tây Nguyên." },
+        { lat: 11.56, lng: 109.03, name: "Điện mặt trời Ninh Thuận", icon: "☀️", cat: "renewable", country: "vietnam", details: "Thủ phủ năng lượng tái tạo VN." },
+
+        // ===== 🇺🇸 HOA KỲ =====
+        { lat: 36.01, lng: -114.74, name: "Hoover Dam", icon: "💧", cat: "power_plant", country: "usa", details: "Thủy điện nổi tiếng trên sông Colorado." },
+        { lat: 32.39, lng: -111.0, name: "Nhà máy điện mặt trời Arizona", icon: "☀️", cat: "renewable", country: "usa", details: "Solar farm lớn." },
+        { lat: 41.48, lng: -81.67, name: "Perry Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "usa", details: "Nhà máy điện hạt nhân Ohio." },
+        { lat: 29.42, lng: -95.0, name: "Texas Wind Farm", icon: "🌬️", cat: "renewable", country: "usa", details: "Bang Texas dẫn đầu điện gió." },
+
+        // ===== 🇷🇺 NGA =====
+        { lat: 56.84, lng: 101.0, name: "Bratsk Dam", icon: "💧", cat: "power_plant", country: "russia", details: "Một trong những đập lớn nhất thế giới." },
+        { lat: 51.3, lng: 39.2, name: "Novovoronezh Nuclear", icon: "⚛️", cat: "nuclear", country: "russia", details: "Nhà máy hạt nhân tiên phong." },
+        { lat: 55.75, lng: 37.61, name: "Moscow Thermal Plant", icon: "🔥", cat: "power_plant", country: "russia", details: "Cung cấp điện cho thủ đô." },
+
+        // ===== 🇨🇳 TRUNG QUỐC =====
+        { lat: 30.82, lng: 111.0, name: "Tam Hiệp", icon: "💧", cat: "power_plant", country: "china", details: "Đập lớn nhất thế giới." },
+        { lat: 31.23, lng: 121.47, name: "Shanghai Solar Grid", icon: "☀️", cat: "renewable", country: "china", details: "Hệ thống năng lượng mặt trời đô thị." },
+        { lat: 22.6, lng: 114.3, name: "Daya Bay Nuclear", icon: "⚛️", cat: "nuclear", country: "china", details: "Nhà máy điện hạt nhân lớn." },
+
+        // ===== 🇩🇪 ĐỨC =====
+        { lat: 51.0, lng: 10.0, name: "German Wind Corridor", icon: "🌬️", cat: "renewable", country: "germany", details: "Điện gió phát triển mạnh." },
+        { lat: 52.52, lng: 13.4, name: "Berlin Solar", icon: "☀️", cat: "renewable", country: "germany", details: "Năng lượng tái tạo đô thị." },
+
+        // ===== 🇫🇷 PHÁP =====
+        { lat: 45.25, lng: 5.7, name: "Cruas Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "france", details: "Pháp phụ thuộc nhiều vào điện hạt nhân." },
+        { lat: 43.6, lng: 1.44, name: "Solar South France", icon: "☀️", cat: "renewable", country: "france", details: "Trang trại điện mặt trời." },
+
+        // ===== 🇮🇳 ẤN ĐỘ =====
+        { lat: 30.73, lng: 76.78, name: "Bhakra Dam", icon: "💧", cat: "power_plant", country: "india", details: "Đập lớn ở Bắc Ấn." },
+        { lat: 23.25, lng: 77.41, name: "Bhopal Thermal", icon: "🔥", cat: "power_plant", country: "india", details: "Nhiệt điện than." },
+        { lat: 27.6, lng: 78.0, name: "India Solar Farm", icon: "☀️", cat: "renewable", country: "india", details: "Top thế giới về solar." },
+
+        // ===== 🇧🇷 BRAZIL =====
+        { lat: -25.4, lng: -54.6, name: "Itaipu Dam", icon: "💧", cat: "power_plant", country: "brazil", details: "Top thủy điện lớn nhất thế giới." },
+        { lat: -15.8, lng: -47.9, name: "Brazil Wind Farm", icon: "🌬️", cat: "renewable", country: "brazil", details: "Điện gió phát triển." },
+
+        // ===== 🇦🇺 ÚC =====
+        { lat: -36.0, lng: 148.0, name: "Snowy Hydro", icon: "💧", cat: "power_plant", country: "australia", details: "Dự án thủy điện lớn." },
+        { lat: -23.7, lng: 133.8, name: "Outback Solar", icon: "☀️", cat: "renewable", country: "australia", details: "Solar lớn ở sa mạc." }
+
     ];
+
     energyHubs.forEach(item => economyData.push(item));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3383,23 +3453,9 @@ const railwayData = [
 
 
 
-
-
-
-
-
-
-
 // DỮ LIỆU ĐƯỜNG BIỂN CHI TIẾT (Từ GeoJSON của Sói)
 const maritimeData = [
-    
-
-
-
-
-
-
-
+  
 {
     name: "Tuyến hàng hải: Việt Nam - Malaysia (VN-MY)",
     color: "#00ff88", // Màu xanh lá đặc trưng Malaysia
@@ -3417,8 +3473,6 @@ const maritimeData = [
     portStart: "Cảng Cái Mép (VN)",
     portEnd: "Cảng Klang (MY)"
 },
-    
-
 
 
 {
@@ -3548,17 +3602,6 @@ const maritimeData = [
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 //CỤM GIAO Thông
 
 
@@ -3569,57 +3612,12 @@ function generateTransportData() {
         { lat: 10.81, lng: 106.66, name: "Sân bay Tân Sơn Nhất (SGN)", icon: "✈️", cat: "airport", details: "Sân bay có lưu lượng khách đông nhất Việt Nam." },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // CẢNG BIỂN -> Dùng cat: "seaport"
         { lat: 20.83, lng: 106.76, name: "Cảng Lạch Huyện (Hải Phòng)", icon: "🚢", cat: "seaport", details: "Cảng cửa ngõ quốc tế có khả năng đón tàu siêu trọng." },
         { lat: 1.26, lng: 103.81, name: "Cảng Singapore", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển container bận rộn hàng đầu thế giới." },
         // Thêm vào trong mảng transportHubs của ông
 { lat: 10.53, lng: 107.02, name: "Cảng Cái Mép", icon: "🚢", cat: "seaport", details: "Cảng nước sâu hiện đại nhất Việt Nam." },
 { lat: 3.00, lng: 101.35, name: "Cảng Klang", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển lớn nhất Malaysia." },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3652,6 +3650,75 @@ generateCoffeeBelt();        // Cà phê toàn cầu
 updateFilters();
 
 console.log("Hệ thống Athemianarotry Geography: Tài nguyên đã sẵn sàng! 🌳💎🚢");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3712,10 +3779,23 @@ let startPoint = null;
 let missileControl = document.getElementById('missile-control');
 
 // 1. Kích đúp để chọn điểm phóng
+// Double click trên map = Tạo bệ phóng + Tự động tạo Keyframe
 map.on('dblclick', function(e) {
     startPoint = e.latlng;
+
+    // Hiển thị control tên lửa
     missileControl.style.display = 'block';
-    L.circleMarker(startPoint, {color: 'red', radius: 5}).addTo(map).bindPopup("Bệ phóng").openPopup();
+
+    // Tạo marker tạm thời đánh dấu điểm phóng
+    L.circleMarker(startPoint, {
+        color: '#ff0000',
+        radius: 6,
+        fillOpacity: 0.9,
+        className: 'glowing-missile'
+    }).addTo(map).bindPopup("Điểm phóng").openPopup();
+
+    // Tự động tạo Keyframe ngay lập tức (theo yêu cầu mới của bạn)
+    recordAction(startPoint, map.getCenter(), 2000, 100000);
 });
 
 map.on('click', function(e) {
@@ -3733,316 +3813,29 @@ map.on('click', function(e) {
     alert("Đã thêm Keyframe vào dòng thời gian. Nhấn SPACE để chạy phim!");
 });
 
-// --- HÀM PHÓNG TÊN LỬA CHÓI LOÀ & CHẬM ---
-function launchMissile(start, end, duration, explosionSize) {
-    // Chế độ bay siêu chậm: Sói nhân duration với 2 hoặc chỉnh thanh gạt về mức cao nhất
-    let actualDuration = duration; 
 
-    // Tạo đầu đạn có hiệu ứng chói (Glow) bằng CSS
-    let missile = L.circleMarker(start, {
-        radius: 5,
-        color: '#fff',
-        weight: 2,
-        fillColor: '#00ffff',
-        fillOpacity: 1,
-        className: 'glowing-missile' // Lớp CSS để làm chói
-    }).addTo(map);
 
-    let startTime = null;
 
-    function animate(timestamp) {
-        if (!startTime) startTime = timestamp;
-        let progress = (timestamp - startTime) / actualDuration;
 
-        if (progress < 1) {
-            let currLat = start.lat + (end.lat - start.lat) * progress;
-            let currLng = start.lng + (end.lng - start.lng) * progress;
-            missile.setLatLng([currLat, currLng]);
-            
-            // Đuôi tên lửa để lại vệt sáng mờ
-            L.circleMarker([currLat, currLng], {
-                radius: 2,
-                color: '#00ffff',
-                opacity: 0.1,
-                fillOpacity: 0.1
-            }).addTo(map);
-            
-            requestAnimationFrame(animate);
-        } else {
-            map.removeLayer(missile);
-            // Kích hoạt sóng xung kích siêu chậm
-            createSlowShockwave(end.lat, end.lng, explosionSize);
-        }
-    }
-    requestAnimationFrame(animate);
-}
 
-// --- HÀM SÓNG XUNG KÍCH CHẬM & CHÓI ---
-function createSlowShockwave(lat, lng, maxR) {
-    let shock = L.circle([lat, lng], {
-        radius: 0,
-        color: '#fff', // Viền trắng chói
-        fillColor: '#ffff00', // Tâm vàng rực
-        fillOpacity: 0.9,
-        weight: 5
-    }).addTo(map);
 
-    let r = 0;
-    // Tốc độ lan tỏa: 60ms mỗi bước (Chậm hơn bản cũ gấp đôi)
-    let interval = setInterval(() => {
-        r += maxR / 100; // Lan tỏa từng chút một
-        shock.setRadius(r);
-        
-        // Hiệu ứng mờ dần cực chậm
-        let opacity = 0.9 * (1 - r / maxR);
-        shock.setStyle({
-            fillOpacity: opacity,
-            opacity: opacity,
-            weight: 10 * (1 - r / maxR) // Viền cũng mờ dần
-        });
 
-        if (r >= maxR) {
-            clearInterval(interval);
-            map.removeLayer(shock);
-        }
-    }, 60); // 60ms tạo cảm giác Slow-mo rất nghệ
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ==========================================
-// 🎬 HỆ THỐNG TIMELINE & ANIMATION - ATHE STUDIO
-// ==========================================
-
-// Biến toàn cục cho hệ thống timeline & animation
-let actions = [];
-let isPlaying = false;
-let animationId = null;
-let pausedElapsed = 0;          // Thời gian đã chạy trước khi pause (ms)
-let currentTime = 0;            // Nếu bạn vẫn cần biến này, giữ lại; nếu không thì xóa
-
-// Độ rộng cột nhãn bên trái (vách ngăn)
-const LABEL_WIDTH = 120; 
-
-// --- 1. GHI LẠI HÀNH ĐỘNG (TẠO KEYFRAME) ---
-function recordAction(start, end, speed, radius) {
-    let id = Date.now();
-    let action = {
-        id: id,
-        time: 50, // Vị trí mặc định trên track (tính từ vách ngăn)
-        start: start,
-        end: end,
-        speed: speed,
-        radius: radius,
-        fired: false
-    };
-    actions.push(action);
-    
-    // Tự động mở bảng khi có keyframe mới
-    const panel = document.getElementById('keyframe-panel');
-    panel.classList.add('active');
-    document.getElementById('toggle-keyframe').innerText = "❌ HIDE TIMELINE";
-    
-    renderKeyframe(action, actions.length);
-}
-
-// --- 2. VẼ TRACK VÀ KEYFRAME TỰ ĐỘNG ---
-function renderKeyframe(action, index) {
-    const container = document.getElementById('timeline-container');
-
-    // Tạo hàng Track mới
-    const trackRow = document.createElement('div');
-    trackRow.className = 'track-row';
-    trackRow.style = "display: flex; border-bottom: 1px solid #111; min-height: 40px; align-items: center;";
-
-    // Tạo nhãn bên trái (MISSILE)
-    const label = document.createElement('div');
-    label.className = 'track-label';
-    label.style = `width: ${LABEL_WIDTH}px; background: #0a0a0a; height: 40px; display: flex; align-items: center; padding-left: 15px; color: #00ffff; font-size: 10px; border-right: 1px solid #222; flex-shrink: 0;`;
-    label.innerText = `MISSILE ${index}`;
-
-    // Tạo vùng chứa Keyframe bên phải
-    const trackContent = document.createElement('div');
-    trackContent.className = 'track-content';
-    trackContent.style = "flex-grow: 1; height: 40px; position: relative; background: transparent;";
-
-    // Tạo viên kim cương Keyframe
-    const dot = document.createElement('div');
-    dot.className = 'keyframe';
-    dot.style = `position: absolute; left: ${action.time}px; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px; background: #00ffff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); cursor: grab;`;
-
-    // Logic kéo thả Keyframe
-    dot.onmousedown = function(e) {
-        e.preventDefault();
-        let rect = trackContent.getBoundingClientRect();
-        function onMouseMove(e) {
-            let x = e.clientX - rect.left;
-            if (x < 0) x = 0;
-            if (x > rect.width) x = rect.width;
-            dot.style.left = x + 'px';
-            action.time = x; 
-        }
-        document.addEventListener('mousemove', onMouseMove);
-        document.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-        };
-    };
-
-    trackContent.appendChild(dot);
-    trackRow.appendChild(label);
-    trackRow.appendChild(trackContent);
-    container.appendChild(trackRow);
-}
-
-
-// Cập nhật bộ đếm (giờ:phút:giây.mili)
-function updateTimeDisplay(timeMs) {
-    const totalSeconds = timeMs / 1000;
-    const hours   = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-    const seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
-    const millis  = Math.floor(timeMs % 1000).toString().padStart(3, '0');
-    document.getElementById('current-time-display').innerText = `${hours}:${minutes}:${seconds}.${millis}`;
-}
-
-// Play / Resume animation
-function playAnimation() {
-    if (isPlaying) return;
-    isPlaying = true;
-
-    const playhead = document.getElementById('playhead');
-    const btn = document.querySelector('.keyframe-controls button');
-    btn.innerText = "PAUSE (SPACE)";
-    btn.style.background = "#ffcc00";
-
-    // Tính timelineWidth mỗi lần play để tránh lệch khi resize
-    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
-    const startTimestamp = performance.now() - pausedElapsed;
-
-    function step(timestamp) {
-        if (!isPlaying) return;
 
-        const elapsed = timestamp - startTimestamp;
-        const progress = elapsed / 10000; // duration = 10000ms
-        const x = progress * timelineWidth;
 
-        if (x <= timelineWidth) {
-            playhead.style.left = (LABEL_WIDTH + x) + 'px';
 
-            actions.forEach(action => {
-                if (!action.fired && Math.abs(x - action.time) < 3) {
-                    if (typeof launchMissile === "function") {
-                        launchMissile(action.start, action.end, action.speed, action.radius);
-                    }
-                    action.fired = true;
-                }
-            });
 
-            updateTimeDisplay(elapsed);
 
-            animationId = requestAnimationFrame(step);
-        } else {
-            stopAnimation();
-        }
-    }
 
-    animationId = requestAnimationFrame(step);
-}
 
-// Pause animation (giữ nguyên vị trí kim)
-function stopAnimation() {
-    isPlaying = false;
-    if (animationId) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
 
-        // Lưu thời gian đã chạy để resume sau
-        const currentLeft = parseFloat(document.getElementById('playhead').style.left) || LABEL_WIDTH;
-        const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
-        pausedElapsed = ((currentLeft - LABEL_WIDTH) / timelineWidth) * 10000;
-    }
 
-    const btn = document.querySelector('.keyframe-controls button');
-    btn.innerText = "PLAY (SPACE)";
-    btn.style.background = "#00ff00";
-}
 
-// Reset toàn bộ (khi clear keyframes)
-function clearKeyframes() {
-    actions = [];
-    pausedElapsed = 0;           // Reset thời gian pause
-    const container = document.getElementById('timeline-container');
-    container.innerHTML = '<div id="playhead"></div>';
-    stopAnimation();
-    document.getElementById('current-time-display').innerText = "00:00:00.000";
-}
 
-// Phím tắt
-window.addEventListener('keydown', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-    if (e.code === "Space") {
-        e.preventDefault();
-        isPlaying ? stopAnimation() : playAnimation();
-    }
 
-    if (e.key.toLowerCase() === 'h') {
-        document.body.classList.toggle('cinematic-mode');
-    }
-});
 
-function toggleTimeline() {
-    const panel = document.getElementById('keyframe-panel');
-    const btn = document.getElementById('toggle-keyframe');
-    panel.classList.toggle('active');
-    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
-}
 
-
-
-
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4052,200 +3845,24 @@ function toggleTimeline() {
 
 
 
-// --- MŨI TÊN CHỈ HƯỚNG TÀI LIỆU (CHỈNH SỬA CHUẨN) ---
-let arrowStartPoint = null;
-let lastRightClick = 0;
-let arrowLayerGroup = L.layerGroup().addTo(map);
 
-// 1. Nhận diện CLICK 2 LẦN CHUỘT PHẢI ĐỂ CHỌN ĐIỂM GỐC
-map.on('contextmenu', function(e) {
-    L.DomEvent.preventDefault(e); // Ngăn menu trình duyệt hiện ra
 
-    let now = Date.now();
-    if (now - lastRightClick < 500) { // Nhận diện double click chuột phải
-        arrowStartPoint = e.latlng;
-        
-        // Tạo marker gốc phát sáng theo phong cách Athe [1]
-        L.circleMarker(arrowStartPoint, {
-            color: '#ffffff',
-            radius: 6,
-            fillOpacity: 1,
-            className: 'glowing-missile' // Hiệu ứng chói lòa từ nguồn [1]
-        }).addTo(arrowLayerGroup).bindPopup("<b>GỐC MŨI TÊN</b>").openPopup();
-        
-        console.log("Đã chọn điểm gốc. Click chuột trái vào điểm đích để hoàn thành.");
-    }
-    lastRightClick = now;
-});
 
-// 2. CLICK CHUỘT TRÁI ĐỂ CHỌN ĐIỂM ĐÍCH VÀ VẼ MŨI TÊN
-map.on('click', function(e) {
-    if (!arrowStartPoint) return;
 
-    let arrowEndPoint = e.latlng;
-    
-    // Vẽ thân mũi tên (nét đứt chuyên nghiệp [2])
-    L.polyline([arrowStartPoint, arrowEndPoint], {
-        color: '#ffffff',
-        weight: 3,
-        dashArray: '10, 10', // Nét đứt từ nguồn [2]
-        opacity: 0.8
-    }).addTo(arrowLayerGroup);
 
-    // Tính toán góc xoay chuẩn để không bị vẹo
-    const dy = arrowEndPoint.lat - arrowStartPoint.lat;
-    const dx = arrowEndPoint.lng - arrowStartPoint.lng;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    // Thêm đầu mũi tên (➤) tại điểm cuối
-    L.marker(arrowEndPoint, {
-    icon: L.divIcon({
-        className: 'doc-arrow-head arrow-marker',  // Thêm class arrow-marker
-        html: `<div style="transform: rotate(${-angle}deg);">➤</div>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15]
-    })
-}).addTo(arrowLayerGroup);
 
-    arrowStartPoint = null; // Reset để vẽ mũi tên mới
-});
 
-function renderTracks() {
-    const container = document.getElementById('timeline-tracks-container');
-    container.innerHTML = ''; // Làm sạch trước khi vẽ lại
-
-    actions.forEach((action, index) => {
-        // 1. Tạo hàng Track mới
-        const track = document.createElement('div');
-        track.className = 'timeline-track';
-
-        // 2. Thêm nhãn tên hành động (Ví dụ: Missile 1, Missile 2)
-        const label = document.createElement('div');
-        label.className = 'track-label';
-        label.innerText = `ACTION #${index + 1}`;
-        track.appendChild(label);
-
-        // 3. Thêm viên kim cương Keyframe vào track đó
-        const key = document.createElement('div');
-        key.className = 'keyframe';
-        // Vị trí dựa trên thời gian (label_width + time) [3], [6]
-        key.style.left = (120 + action.time) + 'px'; 
-        
-        // Cho phép kéo thả Keyframe để chỉnh thời gian nổ
-        makeDraggable(key, action);
-        
-        track.appendChild(key);
-        container.appendChild(track);
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
-//KEY FRAME
 
 
-// Hàm thêm keyframe thủ công (ví dụ: thêm tại vị trí hiện tại của playhead)
-function addManualKeyframe() {
-    // Lấy vị trí hiện tại của kim chỉ (playhead)
-    const playhead = document.getElementById('playhead');
-    const currentLeft = parseFloat(playhead.style.left) || LABEL_WIDTH;
-    
-    // Tính thời gian tương ứng (dựa trên timelineWidth)
-    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
-    const currentTimePx = currentLeft - LABEL_WIDTH;
-    const currentTimePercent = currentTimePx / timelineWidth;
-    
-    // Tạo action mới tại vị trí hiện tại
-    const newAction = {
-        id: Date.now(),
-        time: currentTimePx,           // vị trí pixel trên track
-        start: map.getCenter(),        // ví dụ: dùng vị trí trung tâm bản đồ hiện tại
-        end: map.getCenter(),          // bạn có thể thay bằng logic chọn điểm đích
-        speed: 2000,
-        radius: 100000,                // mặc định
-        fired: false
-    };
-    
-    actions.push(newAction);
-    
-    // Render lại tracks
-    renderTracks();  // hoặc renderKeyframe nếu bạn dùng hàm cũ
-    
-    console.log("Đã thêm keyframe thủ công tại thời gian:", currentTimePx);
-    
-    // Optional: mở rộng panel nếu đang ẩn
-    const panel = document.getElementById('keyframe-panel');
-    if (!panel.classList.contains('active')) {
-        toggleTimeline();
-    }
-}
 
-// Biến lưu đối tượng đang được right-click (bệ phóng hoặc mũi tên)
-let selectedMarker = null;
 
-// Hiện context menu khi chuột phải
-map.on('contextmenu', function(e) {
-    // Kiểm tra nếu click vào marker/mũi tên (hoặc layer tương ứng)
-    const layers = map._layers;
-    for (let id in layers) {
-        const layer = layers[id];
-        if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-            // Kiểm tra khoảng cách click có gần marker không
-            if (layer.getLatLng && e.latlng.distanceTo(layer.getLatLng()) < 20) { // 20m
-                selectedMarker = layer;
-                showContextMenu(e.originalEvent);
-                return;
-            }
-        }
-    }
-    
-    // Nếu không click vào marker nào, ẩn menu
-    hideContextMenu();
-});
 
-// Hiện menu tại vị trí chuột
-function showContextMenu(event) {
-    const menu = document.getElementById('context-menu');
-    menu.style.left = event.clientX + 'px';
-    menu.style.top = event.clientY + 'px';
-    menu.style.display = 'block';
-}
 
-// Ẩn menu
-function hideContextMenu() {
-    document.getElementById('context-menu').style.display = 'none';
-    selectedMarker = null;
-}
 
-// Xóa đối tượng được chọn
-function deleteSelectedMarker() {
-    if (selectedMarker) {
-        map.removeLayer(selectedMarker);
-        selectedMarker = null;
-    }
-    hideContextMenu();
-}
 
-// Ẩn menu khi click bất kỳ đâu khác
-document.addEventListener('click', function(e) {
-    if (!document.getElementById('context-menu').contains(e.target)) {
-        hideContextMenu();
-    }
-});
 
 
 
@@ -4267,160 +3884,48 @@ document.addEventListener('click', function(e) {
 
 
 
-// Cho phép kéo kim chỉ (playhead)
-function makePlayheadDraggable() {
-    const playhead = document.getElementById('playhead');
-    if (!playhead) return;
 
-    let isDragging = false;
-    let startX = 0;
-    let startLeft = 0;
-    const timelineWidth = document.querySelector('.track-content')?.clientWidth || 1000;
 
-    playhead.onmousedown = function(e) {
-        if (e.button !== 0) return;
-        e.preventDefault();
-        isDragging = true;
-        startX = e.clientX;
-        startLeft = parseFloat(playhead.style.left) || 120;
-        playhead.classList.add('draggable');
-        document.body.style.userSelect = 'none';
-    };
 
-    document.onmousemove = function(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - startX;
-        let newLeft = startLeft + dx;
-        newLeft = Math.max(120, Math.min(newLeft, 120 + timelineWidth));
-        
-        playhead.style.left = newLeft + 'px';
-        pausedElapsed = ((newLeft - 120) / timelineWidth) * 10000;
-        updateTimeDisplay(pausedElapsed);
-    };
 
-    document.onmouseup = function() {
-        if (!isDragging) return;
-        isDragging = false;
-        playhead.classList.remove('draggable');
-        document.body.style.userSelect = '';
-    };
-}
 
-// Gọi khi mở timeline
-function toggleTimeline() {
-    const panel = document.getElementById('keyframe-panel');
-    const btn = document.getElementById('toggle-keyframe');
-    panel.classList.toggle('active');
-    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
-    
-    if (panel.classList.contains('active')) {
-        makePlayheadDraggable();
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-let trackCounter = 1;  // Bắt đầu từ track 1
-
-function addNewTrack() {
-    trackCounter++;
-    
-    const wrapper = document.getElementById('tracks-wrapper');
-    
-    const newTrack = document.createElement('div');
-    newTrack.className = 'timeline-track';
-    newTrack.dataset.trackId = trackCounter;
-    
-    newTrack.innerHTML = `
-        <div class="track-label">TRACK ${trackCounter}</div>
-        <div class="track-content"></div>
-        <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
-    `;
-    
-    wrapper.appendChild(newTrack);
-    
-    // Optional: cuộn xuống track mới
-    wrapper.scrollTop = wrapper.scrollHeight;
-}
-
-
-// Biến lưu track đang được chọn
-let selectedTrack = null;
-
-// Hàm chọn track (highlight)
-function selectTrack(trackElement) {
-    // Bỏ highlight track cũ (nếu có)
-    if (selectedTrack) {
-        selectedTrack.classList.remove('active');
-    }
-    
-    // Highlight track mới
-    trackElement.classList.add('active');
-    selectedTrack = trackElement;
-    
-    // Optional: lưu id track đang chọn (nếu sau này cần thêm keyframe vào track cụ thể)
-    console.log("Đã chọn track:", trackElement.dataset.trackId);
-}
-
-// Gắn sự kiện click cho tất cả track (kể cả track mới tạo sau)
-function attachTrackClickListeners() {
-    const tracks = document.querySelectorAll('.timeline-track');
-    tracks.forEach(track => {
-        track.onclick = function(e) {
-            // Ngăn click vào nút + hoặc các phần con khác nếu cần
-            if (e.target.classList.contains('btn-add-track')) return;
-            selectTrack(track);
-        };
-    });
-}
-
-// Gọi lại hàm này mỗi khi thêm track mới hoặc mở timeline
-function addNewTrack() {
-    trackCounter++;
-    
-    const wrapper = document.getElementById('tracks-wrapper');
-    
-    const newTrack = document.createElement('div');
-    newTrack.className = 'timeline-track';
-    newTrack.dataset.trackId = trackCounter;
-    
-    newTrack.innerHTML = `
-        <div class="track-label">TRACK ${trackCounter}</div>
-        <div class="track-content"></div>
-        <button class="btn-add-track" onclick="addNewTrack()" title="Thêm track mới">+</button>
-    `;
-    
-    wrapper.appendChild(newTrack);
-    
-    // Gắn lại sự kiện click cho track mới
-    attachTrackClickListeners();
-    
-    // Cuộn xuống track mới
-    wrapper.scrollTop = wrapper.scrollHeight;
-}
-
-// Khi mở timeline → gắn sự kiện click cho tất cả track
-function toggleTimeline() {
-    const panel = document.getElementById('keyframe-panel');
-    const btn = document.getElementById('toggle-keyframe');
-    panel.classList.toggle('active');
-    btn.innerText = panel.classList.contains('active') ? "❌ HIDE TIMELINE" : "🎬 SHOW TIMELINE";
-    
-    if (panel.classList.contains('active')) {
-        attachTrackClickListeners();  // Gắn sự kiện click cho các track
-        makePlayheadDraggable();      // Nếu bạn đã có hàm kéo kim
-    }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Gọi lần đầu khi load (nếu timeline mở sẵn)
 window.addEventListener('load', () => {
@@ -4455,31 +3960,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-//NÚT TẮT
 
-
-window.addEventListener('keydown', function(e) {
-    // Các phím tắt cũ của bạn (Space, H, v.v.)
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-    if (e.code === "Space") {
-        e.preventDefault();
-        isPlaying ? stopAnimation() : playAnimation();
-    }
-
-    if (e.key.toLowerCase() === 'h') {
-        document.body.classList.toggle('cinematic-mode');
-    }
-
-    // Thêm phím C để chụp ảnh
-    if (e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        const screenshotBtn = document.getElementById('screenshot-btn');
-        if (screenshotBtn) {
-            screenshotBtn.click(); // Gọi hàm chụp ảnh giống như click nút
-        }
-    }
-});
 
 
 
@@ -4628,6 +4109,13 @@ function toggleNewsTicker(checked) {
     if (ticker) ticker.style.display = checked ? 'block' : 'none';
 }
 
+// Tắt/mở hiển thị tình hình chính trị
+function togglePoliticalStatus(checked) {
+    showPoliticalStatus = checked;
+    renderBorders(0); // Vẽ lại biên giới để cập nhật hiệu ứng nháy
+    console.log("Tình hình chính trị:", showPoliticalStatus ? "HIỆN" : "ẨN");
+}
+
 // Đóng modal khi click bên ngoài
 document.addEventListener('click', function(e) {
     const modal = document.getElementById('settings-modal');
@@ -4682,14 +4170,36 @@ document.addEventListener('click', function(e) {
 
 
 
+// PHÍM TẮT - CHỈ MỘT KHỐI DUY NHẤT
 
 
 
+window.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
+    console.log("Phím được ấn:", e.key); // Debug: xem phím nào được nhận
 
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
 
+    if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('cinematic-mode');
+    }
 
+    if (e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        console.log("Phím K: Đang toggle timeline...");
+        toggleTimeline();
+        makePlayheadDraggable();  // ← Đúng vị trí này, an toàn và hiệu quả
+    }
 
+    if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        takeScreenshot();
+    }
+});
 
 
 
@@ -4713,9 +4223,239 @@ document.addEventListener('click', function(e) {
 
 
 
+// ====================== FIX HOÀN CHỈNH - THỦ ĐÔ & BANG + WIKIPEDIA ======================
 
+// ====================== WIKI & THỦ ĐÔ & BANG - PHIÊN BẢN KẾT NỐI API TOÀN CẦU ======================
 
+// 1. Hàm lấy thông tin Wikipedia từ API thật
+async function fetchWiki(countryName) {
+    const panel = document.getElementById('wiki-panel');
+    const title = document.getElementById('wiki-title');
+    const body = document.getElementById('wiki-body');
+
+    if (!panel || !title || !body) return;
+
+    // Hiển thị trạng thái đang tải
+    body.innerHTML = `
+        <div style="text-align:center; padding:50px 20px;">
+            <div class="loading-spinner" style="border: 4px solid rgba(255,204,0,0.1); border-left-color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color:#ffcc00; font-weight:bold;">ĐANG TRUY XUẤT KHO DỮ LIỆU WIKIPEDIA...</p>
+            <p style="color:#888; font-size:12px;">Đang kết nối tới thư viện tri thức toàn cầu cho ${countryName}</p>
+        </div>
+    `;
+    title.textContent = countryName;
+    panel.classList.add('active');
+    panel.scrollTop = 0;
 
+    try {
+        const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
+        const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
+
+        // Gọi API Wikipedia (phiên bản tóm tắt tiếng Việt hoặc Anh)
+        const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
+        const data = await response.json();
+
+        if (data.type === 'standard' || data.type === 'disambiguation') {
+            let html = `
+                <div style="animation: fadeIn 0.5s ease;">
+                    ${warBadge}
+                    ${data.thumbnail ? `<img src="${data.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">` : ''}
+                    <h2 style="color:#ffcc00; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:15px;">${data.title}</h2>
+                    <p style="line-height:1.8; color:#eee; font-size:14px; text-align:justify;">${data.extract}</p>
+                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+                    <a href="${data.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">
+                        XEM CHI TIẾT TRÊN WIKIPEDIA ↗
+                    </a>
+                    ${isWarZone ? `
+                        <div style="margin-top:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444; animation: fadeIn 0.8s ease;">
+                            <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
+                            <div style="color:#eee; font-size:13px;">
+                                <b>Trạng thái:</b> ${warZones[countryName].status}<br>
+                                <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            body.innerHTML = html;
+        } else {
+            throw new Error("Không tìm thấy bài viết");
+        }
+    } catch (err) {
+        // Thử lại với tiếng Anh nếu tiếng Việt không có
+        try {
+            const responseEn = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
+            const dataEn = await responseEn.json();
+            
+            let html = `
+                <div style="animation: fadeIn 0.5s ease;">
+                    ${dataEn.thumbnail ? `<img src="${dataEn.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px;">` : ''}
+                    <h2 style="color:#ffcc00;">${dataEn.title} (English)</h2>
+                    <p style="line-height:1.8; color:#eee;">${dataEn.extract}</p>
+                    <a href="${dataEn.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold;">READ MORE ↗</a>
+                </div>
+            `;
+            body.innerHTML = html;
+        } catch (e) {
+            body.innerHTML = `<h2>${countryName}</h2><p>Xin lỗi, dữ liệu về quốc gia này đang được Athemianartory cập nhật thủ công. Vui lòng thử lại sau.</p>`;
+        }
+    }
+}
+
+// ====================== SIÊU CƠ SỞ DỮ LIỆU ĐỊA CHÍ NGOẠI TUYẾN 2025 (HÀNH CHÍNH TOÀN CẦU) ======================
+const WORLD_OFFLINE_DB = {
+    "Vietnam": { capital: "Hà Nội", pop: "101,500,000", area: "331,212", provinces: ["An Giang","Bà Rịa – Vũng Tàu","Bắc Giang","Bắc Kạn","Bạc Liêu","Bắc Ninh","Bến Tre","Bình Định","Bình Dương","Bình Phước","Bình Thuận","Cà Mau","Cần Thơ","Cao Bằng","Đà Nẵng","Đắk Lắk","Đắk Nông","Điện Biên","Đồng Nai","Đồng Tháp","Gia Lai","Hà Giang","Hà Nam","Hà Nội","Hà Tĩnh","Hải Dương","Hải Phòng","Hậu Giang","Hòa Bình","Hưng Yên","Khánh Hòa","Kiên Giang","Kon Tum","Lai Châu","Lâm Đồng","Lạng Sơn","Lào Cai","Long An","Nam Định","Nghệ An","Ninh Bình","Ninh Thuận","Phú Thọ","Phú Yên","Quảng Bình","Quảng Nam","Quảng Ngãi","Quảng Ninh","Quảng Trị","Sóc Trăng","Sơn La","Tây Ninh","Thái Bình","Thái Nguyên","Thanh Hóa","Thừa Thiên Huế","Tiền Giang","TP. Hồ Chí Minh","Trà Vinh","Tuyên Quang","Vĩnh Long","Vĩnh Phúc","Yên Bái"] },
+    "Russia": { capital: "Moscow", pop: "144,000,000", area: "17,098,242", provinces: ["Moscow","Saint Petersburg","Adygea","Altai Republic","Altai Krai","Amur Oblast","Arkhangelsk Oblast","Astrakhan Oblast","Bashkortostan","Belgorod Oblast","Bryansk Oblast","Buryatia","Chechnya","Chelyabinsk Oblast","Chukotka","Chuvashia","Dagestan","Ingushetia","Irkutsk Oblast","Ivanovo Oblast","Jewish Autonomous Oblast","Kabardino-Balkaria","Kaliningrad Oblast","Kalmykia","Kaluga Oblast","Kamchatka Krai","Karachay-Cherkessia","Karelia","Kemerovo Oblast","Khabarovsk Krai","Khakassia","Khanty-Mansi","Kirov Oblast","Komi Republic","Kostroma Oblast","Krasnodar Krai","Krasnoyarsk Krai","Kurgan Oblast","Kursk Oblast","Leningrad Oblast","Lipetsk Oblast","Magadan Oblast","Mari El","Mordovia","Moscow Oblast","Murmansk Oblast","Nenets","Nizhny Novgorod Oblast","North Ossetia-Alania","Novgorod Oblast","Novosibirsk Oblast","Omsk Oblast","Orenburg Oblast","Oryol Oblast","Penza Oblast","Perm Krai","Primorsky Krai","Pskov Oblast","Rostov Oblast","Ryazan Oblast","Sakha","Sakhalin Oblast","Samara Oblast","Saratov Oblast","Sevastopol","Smolensk Oblast","Stavropol Krai","Sverdlovsk Oblast","Tambov Oblast","Tatarstan","Tomsk Oblast","Tula Oblast","Tuva","Tyumen Oblast","Udmurtia","Ulyanovsk Oblast","Vladimir Oblast","Volgograd Oblast","Vologda Oblast","Voronezh Oblast","Yamalo-Nenets","Yaroslavl Oblast","Zabaykalsky Krai"] },
+    "China": { capital: "Bắc Kinh", pop: "1,425,000,000", area: "9,596,961", provinces: ["An Huy","Bắc Kinh","Chiết Giang","Cam Túc","Cát Lâm","Giang Tô","Giang Tây","Hà Bắc","Hà Nam","Hải Nam","Hắc Long Giang","Hồ Bắc","Hồ Nam","Liêu Ninh","Ninh Hạ","Nội Mông","Phúc Kiến","Quảng Đông","Quảng Tây","Quý Châu","Sơn Đông","Sơn Tây","Tân Cương","Tây Tạng","Thanh Hải","Thiểm Tây","Thiên Tân","Thượng Hải","Trùng Khánh","Tứ Xuyên","Vân Nam","Đài Loan","Hồng Kông","Ma Cao"] },
+    "USA": { capital: "Washington, D.C.", pop: "342,000,000", area: "9,833,517", provinces: ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"] },
+    "Japan": { capital: "Tokyo", pop: "122,000,000", area: "377,975", provinces: ["Aichi","Akita","Aomori","Chiba","Ehime","Fukui","Fukuoka","Fukushima","Gifu","Gunma","Hiroshima","Hokkaido","Hyogo","Ibaraki","Ishikawa","Iwate","Kagawa","Kagoshima","Kanagawa","Kochi","Kumamoto","Kyoto","Mie","Miyagi","Miyazaki","Nagano","Nagasaki","Nara","Niigata","Oita","Okayama","Okinawa","Osaka","Saga","Saitama","Shiga","Shimane","Shizuoka","Tochigi","Tokushima","Tokyo","Tottori","Toyama","Wakayama","Yamagata","Yamaguchi","Yamanashi"] },
+    "France": { capital: "Paris", pop: "68,200,000", area: "551,695", provinces: ["Auvergne-Rhône-Alpes","Bourgogne-Franche-Comté","Bretagne","Centre-Val de Loire","Corse","Grand Est","Hauts-de-France","Île-de-France","Normandie","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d'Azur"] },
+    "Germany": { capital: "Berlin", pop: "84,500,000", area: "357,022", provinces: ["Baden-Württemberg","Bavaria","Berlin","Brandenburg","Bremen","Hamburg","Hesse","Lower Saxony","Mecklenburg-Vorpommern","North Rhine-Westphalia","Rhineland-Palatinate","Saarland","Saxony","Saxony-Anhalt","Schleswig-Holstein","Thuringia"] },
+    "India": { capital: "New Delhi", pop: "1,450,000,000", area: "3,287,263", provinces: ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"] },
+    "Indonesia": { capital: "Nusantara", pop: "282,000,000", area: "1,904,569", provinces: ["Aceh","Bali","Banten","Bengkulu","Gorontalo","Jakarta","Jambi","Jawa Barat","Jawa Tengah","Jawa Timur","Kalimantan Barat","Kalimantan Selatan","Kalimantan Tengah","Kalimantan Timur","Kalimantan Utara","Kepulauan Bangka Belitung","Kepulauan Riau","Lampung","Maluku","Maluku Utara","Nusa Tenggara Barat","Nusa Tenggara Timur","Papua","Papua Barat","Papua Pegunungan","Papua Selatan","Papua Tengah","Papua Barat Daya","Riau","Sulawesi Barat","Sulawesi Selatan","Sulawesi Tengah","Sulawesi Tenggara","Sulawesi Utara","Sumatera Barat","Sumatera Selatan","Sumatera Utara","Yogyakarta"] },
+    "Thailand": { capital: "Bangkok", pop: "72,100,000", area: "513,120", provinces: ["Bangkok","Amnat Charoen","Ang Thong","Bueng Kan","Buriram","Chachoengsao","Chai Nat","Chaiyaphum","Chanthaburi","Chiang Mai","Chiang Rai","Chonburi","Chumphon","Kalasin","Kamphaeng Phet","Kanchanaburi","Khon Kaen","Krabi","Lampang","Lamphun","Loei","Lopburi","Mae Hong Son","Maha Sarakham","Mukdahan","Nakhon Nayok","Nakhon Pathom","Nakhon Phanom","Nakhon Ratchasima","Nakhon Sawan","Nakhon Si Thammarat","Nan","Narathiwat","Nong Bua Lamphu","Nong Khai","Nonthaburi","Pathum Thani","Pattani","Phang Nga","Phatthalung","Phayao","Phetchabun","Phetchaburi","Phichit","Phitsanulok","Phra Nakhon Si Ayutthaya","Phrae","Phuket","Prachinburi","Prachuap Khiri Khan","Ranong","Ratchaburi","Rayong","Roi Et","Sa Kaeo","Sakon Nakhon","Samut Prakan","Samut Sakhon","Samut Songkhram","Saraburi","Satun","Sing Buri","Sisaket","Songkhla","Sukhothai","Suphan Buri","Surat Thani","Surin","Tak","Trang","Trat","Ubon Ratchathani","Udon Thani","Uthai Thani","Uttaradit","Yala","Yasothon"] },
+    "Philippines": { capital: "Manila", pop: "119,000,000", area: "300,000", provinces: ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan","Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Cagayan","Camarines Norte","Camarines Sur","Camiguin","Capiz","Catanduanes","Cavite","Cebu","Cotabato","Davao de Oro","Davao del Norte","Davao del Sur","Davao Occidental","Davao Oriental","Dinagat Islands","Eastern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur","Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao del Norte","Maguindanao del Sur","Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental","Northern Samar","Nueva Ecija","Nueva Vizcaya","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon","Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat","Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur","Zamboanga Sibugay","Metro Manila"] },
+    "Malaysia": { capital: "Kuala Lumpur", pop: "35,500,000", area: "330,803", provinces: ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","Kuala Lumpur","Labuan","Putrajaya"] },
+    "Myanmar": { capital: "Naypyidaw", pop: "55,200,000", area: "676,578", provinces: ["Ayeyarwady","Bago","Magway","Mandalay","Sagaing","Tanintharyi","Yangon","Chin","Kachin","Kayah","Kayin","Mon","Rakhine","Shan","Naypyidaw"] },
+    "Laos": { capital: "Vientiane", pop: "7,700,000", area: "236,800", provinces: ["Vientiane Prefecture","Attapeu","Bokeo","Bolikhamsai","Champasak","Houaphan","Khammouane","Luang Namtha","Luang Prabang","Oudomxay","Phongsaly","Salavan","Savannakhet","Sayaboury","Sekong","Vientiane Province","Xaisomboun","Xieng Khouang"] },
+    "Cambodia": { capital: "Phnom Penh", pop: "17,200,000", area: "181,035", provinces: ["Phnom Penh","Banteay Meanchey","Battambang","Kampong Cham","Kampong Chhnang","Kampong Speu","Kampong Thom","Kampot","Kandal","Koh Kong","Kratié","Mondulkiri","Oddar Meanchey","Pailin","Preah Sihanouk","Preah Vihear","Prey Veng","Pursat","Ratanakiri","Siem Reap","Stung Treng","Svay Rieng","Takéo","Tboung Khmum","Kep"] },
+    "South Korea": { capital: "Seoul", pop: "51,800,000", area: "100,210", provinces: ["Seoul","Busan","Daegu","Incheon","Gwangju","Daejeon","Ulsan","Sejong","Gyeonggi","Gangwon","Chungcheongbuk","Chungcheongnam","Jeollabuk","Jeollanam","Gyeongsangbuk","Gyeongsangnam","Jeju"] },
+    "United Kingdom": { capital: "London", pop: "68,500,000", area: "242,495", provinces: ["England","Scotland","Wales","Northern Ireland"] },
+    "Brazil": { capital: "Brasília", pop: "218,000,000", area: "8,515,767", provinces: ["Acre","Alagoas","Amapá","Amazonas","Bahia","Ceará","Distrito Federal","Espírito Santo","Goiás","Maranhão","Mato Grosso","Mato Grosso do Sul","Minas Gerais","Pará","Paraíba","Paraná","Pernambuco","Piauí","Rio de Janeiro","Rio Grande do Norte","Rio Grande do Sul","Rondônia","Roraima","Santa Catarina","São Paulo","Sergipe","Tocantins"] },
+    "Australia": { capital: "Canberra", pop: "27,200,000", area: "7,692,024", provinces: ["New South Wales","Victoria","Queensland","Western Australia","South Australia","Tasmania","Northern Territory","Australian Capital Territory"] },
+    "Canada": { capital: "Ottawa", pop: "40,500,000", area: "9,984,670", provinces: ["Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Nova Scotia","Ontario","Prince Edward Island","Quebec","Saskatchewan","Northwest Territories","Nunavut","Yukon"] },
+    "Italy": { capital: "Rome", pop: "58,800,000", area: "301,340", provinces: ["Abruzzo","Basilicata","Calabria","Campania","Emilia-Romagna","Friuli-Venezia Giulia","Lazio","Liguria","Lombardy","Marche","Molise","Piedmont","Puglia","Sardinia","Sicily","Tuscany","Trentino-Alto Adige","Umbria","Valle d'Aosta","Veneto"] },
+    "Spain": { capital: "Madrid", pop: "47,800,000", area: "505,992", provinces: ["Andalusia","Aragon","Asturias","Balearic Islands","Basque Country","Canary Islands","Cantabria","Castile-La Mancha","Castile and León","Catalonia","Extremadura","Galicia","La Rioja","Madrid","Murcia","Navarre","Valencian Community"] },
+    "Ukraine": { capital: "Kyiv", pop: "37,000,000", area: "603,628", provinces: ["Kyiv","Cherkasy","Chernihiv","Chernivtsi","Crimea","Dnipropetrovsk","Donetsk","Ivano-Frankivsk","Kharkiv","Kherson","Khmelnytskyi","Kirovohrad","Luhansk","Lviv","Mykolaiv","Odesa","Poltava","Rivne","Sevastopol","Sumy","Ternopil","Vinnytsia","Volyn","Zakarpattia","Zaporizhzhia","Zhytomyr"] },
+    "Poland": { capital: "Warsaw", pop: "37,500,000", area: "312,696", provinces: ["Greater Poland","Kuyavian-Pomeranian","Lesser Poland","Łódź","Lower Silesian","Lublin","Lubusz","Masovian","Opole","Podlaskie","Pomeranian","Silesian","Subcarpathian","Holy Cross","Warmian-Masurian","West Pomeranian"] }
+};
+
+// 2. Hàm lấy thông tin Thủ đô & Bang (Tích hợp Offline + Online)
+async function showCountryDetails(countryName) {
+    const panel = document.getElementById('wiki-panel');
+    const title = document.getElementById('wiki-title');
+    const body = document.getElementById('wiki-body');
+
+    if (!panel || !title || !body) return;
+
+    // Reset giao diện
+    title.textContent = `${countryName} - Chi tiết`;
+    panel.classList.add('active');
+    panel.scrollTop = 0;
+
+    // 1. Kiểm tra trong DB Offline trước (Để dùng được khi không có mạng)
+    const offlineData = WORLD_OFFLINE_DB[countryName] || WORLD_OFFLINE_DB[Object.keys(WORLD_OFFLINE_DB).find(k => k.toLowerCase() === countryName.toLowerCase())];
+
+    if (offlineData) {
+        renderCountryUI(countryName, offlineData, true);
+        return;
+    }
+
+    // 2. Nếu không có Offline, thử gọi API Online
+    body.innerHTML = `
+        <div style="text-align:center; padding:50px 20px;">
+            <div class="loading-spinner" style="border: 4px solid rgba(0,255,204,0.1); border-left-color: #00ffcc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color:#00ffcc; font-weight:bold;">ĐANG TRA CỨU DỮ LIỆU TRỰC TUYẾN...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`);
+        const data = await response.json();
+        const country = data[0];
+
+        const onlineData = {
+            capital: country.capital ? country.capital[0] : "N/A",
+            pop: country.population.toLocaleString(),
+            area: country.area.toLocaleString(),
+            flag: country.flags.svg,
+            latlng: country.latlng,
+            provinces: ["Dữ liệu tỉnh thành đang được cập nhật trực tuyến..."]
+        };
+
+        renderCountryUI(countryName, onlineData, false);
+    } catch (err) {
+        body.innerHTML = `<div style="padding:20px; text-align:center;"><p>⚠️ Lỗi kết nối. Không có dữ liệu offline cho quốc gia này.</p></div>`;
+    }
+}
+
+// Hàm vẽ giao diện chi tiết quốc gia
+function renderCountryUI(countryName, data, isOffline) {
+    const body = document.getElementById('wiki-body');
+    const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
+    const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
+
+    let html = `
+        <div style="animation: slideUp 0.4s ease;">
+            ${warBadge}
+            ${data.flag ? `<img src="${data.flag}" style="width:100px; display:block; margin:0 auto 15px; border-radius:5px; box-shadow:0 3px 10px rgba(0,0,0,0.3);">` : ''}
+            <h2 style="color:#ffcc00; text-align:center; margin-bottom:20px;">${countryName} ${isOffline ? '<span style="font-size:10px; color:#555;">(Offline)</span>' : ''}</h2>
+            
+            <div style="background:rgba(255,204,0,0.1); padding:15px; border-radius:10px; border-left:5px solid #ffcc00; margin-bottom:15px;">
+                <span style="color:#888; font-size:12px;">THỦ ĐÔ CHÍNH THỨC</span><br>
+                <b style="font-size:24px; color:#ffcc00;">${data.capital}</b>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="background:#222; padding:10px; border-radius:8px;">
+                    <span style="color:#888; font-size:11px;">DÂN SỐ</span><br>
+                    <b style="color:#00ffcc;">${data.pop}</b>
+                </div>
+                <div style="background:#222; padding:10px; border-radius:8px;">
+                    <span style="color:#888; font-size:11px;">DIỆN TÍCH</span><br>
+                    <b style="color:#00ffcc;">${data.area} km²</b>
+                </div>
+            </div>
+
+            <h3 style="color:#fff; border-bottom:1px solid #333; padding-bottom:5px;">VÙNG HÀNH CHÍNH</h3>
+            ${isWarZone ? `
+                <div style="margin-bottom:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444;">
+                    <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
+                    <div style="color:#eee; font-size:13px;">
+                        <b>Trạng thái:</b> ${warZones[countryName].status}<br>
+                        <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
+                    </div>
+                </div>
+            ` : ''}
+            <div style="max-height:400px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px; border:1px solid rgba(255,255,255,0.05);">
+    `;
+
+    data.provinces.forEach(p => {
+        const isCap = p.includes(data.capital);
+        html += `
+            <div style="padding:8px 12px; margin-bottom:4px; background:${isCap ? '#ffcc00' : '#222'}; color:${isCap ? '#000' : '#ccc'}; border-radius:4px; font-size:13px;">
+                ${p} ${isCap ? '★' : ''}
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+    body.innerHTML = html;
+
+    // Fly tới nước đó nếu có tọa độ
+    if (data.latlng) {
+        map.flyTo([data.latlng[0], data.latlng[1]], 5);
+    }
+}
+
+// Thêm CSS hiệu ứng vào thẻ <style>
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes blinker { 50% { opacity: 0; } }
+    .loading-spinner { border-top-color: transparent !important; }
+    .war-zone-blink {
+        animation: warBlink 1s ease-in-out infinite !important;
+    }
+    @keyframes warBlink {
+        0% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
+        50% { opacity: 0.3; fill-opacity: 0.1; stroke-width: 2; }
+        100% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
+    }
+`;
+document.head.appendChild(styleSheet);
 
 
 
@@ -4753,11 +4493,47 @@ document.addEventListener('click', function(e) {
 
 
 
+// ====================== CONTEXT MENU CHO KEYFRAME ======================
+function showKeyframeContextMenu(e, keyframeElement, actionId) {
+    hideAllContextMenus();
 
+    const menu = document.createElement('div');
+    menu.id = 'context-menu';
+    menu.style.cssText = `
+        position:absolute; 
+        left:${e.pageX}px; 
+        top:${e.pageY}px; 
+        background:rgba(0,0,0,0.95); 
+        border:1px solid #00ffff; 
+        border-radius:6px; 
+        padding:8px 0; 
+        z-index:100001; 
+        min-width:160px;
+    `;
 
+    menu.innerHTML = `
+        <div onclick="deleteKeyframe(${actionId});" 
+             style="padding:10px 16px; color:#00ffff; cursor:pointer; font-size:14px;">
+            🗑️ Xóa Keyframe này
+        </div>
+    `;
 
+    document.body.appendChild(menu);
+}
 
+function hideAllContextMenus() {
+    document.querySelectorAll('#context-menu').forEach(m => m.remove());
+}
 
+function deleteKeyframe(actionId) {
+    actions = actions.filter(a => a.id !== actionId);
+    
+    if (selectedTrack) {
+        renderKeyframesOnTrack(selectedTrack.dataset.trackId);
+    }
+    
+    hideAllContextMenus();
+}
 
 
 
@@ -4784,18 +4560,101 @@ document.addEventListener('click', function(e) {
 
 
 
+// ====================== CLEAR / RESET TIMELINE ======================
+function clearKeyframes() {
+    // Dừng animation và tất cả tên lửa đang bay
+    if (typeof stopAnimation === "function") {
+        stopAnimation();
+    }
 
+    // Xóa hết dữ liệu keyframe
+    actions = [];
+    pausedTime = 0;
 
+    // Reset giao diện timeline về trạng thái ban đầu
+    const container = document.getElementById('timeline-container');
+    if (container) {
+        container.innerHTML = `
+            <div id="playhead">
+                <div class="playhead-marker"></div>
+            </div>
+        `;
+    }
 
+    // Reset thời gian hiển thị
+    const timeDisplay = document.getElementById('current-time-display');
+    if (timeDisplay) {
+        timeDisplay.innerText = "00:00:00.000";
+    }
 
+    console.log("✅ Đã RESET toàn bộ timeline");
+}
 
 
+console.log("Bất kỳ phím nào cũng ấn được:", e.key);
+// Event Space toàn cục - debug rõ ràng hơn
+document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault(); // Ngăn scroll trang
 
+        console.log("Space pressed! isPlaying =", isPlaying, "actions.length =", actions?.length || 0);
 
+        // Nếu chưa có keyframe nào thì báo
+        if (!actions || actions.length === 0) {
+            console.warn("Chưa có keyframe nào để play");
+            return;
+        }
 
+        if (isPlaying) {
+            console.log("→ Đang PAUSE animation");
+            stopAnimation();
+        } else {
+            console.log("→ Đang PLAY animation");
+            playAnimation();
+        }
+    }
+}, { once: false }); // Đảm bảo không duplicate
 
 
+function toggleKeyframePanel() {
+    const panel = document.getElementById('keyframe-panel');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+        // Nếu trước đó đang pause, có thể resume tự động (tùy ý bạn)
+        // if (!isPlaying && pausedTime > 0) playAnimation();
+    } else {
+        panel.style.display = 'none';
+        // KHÔNG reset animation ở đây!
+        // KHÔNG đặt: isPlaying = false; animationId = null; pausedTime = 0;
+    }
+}
 
+function renderTimelineTicks() {
+    const container = document.getElementById('timeline-ticks');
+    if (!container) return;
+    container.innerHTML = '';
+    const totalSeconds = TOTAL_DURATION / 1000 || 240; // Nếu TOTAL_DURATION chưa định nghĩa, mặc định 4 phút
+    const interval = 30; // mỗi 30 giây
+    for (let s = 0; s <= totalSeconds; s += interval) {
+        const percent = (s / totalSeconds) * 100;
+        const time = formatTime(s * 1000);
+        // Thanh dọc
+        const line = document.createElement('div');
+        line.style.cssText = `position:absolute; left:${percent}%; height:100%; width:1px; background:#666;`;
+        container.appendChild(line);
+        // Nhãn
+        const label = document.createElement('div');
+        label.textContent = time;
+        label.style.cssText = `position:absolute; left:${percent}%; transform:translateX(-50%); top:4px; color:#aaa; font-size:11px;`;
+        container.appendChild(label);
+    }
+}
+function formatTime(ms) {
+    const sec = Math.floor(ms / 1000);
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
 
 
 
@@ -4834,19 +4693,348 @@ document.addEventListener('click', function(e) {
 
 
 
+// ====================== HỆ THỐNG ĐỊA HÌNH CHUNG - ĐÃ TINH LUYỆN ======================
+let terrainLayers = {
+    mountain: null,
+    desert:   null,
+    forest:   null,
+    plain:    null,
+    tundra:   null
+};
 
+let currentTerrain = "none";
 
+// Chuyển đổi địa hình
+function switchTerrain(type) {
+    currentTerrain = type;
 
+    // Tắt tất cả layer
+    Object.values(terrainLayers).forEach(layer => {
+        if (layer && map.hasLayer(layer)) map.removeLayer(layer);
+    });
 
+    if (type === "none") {
+        console.log("Đã tắt tất cả địa hình");
+        return;
+    }
 
+    if (terrainLayers[type]) {
+        map.addLayer(terrainLayers[type]);
+        console.log(`Đã bật địa hình: ${type}`);
+    } else {
+        console.warn(`Chưa có dữ liệu GeoJSON cho ${type}. Đưa mình để thêm.`);
+    }
+}
 
+// ====================== TẢI DỮ LIỆU ĐỊA HÌNH (ĐÃ SỬA LỖI & TINH LUYỆN) ======================
+function loadTerrainGeoJSON() {
+    // ==================== DÃY NÚI (Alps + Himalaya + Andes) ====================
+    const mountainData = {
+        "type": "FeatureCollection",
+        "features": [
+            // Alps
+            {
+                "type": "Feature",
+                "properties": { "name": "Dãy Alps" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [6.967549020717996, 45.82277453335553],
+                        [7.849606129260792, 46.31212744619805],
+                        [8.654794263954159, 46.670654615859235],
+                        [9.57773499281825, 46.425824409728364],
+                        [10.362002027313167, 46.48027179235828],
+                        [10.994732244220074, 46.86918278609042],
+                        [11.785842455364218, 47.06265980007163],
+                        [12.83469231798614, 47.12120309431708],
+                        [13.50749856742479, 46.986502749991075]
+                    ]
+                }
+            },
+            // Himalaya
+            {
+                "type": "Feature",
+                "properties": { "name": "Dãy Himalaya" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [72.08724217440346, 38.9135249402884],
+                        [73.9683730384051, 39.016527415574814],
+                        [75.31960788437658, 38.292370493496975],
+                        [75.55806109248914, 36.716087655892366],
+                        [75.66404029609478, 34.650345129648386],
+                        [76.32641064607401, 33.332355230759845],
+                        [78.07506750556655, 32.03904985984673],
+                        [79.82372436505909, 30.749986495713884],
+                        [81.86382403446902, 29.76593915907395],
+                        [83.506501690356, 28.81856750550756],
+                        [86.60639339582008, 28.189927545368377],
+                        [89.17638908325608, 27.67495048083154],
+                        [91.50793156258152, 27.9327457778042],
+                        [93.8659688428063, 28.58617489645485],
+                        [94.79328687435543, 29.558733756606827],
+                        [96.11802691942546, 29.76593915907395],
+                        [97.57524096900266, 28.493073569417348]
+                    ]
+                }
+            },
+            // Andes
+            {
+                "type": "Feature",
+                "properties": { "name": "Dãy Andes" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [-78.2636615072047, 0.15609035814287608],
+                        [-79.24396914055708, -2.8366623921053247],
+                        [-79.34994834416268, -5.74261122181845],
+                        [-79.87984436219072, -6.822357949069456],
+                        [-77.57479668376824, -11.113336945318764],
+                        [-76.20152399806662, -14.23630773592484],
+                        [-70.45215220246133, -18.103345274109927],
+                        [-70.75800978934068, -26.668604392352563],
+                        [-71.68192854879275, -31.14728376350348],
+                        [-70.62213651273616, -33.98258454431601],
+                        [-70.98093887090032, -39.46567523666578],
+                        [-71.21990965487417, -42.85286469383656],
+                        [-67.19723479131335, -42.059481307917615],
+                        [-65.08632619954419, -39.89481167736486],
+                        [-66.40066551140043, -36.83524794485957],
+                        [-67.22588285652657, -33.60724541422983],
+                        [-65.47343044071818, -31.083973357634413],
+                        [-64.51754730482277, -29.77904380660972],
+                        [-65.79205815268335, -29.154876645781613],
+                        [-65.03531733676613, -23.006291149868616],
+                        [-64.19529538696166, -18.487372410930675],
+                        [-69.25351031441002, -14.555317804916157],
+                        [-74.27189677786198, -12.230778004967718],
+                        [-77.55228756310181, -7.3361609444087605],
+                        [-77.96779893733684, -6.3077565908011195],
+                        [-79.84220038444317, -6.7778687777301485]
+                    ]
+                }
+            }
+        ]
+    };
+
+    terrainLayers.mountain = L.geoJSON(mountainData, {
+        style: {
+            color: "#ffdd00",      // Vàng sáng cực đậm
+            weight: 7,
+            opacity: 0.95,
+            lineJoin: "round",
+            lineCap: "round"
+        },
+        onEachFeature: function(feature, layer) {
+            const name = feature.properties?.name || "Dãy núi";
+            layer.bindTooltip(`<b>${name}</b>`, {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // ==================== LAYER SA MẠC / BÁN HOANG MẠC ====================
+    const desertData = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": { "name": "Vùng Hoang mạc & Bán hoang mạc" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [38.69520675883754, 17.520410657407467],
+                        [36.32891331036225, 14.793313249536482],
+                        [31.79302684524015, 12.5517164140835],
+                        [25.04909394776729, 10.755722709346315],
+                        [18.541790274767095, 12.782586012005012],
+                        [13.3359473363667, 14.277941201476565],
+                        [11.738700071174918, 11.452316065469432],
+                        [-1.6308511115344686, 13.818838792375317],
+                        [-10.68191894761722, 14.850502178433317],
+                        [-16.83427878390839, 14.964834495163373],
+                        [-15.946919192135795, 17.80225560714628],
+                        [-16.479334947199334, 19.539538935851553],
+                        [-16.124391110490336, 20.484477903431582],
+                        [-17.011750702262873, 21.368550539532137],
+                        [-14.527143845299605, 24.90375264678552],
+                        [-12.752424661754446, 27.87090550136766],
+                        [-9.498772825253752, 29.89092329396081],
+                        [-9.025514376308365, 32.521602675884594],
+                        [-6.836694049934863, 33.759912749476186],
+                        [-1.7491657237708296, 35.02904499827227],
+                        [2.924261459565969, 36.2787738475666],
+                        [8.189261704084544, 35.75242990166184],
+                        [10.141452805984272, 35.077472262332904],
+                        [9.84566627539337, 33.956414046560155],
+                        [12.389430438474818, 32.6213088262668],
+                        [15.169823826030097, 32.121672363846685],
+                        [19.369992560421537, 29.993446372436168],
+                        [20.553138682784976, 30.962109565891893],
+                        [20.434824070548643, 32.42178577341765],
+                        [23.74763321316749, 32.22182043481979],
+                        [30.195779580049447, 30.555426713769236],
+                        [32.325442600303745, 29.78829465646868],
+                        [35.57909443680438, 23.229374152392737],
+                        [37.29465631423139, 19.762386392116895],
+                        [38.8919035794232, 17.011989876547673],
+                        [38.562420791194626, 17.38852504665283]
+                    ]
+                }
+            }
+        ]
+    };
+
+    terrainLayers.desert = L.geoJSON(desertData, {
+        style: {
+            fillColor: "#e8c070",
+            fillOpacity: 0.9,        // Đậm như bạn muốn
+            color: "#c61717",        // Viền đỏ đậm hơn chút
+            weight: 4,
+            opacity: 0.95
+        },
+        onEachFeature: function(feature, layer) {
+            layer.bindTooltip("<b>Vùng Hoang mạc & Bán hoang mạc</b>", {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
+
+    // ==================== THÊM VÙNG HOANG MẠC ÚC (CHỈ THÊM VÀO LAYER SA MẠC) ====================
+    const australiaDesert = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": { "name": "Hoang mạc Úc" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [138.21384446260186, -33.81735995770527],
+                        [143.10133793389753, -35.06994335682733],
+                        [147.00566689053863, -33.97504281284929],
+                        [148.34704037778602, -31.17044517501901],
+                        [148.54777350707974, -27.794619561731906],
+                        [145.5595962201673, -25.22732394823248],
+                        [143.29852737003966, -22.125023877521357],
+                        [140.58472768492067, -20.213404044316817],
+                        [139.01695810950497, -18.12224662341393],
+                        [137.95438624548882, -20.866511330902412],
+                        [134.38634150883155, -18.399557611051534],
+                        [133.58885538513834, -17.27269827359096],
+                        [135.09055424217888, -14.343596645964809],
+                        [134.69552972524815, -12.300500041865533],
+                        [130.3169319867502, -14.642735147986869],
+                        [127.08809253585952, -13.958553892632565],
+                        [120.98168320944848, -19.688182467026678],
+                        [114.17630246237206, -21.807301148379793],
+                        [113.93320398638093, -26.849742835983008],
+                        [118.60210784777917, -31.035185461875287],
+                        [122.1955557915532, -32.751950838260235],
+                        [128.31108871880457, -32.16574545595126],
+                        [131.70295843539242, -31.70993775622133],
+                        [135.88514281167403, -34.459511537210695],
+                        [138.28234257555283, -33.78804566679812]
+                    ]
+                }
+            }
+        ]
+    };
+
+   
+    terrainLayers.desert.addData(australiaDesert);
+
+  
+    terrainLayers.desert.eachLayer(function(layer) {
+        if (layer.feature?.properties?.name === "Hoang mạc Úc") {
+            layer.bindTooltip("<b>Hoang mạc Úc (Outback)</b>", {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
 
+    console.log("✅ Đã tải địa hình: Núi + Sa mạc (bao gồm Úc)");
 
 
 
+    // ==================== THÊM VÙNG HOANG MẠC NAM PHI ====================
+    const namPhiDesert = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": { "name": "Hoang mạc Nam Phi" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [12.45627163103876, -14.561985938266702],
+                        [14.742400839812149, -16.177773491422812],
+                        [16.78978289402457, -18.800559390737746],
+                        [19.78582269558865, -19.45874456306055],
+                        [25.72615358949207, -20.788177514881],
+                        [27.44515457551077, -17.88234451045966],
+                        [29.365531967495514, -15.45968421665043],
+                        [33.15307948000901, -16.257843565671593],
+                        [32.484752598183036, -20.126112825584272],
+                        [33.01178376866062, -22.434558017047422],
+                        [31.432860629700315, -24.615895764214713],
+                        [28.979589944941807, -26.45370401889018],
+                        [28.468176393287337, -28.043838222503688],
+                        [29.07313331487191, -29.446352074212435],
+                        [27.104832794537202, -32.00810440767462],
+                        [25.31392768526385, -33.53877988803951],
+                        [22.540973099893876, -34.025060891798965],
+                        [19.83363757351205, -34.77426570202406],
+                        [17.917815911553475, -32.96454073228966],
+                        [18.40115339961622, -32.328077709998816],
+                        [16.496542170989898, -28.681810130716222],
+                        [15.374490421453856, -27.750909898842792],
+                        [14.383096005623258, -22.66671248654069],
+                        [12.719601649983531, -19.279627494699213],
+                        [11.569809101423317, -17.387485943288283],
+                        [11.837283157811157, -15.429870980246122],
+                        [12.364119824237065, -14.565883939239953]
+                    ]
+                }
+            }
+        ]
+    };
 
+  
+    terrainLayers.desert.addData(namPhiDesert);
 
 
+    terrainLayers.desert.eachLayer(function(layer) {
+        if (layer.feature?.properties?.name === "Hoang mạc Nam Phi") {
+            layer.bindTooltip("<b>Hoang mạc Nam Phi (Kalahari & Namib)</b>", {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
 
 
 
@@ -4858,8 +5046,11 @@ document.addEventListener('click', function(e) {
 
 
 
+    
+}
 
 
+window.addEventListener('load', loadTerrainGeoJSON);
 
 
 
@@ -4876,6 +5067,374 @@ document.addEventListener('click', function(e) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ====================== XỬ LÝ NÚT CON BIỂN & ĐẠI DƯƠNG ======================
+let currentOceanLayer = null; 
+
+function toggleOceanLayer(subType) {
+    currentOceanLayer = subType;
+
+    
+    if (terrainLayers.sea) map.removeLayer(terrainLayers.sea);
+    if (terrainLayers.ocean) map.removeLayer(terrainLayers.ocean);
+
+    
+    if (subType === "sea" && terrainLayers.sea) {
+        map.addLayer(terrainLayers.sea);
+        console.log("Đã bật: Biển");
+    } else if (subType === "ocean" && terrainLayers.ocean) {
+        map.addLayer(terrainLayers.ocean);
+        console.log("Đã bật: Đại dương");
+    }
+}
+
+
+
+switchTerrain = function(type) {
+    oldSwitchTerrain(type);
+
+    const subMenu = document.getElementById('ocean-sub');
+    if (subMenu) {
+        subMenu.style.display = (type === "ocean") ? 'flex' : 'none';
+    }
+
+    if (type !== "ocean") {
+        if (terrainLayers.sea) map.removeLayer(terrainLayers.sea);
+        if (terrainLayers.ocean) map.removeLayer(terrainLayers.ocean);
+        currentOceanLayer = null;
+    }
+};
+
+    // ==================== LAYER ĐẠI DƯƠNG (Ấn Độ Dương - thêm vào) ====================
+    const indianOcean = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": { "name": "Ấn Độ Dương" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [134.75760002036742, -33.40702533933875],
+                        [134.93031718824483, -66.2357280014117],
+                        [108.55492971444266, -66.77648929025663],
+                        [93.21235957647673, -65.01392517067954],
+                        [73.8964254500928, -69.86597883501508],
+                        [53.090465243614744, -65.68296383546075],
+                        [34.059396377284145, -68.95689690661746],
+                        [24.05541544574467, -70.034765603849],
+                        [23.953645698527367, -34.02943252830166],
+                        [30.806114905720165, -30.912962995680026],
+                        [35.67833616777111, -24.0961056639555],
+                        [34.89924700786466, -20.064035195831025],
+                        [40.27190470768912, -16.02192602862226],
+                        [40.583289457043065, -10.815399212254661],
+                        [38.8767661169432, -5.8308856156103275],
+                        [51.41250799248209, 11.412966318117014],
+                        [43.951416003918325, 10.555219212470618],
+                        [43.28543057322835, 12.601265118211415],
+                        [39.46926220941825, 15.457270475966467],
+                        [32.488903564427886, 29.715778728195247],
+                        [35.17363405410839, 27.983684421045552],
+                        [39.61908198926753, 20.44429057610725],
+                        [42.67967192741685, 16.401835653130348],
+                        [43.557104528468614, 12.813871474188673],
+                        [52.10043325232948, 15.50985045921739],
+                        [57.76882888097856, 18.89986879438858],
+                        [59.90210194648816, 22.329439892505448],
+                        [56.36255372936617, 25.929351563585],
+                        [54.25329314695273, 24.11252598746644],
+                        [51.58366565605613, 24.085444512908097],
+                        [51.583722283082864, 26.07555285025522],
+                        [51.04928191947204, 26.128938261971072],
+                        [50.812229851736504, 24.734000987593305],
+                        [48.01507412976713, 29.447047131676015],
+                        [49.769140806950475, 30.094400255272618],
+                        [51.554058665489464, 27.93092055749456],
+                        [54.553392479933024, 26.502028187331277],
+                        [57.019342893073826, 26.927101664031923],
+                        [57.491429189835, 25.835051799165655],
+                        [61.43571006970808, 24.976448783508346],
+                        [66.42491121866067, 25.513709588267943],
+                        [70.37926799012064, 20.645300255625884],
+                        [72.69456253435854, 21.255448284197413],
+                        [73.45674612319081, 15.352017568114562],
+                        [77.17774929981715, 8.003692882656694],
+                        [78.30496689635987, 8.677029819919625],
+                        [79.79157250942194, 10.312897138376243],
+                        [80.22460039887483, 15.551875656930036],
+                        [85.85849986270807, 19.644547848926464],
+                        [86.98377899489907, 20.507693955657643],
+                        [86.9232375715253, 21.339044867957853],
+                        [91.67086827621438, 22.221353356597476],
+                        [94.5692733427669, 17.22979301707001],
+                        [94.12234125047598, 15.728149475117888],
+                        [95.6316933796661, 15.784986724563069],
+                        [97.02640001906775, 17.00375205665796],
+                        [98.25333674266693, 8.233902453151245],
+                        [95.13610450583388, 5.382991119296932],
+                        [104.2485532916254, -6.361715584109334],
+                        [122.218469296043, -11.04867647421139],
+                        [141.93683010210486, -11.136294165220036],
+                        [140.6328780991886, -17.81838553864226],
+                        [135.6656395894126, -14.958226692817874],
+                        [137.15498761924414, -12.316032273561007],
+                        [132.34397299705046, -11.355202855383297],
+                        [129.0717425446623, -14.69986430404461],
+                        [126.53651154842476, -13.446321410364177],
+                        [113.3399410324098, -22.6897749112575],
+                        [115.21888393106133, -34.209273641668766],
+                        [116.95289940802019, -35.448805352162175],
+                        [123.89914952249774, -33.91475904844105],
+                        [124.3030169758066, -33.099274411911765],
+                        [130.54434592360644, -31.823068329688077],
+                        [133.43658556247084, -32.275684614017045],
+                        [134.6763368862255, -33.24814963285713]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // Khởi tạo layer đại dương nếu chưa có
+    if (!terrainLayers.ocean) {
+        terrainLayers.ocean = L.geoJSON();
+    }
+
+    // Thêm Ấn Độ Dương vào layer đại dương
+    terrainLayers.ocean.addData(indianOcean);
+
+    // Style cho đại dương (xanh đậm, tô đầy)
+    terrainLayers.ocean.setStyle({
+        fillColor: "#DC143C",     // Xanh dương đậm cho đại dương
+        fillOpacity: 0.8,
+        color: "#001f3f",         // Viền tối hơn
+        weight: 1,
+        opacity: 0.9
+    });
+
+    // Tooltip riêng cho Ấn Độ Dương
+    terrainLayers.ocean.eachLayer(function(layer) {
+        if (layer.feature?.properties?.name === "Ấn Độ Dương") {
+            layer.bindTooltip("<b>Ấn Độ Dương</b>", {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ==================== THÊM VÙNG BIỂN ĐỎ (RED SEA) ====================
+    const redSea = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": { "name": "Biển Đỏ" },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [43.49527135153534, 12.742582764643586],
+                        [42.71055975673116, 15.602785710082884],
+                        [42.826257442738324, 15.953852287694716],
+                        [42.34612205605279, 17.408659330495766],
+                        [41.65292421834971, 17.94060130697231],
+                        [40.74643977032275, 19.819925664123602],
+                        [39.646115827904936, 20.43663578742931],
+                        [39.006511750094916, 21.951878293174133],
+                        [39.12150316962351, 22.47208821971644],
+                        [38.383660293083295, 23.969969298997057],
+                        [37.536865928328695, 24.298744101597492],
+                        [37.189474299796984, 24.930926883538987],
+                        [35.19603383669997, 28.153640848980572],
+                        [34.654546918663414, 28.102268521261536],
+                        [34.94173496459047, 29.53277453178042],
+                        [34.4226491298877, 28.016602172163616],
+                        [34.075159393956, 27.776433067621127],
+                        [32.48112769290282, 29.90466693221248],
+                        [32.69809867889009, 28.870669111169434],
+                        [33.63180139043027, 27.3119985357025],
+                        [35.43477621959403, 24.140293520525987],
+                        [35.78222608781266, 23.911138663461955],
+                        [35.474021210160885, 23.716980468727243],
+                        [35.84156693940221, 22.77824336866854],
+                        [36.8052926685487, 22.101966902809238],
+                        [37.26793116615377, 20.382139656106872],
+                        [37.45659514293294, 18.84834358569202],
+                        [38.68801796479079, 17.90047085615788],
+                        [39.29664339261862, 15.853293534633849],
+                        [39.758307025798615, 15.076078345292231],
+                        [39.835282614170325, 15.446439731773964],
+                        [40.31586737154615, 14.90926634414329],
+                        [40.642736875403926, 14.927805518501131],
+                        [41.19987091552744, 14.519687782616316],
+                        [42.2744639951091, 13.53438747949619],
+                        [42.8873667436626, 12.751618498227685],
+                        [43.521007900625534, 12.788930192972614]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // Khởi tạo layer biển nếu chưa có
+    if (!terrainLayers.sea) {
+        terrainLayers.sea = L.geoJSON();
+    }                   
+
+
+
+
+
+
+
+    // Thêm Biển Đỏ vào layer biển
+    terrainLayers.sea.addData(redSea);
+
+    // Style cho biển (xanh nhạt, tô đầy)
+    terrainLayers.sea.setStyle({
+        fillColor: "#1E90FF",     // Xanh dương nhạt cho biển
+        fillOpacity: 0.7,
+        color: "#1C86EE",         // Viền xanh đậm hơn
+        weight: 2,
+        opacity: 0.9
+    });
+
+    // Tooltip riêng cho Biển Đỏ
+    terrainLayers.sea.eachLayer(function(layer) {
+        if (layer.feature?.properties?.name === "Biển Đỏ") {
+            layer.bindTooltip("<b>Biển Đỏ</b>", {
+                permanent: false,
+                direction: "top",
+                className: "terrain-tooltip"
+            });
+        }
+    });
+
+
+
+// ==================== TÁCH LAYER RIÊNG CHO DÒNG BIỂN (TRÁNH CONFLICT VỚI RAILWAY) ====================
+let maritimeLayer = L.layerGroup().addTo(map); // Layer riêng cho dòng biển
+
+// ==================== HÀM VẼ DÒNG BIỂN ====================
+function drawMaritimeCurrents() {
+    if (!maritimeLayer) return;
+
+    // Xóa layer cũ
+    maritimeLayer.clearLayers();
+
+    // Bỏ kiểm tra checkbox, vẽ luôn khi gọi từ switchTerrain
+    maritimeCurrents.forEach(current => {
+        // Vẽ đường chính
+        L.polyline(current.coords, {
+            color: current.color,
+            weight: 3,
+            opacity: 0.8,
+            dashArray: "5, 10", // Nét đứt để giống dòng chảy
+            lineCap: "round"
+        })
+        .bindTooltip(`<b>${current.name}</b><br>Hướng: ${current.direction}<br>Nhiệt độ: ${current.type === 'hot' ? 'Nóng' : 'Lạnh'}`, {
+            permanent: false,
+            direction: "top",
+            className: "terrain-tooltip"
+        })
+        .addTo(maritimeLayer); // Dùng layer riêng
+
+        // Thêm mũi tên hướng chảy (tại điểm giữa)
+        const midIndex = Math.floor(current.coords.length / 2);
+        const midPoint = current.coords[midIndex];
+        L.marker(midPoint, {
+            icon: L.divIcon({
+                html: `<div style="font-size:16px; color:${current.color}; transform:rotate(${current.direction === '↑ Bắc' ? '0deg' : current.direction === '↓ Nam' ? '180deg' : current.direction === '↖ Tây Bắc' ? '-45deg' : '-135deg'});">➤</div>`,
+                className: 'current-arrow',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        }).addTo(maritimeLayer); // Dùng layer riêng
+    });
+}
+
+// ==================== CẬP NHẬT switchTerrain ====================
+// giữ 1 bản duy nhất, không đè trùng nhiều chỗ
+const oldSwitchTerrain = switchTerrain;
+
+switchTerrain = function(type) {
+  oldSwitchTerrain(type);
+
+  if (type === "maritime") {
+    drawMaritimeCurrents();
+  } else {
+    if (maritimeLayer) maritimeLayer.clearLayers();
+  }
+
+  const subMenu = document.getElementById('ocean-sub');
+  if (subMenu) subMenu.style.display = type === "ocean" ? "flex" : "none";
+};
+
+// Xóa phần trùng lặp ở dưới (nếu có)
+
+
+const maritimeCurrents = [
+  { name:"Dòng lạnh Biển Đông", type:"cold", color:"#0055aa",
+    coords:[[10,109],[14,111],[18,113]] /*...*/ },
+  { name:"Dòng nóng Biển Đông", type:"hot", color:"#ff3300",
+    coords:[[21,118],[19,116],[16,113]] /*...*/ }
+];
 
 
 
