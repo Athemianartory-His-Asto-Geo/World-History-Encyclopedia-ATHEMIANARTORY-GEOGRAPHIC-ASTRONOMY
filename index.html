@@ -923,7 +923,7 @@ left-group {
         </div>
         <div class="modal-body">
             <label class="setting-item">
-                <input type="checkbox" id="toggle-ticker" checked onchange="toggleNewsTicker(this.checked)">
+                <input type="checkbox" id="toggle-ticker" onchange="toggleNewsTicker(this.checked)">
                 Hiển thị thanh tin tức (ticker)
             </label>
             
@@ -1030,14 +1030,14 @@ left-group {
         <div id="filter-container" style="background:#222; border:1px solid #ffcc00; padding:10px; border-radius:5px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
             <h4 style="color:#ffcc00; margin: 5px 0;">⛏️ Khoáng sản & Lâm sản</h4>
             <label class="check-item"><input type="checkbox" class="res-check" value="wood" onchange="updateFilters()"> 🌲 Gỗ rừng</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="oil" onchange="updateFilters()"> 🛢️ Dầu mỏ</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="gas" onchange="updateFilters()"> 💨 Khí tự nhiên</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="gold" onchange="updateFilters()"> 🟡 Vàng & Bạch kim</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="diamond" onchange="updateFilters()"> 💎 Kim cương</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()"> ⬛ Than đá</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()"> ⛓️ Sắt & Đồng</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="oil" onchange="updateFilters()" checked> 🛢️ Dầu mỏ</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gas" onchange="updateFilters()" checked> 💨 Khí tự nhiên</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gold" onchange="updateFilters()" checked> 🟡 Vàng & Bạch kim</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="diamond" onchange="updateFilters()" checked> 💎 Kim cương</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()" checked> ⬛ Than đá</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()" checked> ⛓️ Sắt & Đồng</label><br>
             
-   k         <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
+            <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
             <label class="check-item"><input type="checkbox" class="res-check" value="wolf" onchange="updateFilters()"> 🐺 Loài Sói</label><br>
             <label class="check-item"><input type="checkbox" class="res-check" value="bear" onchange="updateFilters()"> 🐻 Gấu</label><br>
             <label class="check-item"><input type="checkbox" class="res-check" value="tiger" onchange="updateFilters()"> 🐅 Hổ</label><br>
@@ -1050,7 +1050,8 @@ left-group {
     <h4 style="color:#00fbff; margin: 5px 0;">🏭 Công nghiệp sản xuất</h4>
     <label class="check-item"><input type="checkbox" class="eco-check" value="automotive" onchange="updateFilters()"> 🚗 Công nghiệp Ô tô</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="heavy_industry" onchange="updateFilters()"> 🛡️ Công nghiệp nặng</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ & Hàng không</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="aviation" onchange="updateFilters()"> ✈️ Hàng không</label><br>
     
     <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🏗️ Hạ tầng chiến lược</h4>
     <label class="check-item"><input type="checkbox" class="eco-check" value="power_plant" onchange="updateFilters()"> ⚡ Hệ thống Năng lượng</label><br>
@@ -1724,8 +1725,8 @@ const map = L.map('map', {
     preferCanvas: false, // TẮT CANVAS ĐỂ CSS ANIMATION HOẠT ĐỘNG
 
     // --- CỤM NÀY GIÚP ZOOM NHIỀU NẤC, KHÔNG BỊ QUÁ TRỚN ---
-    zoomSnap: 0.4,        // Chia nhỏ nấc zoom (bình thường là 1, giờ là 0.1)
-    zoomDelta: 0.4,       // Mỗi nấc lăn chuột chỉ nhảy 0.1 (zoom rất chậm và mịn)
+    zoomSnap: 0.1,        // Chia nhỏ nấc zoom (bình thường là 1, giờ là 0.1)
+    zoomDelta: 0.1,       // Mỗi nấc lăn chuột chỉ nhảy 0.1 (zoom rất chậm và mịn)
     wheelPxPerZoomLevel: 150, // Lăn chuột nhiều hơn mới nhảy 1 level (chống vọt)
     wheelDebounceTime: 10     // Phản hồi chuột nhanh hơn
 });
@@ -1735,12 +1736,14 @@ const map = L.map('map', {
 // base layers
 const darkTerrainLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 19
+    maxZoom: 19,
+    crossOrigin: 'anonymous'
 });
 
 const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri',
-    maxZoom: 19
+    maxZoom: 19,
+    crossOrigin: 'anonymous'
 });
 
 // khởi tạo map với dark terrain mặc định
@@ -1750,12 +1753,14 @@ darkTerrainLayer.addTo(map);
 // 2. Layer đổ bóng địa hình (Tạo khối núi 3D)
 var hillshadeLayer = L.tileLayer('https://{s}.tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
     opacity: 0.5, 
-    maxZoom: 15
+    maxZoom: 15,
+    crossOrigin: 'anonymous'
 }).addTo(map);
 
 // 3. Layer biên giới và nhãn (Dùng nhãn sáng để nổi bật trên nền tối)
 const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-    opacity: 1.0 // Tăng độ đậm nhãn
+    opacity: 1.0, // Tăng độ đậm nhãn
+    crossOrigin: 'anonymous'
 }).addTo(map);
 
 // hàm chuyển đổi
@@ -1994,6 +1999,7 @@ async function fetchBorders() {
 window.addEventListener('load', async () => {
     await fetchBorders();
     renderBorders(0);  // Render biên giới ngay khi load xong, với year mặc định 0
+    if (typeof updateFilters === 'function') updateFilters();
     // ...existing code...
 });
 
@@ -2231,51 +2237,89 @@ document.getElementById('wiki-close').onclick = () => {
     document.getElementById('wiki-panel').classList.remove('active');
 };
 
-// Chụp ảnh màn hình (nút + phím C)
-// Hàm chụp ảnh (dùng cho cả nút và phím C)
+// Hàm chụp ảnh màn hình ĐẲNG CẤP (Bản Full UI + Cinematic Color)
 function takeScreenshot() {
-    const screenshotBtn = document.getElementById('screenshot-btn');
-    if (screenshotBtn) screenshotBtn.style.display = 'none';
-
-    // Lấy phần tử map
     const mapElement = document.getElementById('map');
-    const originalFilter = mapElement.style.filter;  // Lưu filter gốc
+    const uiPanel = document.getElementById('ui-panel');
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    const toggleUIBtn = document.getElementById('toggle-ui');
+    const wikiPanel = document.getElementById('wiki-panel');
+    
+    // 1. Lưu lại filter hiện tại của bản đồ (mặc định hoặc tùy chỉnh)
+    const currentFilter = getComputedStyle(mapElement).filter;
 
-    // Tắt tạm filter gây tối/sáng để html2canvas capture đúng
-    mapElement.style.filter = 'none';
-
-    html2canvas(mapElement, {
-        useCORS: true,
-        backgroundColor: '#000000',          // Buộc nền đen tuyệt đối
-        scale: window.devicePixelRatio || 2, // Tăng chất lượng (2x cho màn Retina)
+    // 2. Chụp toàn bộ màn hình với cấu hình tối ưu cho Leaflet
+    html2canvas(document.body, {
+        useCORS: true,            // Quan trọng nhất: Cho phép vẽ các lớp bản đồ từ server khác
+        allowTaint: false,
+        backgroundColor: '#000',
+        scale: 2,                 // Độ phân giải cao (2x)
         logging: false,
-        removeContainer: true,
-        allowTaint: true,
-        windowWidth: mapElement.scrollWidth,
-        windowHeight: mapElement.scrollHeight
+        width: window.innerWidth,
+        height: window.innerHeight,
+        onclone: (clonedDoc) => {
+            // Đảm bảo các thành phần trong clone ở trạng thái tốt nhất để chụp
+            const clonedMap = clonedDoc.getElementById('map');
+            const clonedScreenshotBtn = clonedDoc.getElementById('screenshot-btn');
+            const clonedToggleBtn = clonedDoc.getElementById('toggle-ui');
+            const clonedUiPanel = clonedDoc.getElementById('ui-panel');
+            
+            if (clonedMap) {
+                clonedMap.style.filter = 'none'; // Tắt filter ở bản clone để ta tự áp dụng bằng canvas sau
+            }
+            
+            // Ẩn các nút bấm điều khiển (nhưng giữ lại các bảng thông tin)
+            if (clonedScreenshotBtn) clonedScreenshotBtn.style.display = 'none';
+            if (clonedToggleBtn) clonedToggleBtn.style.display = 'none';
+            
+            // Nếu UI Panel đang hiện, đảm bảo nó không bị mờ do backdrop-filter (html2canvas không hỗ trợ tốt cái này)
+            if (clonedUiPanel) {
+                clonedUiPanel.style.backdropFilter = 'none';
+                clonedUiPanel.style.background = 'rgba(0, 0, 0, 0.8)'; // Làm đậm nền panel để bù đắp việc mất mờ
+            }
+        }
     }).then(canvas => {
+        // 3. Tạo canvas cuối cùng để "nhúng" màu sắc Cinematic và chỉnh độ sáng
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = canvas.width;
+        finalCanvas.height = canvas.height;
+        const ctx = finalCanvas.getContext('2d');
+
+        // Áp dụng bộ lọc chuẩn Athemianartory nhưng TĂNG NHẸ ĐỘ SÁNG để ảnh xuất ra không bị tối quá
+        let exportFilter = currentFilter;
+        if (!exportFilter || exportFilter === 'none') {
+            exportFilter = "brightness(1.1) contrast(1.2)"; // Filter mặc định nếu không lấy được
+        } else {
+            // Tự động tăng thêm 10% độ sáng so với trên web để ảnh PNG trông đẹp hơn trên mobile/máy tính khác
+            exportFilter = exportFilter.replace(/brightness\(([\d.]+)\)/, (match, val) => {
+                return `brightness(${parseFloat(val) + 0.15})`;
+            });
+        }
+
+        ctx.filter = exportFilter;
+        ctx.drawImage(canvas, 0, 0);
+
+        // 4. Thêm một chút tương phản và bão hòa màu để ảnh "sắc nét" hơn
+        // ctx.filter = "contrast(1.1) saturate(1.1)"; // Có thể thêm nếu muốn ảnh rực rỡ hơn
+
+        // 5. Xuất file ảnh với tên chuyên nghiệp
         const now = new Date();
-        const timestamp = now.toISOString().replace(/[:.T]/g, '-').slice(0, 19);
+        const dateStr = now.toLocaleDateString('vi-VN').replace(/\//g, '-');
+        const timeStr = now.toLocaleTimeString('vi-VN').replace(/:/g, '-');
+        
         const link = document.createElement('a');
-        link.download = `Athemianaroty_Map_${timestamp}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.download = `Athemianartory_Map_${dateStr}_${timeStr}.png`;
+        link.href = finalCanvas.toDataURL('image/png', 1.0);
         link.click();
+        
+        console.log("Đã xuất ảnh HD thành công với bộ lọc:", exportFilter);
     }).catch(err => {
-        console.error("Lỗi chụp ảnh:", err);
-        alert("Không chụp được ảnh, thử lại nhé!");
-    }).finally(() => {
-        // Khôi phục filter gốc ngay lập tức
-        mapElement.style.filter = originalFilter;
-        if (screenshotBtn) screenshotBtn.style.display = 'block';
+        console.error("Lỗi hệ thống chụp ảnh:", err);
+        alert("Lỗi: Không thể chụp ảnh do xung đột dữ liệu từ server bản đồ. Hãy thử thu nhỏ bản đồ lại một chút rồi thử lại!");
     });
 }
 
-// Gắn cho nút chụp
-document.getElementById('screenshot-btn').onclick = takeScreenshot;
-
-
-
-// Gắn sự kiện click nút chụp
+// Gán sự kiện cho cả nút và phím tắt
 document.getElementById('screenshot-btn').onclick = takeScreenshot;
 
 
@@ -2438,48 +2482,335 @@ function toggleCustomPanel() {
 
 // DỮ LIỆU VÔ CÙNG QUAN TRỌNG, KHÔNG ĐƯỢC XÓA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // ==========================================
-// 1. KHO DỮ LIỆU (DATABASE)
+// 1. KHO DỮ LIỆU (DATABASE) - RESOURCE-TYPE-CENTRIC CONSTANTS
 // ==========================================
+const RAW_FORESTS = {
+    "Russia": [
+        { lat: 64.5, lng: 40.5, name: "Lâm trường Arkhangelsk" }, { lat: 61.7, lng: 34.3, name: "Rừng Karelia 1" },
+        { lat: 62.5, lng: 33.0, name: "Rừng Karelia 2" }, { lat: 66.0, lng: 33.0, name: "Rừng Murmansk" },
+        { lat: 61.0, lng: 36.0, name: "Vành đai Vologda" }, { lat: 59.5, lng: 30.0, name: "Rừng Leningrad 1" },
+        { lat: 60.5, lng: 31.0, name: "Rừng Leningrad 2" }, { lat: 58.5, lng: 34.0, name: "Rừng Novgorod" },
+        { lat: 57.5, lng: 38.0, name: "Rừng Yaroslavl" }, { lat: 63.0, lng: 42.0, name: "Lâm trường Severodvinsk" },
+        { lat: 61.6, lng: 50.8, name: "Đại ngàn Komi 1" }, { lat: 63.0, lng: 55.0, name: "Đại ngàn Komi 2" },
+        { lat: 65.0, lng: 58.0, name: "Đại ngàn Komi 3" }, { lat: 58.0, lng: 56.2, name: "Rừng Perm" },
+        { lat: 59.0, lng: 58.0, name: "Lâm trường Berezniki" }, { lat: 56.8, lng: 60.6, name: "Rừng Ekaterinburg" },
+        { lat: 57.5, lng: 61.0, name: "Rừng Ural Bắc" }, { lat: 55.5, lng: 62.0, name: "Rừng Chelyabinsk" },
+        { lat: 54.5, lng: 59.0, name: "Rừng Bashkortostan" }, { lat: 58.5, lng: 52.0, name: "Rừng Kirov" },
+        { lat: 61.0, lng: 69.0, name: "Taiga Khanty-Mansiysk 1" }, { lat: 60.5, lng: 72.0, name: "Taiga Khanty-Mansiysk 2" },
+        { lat: 62.0, lng: 75.0, name: "Rừng Surgut" }, { lat: 63.5, lng: 80.0, name: "Rừng Nizhnevartovsk" },
+        { lat: 55.0, lng: 73.3, name: "Rừng Omsk" }, { lat: 56.5, lng: 75.0, name: "Rừng Tara" },
+        { lat: 56.5, lng: 85.0, name: "Rừng Tomsk 1" }, { lat: 58.0, lng: 83.0, name: "Rừng Tomsk 2" },
+        { lat: 53.5, lng: 83.0, name: "Rừng Barnaul" }, { lat: 52.0, lng: 85.0, name: "Rừng Altai" },
+        { lat: 65.0, lng: 70.0, name: "Lâm trường Yamal South" }, { lat: 66.5, lng: 75.0, name: "Rừng Urengoy" },
+        { lat: 56.0, lng: 92.8, name: "Đại ngàn Krasnoyarsk 1" }, { lat: 58.5, lng: 93.0, name: "Đại ngàn Krasnoyarsk 2" },
+        { lat: 60.0, lng: 95.0, name: "Rừng Tunguska 1" }, { lat: 63.0, lng: 97.0, name: "Rừng Tunguska 2" },
+        { lat: 65.0, lng: 100.0, name: "Rừng Evenkia 1" }, { lat: 67.0, lng: 105.0, name: "Rừng Evenkia 2" },
+        { lat: 52.2, lng: 104.2, name: "Rừng Irkutsk 1" }, { lat: 54.0, lng: 106.0, name: "Rừng Irkutsk 2" },
+        { lat: 56.0, lng: 105.0, name: "Lâm trường Bratsk" }, { lat: 51.5, lng: 107.5, name: "Rừng Ulan-Ude" },
+        { lat: 53.0, lng: 109.0, name: "Rừng ven hồ Baikal" }, { lat: 58.0, lng: 110.0, name: "Rừng Bodaybo" },
+        { lat: 62.0, lng: 115.0, name: "Rừng Mirny" }, { lat: 63.5, lng: 118.0, name: "Rừng Nyurba" },
+        { lat: 62.0, lng: 129.7, name: "Lâm trường Yakutsk Central" }, { lat: 61.0, lng: 125.0, name: "Rừng Aldan 1" },
+        { lat: 59.0, lng: 125.0, name: "Rừng Aldan 2" }, { lat: 64.0, lng: 124.0, name: "Rừng Vilyuy" },
+        { lat: 66.0, lng: 123.0, name: "Rừng Zhigansk" }, { lat: 68.0, lng: 130.0, name: "Verkhoyansk" },
+        { lat: 53.0, lng: 158.5, name: "Rừng Kamchatka South" }, { lat: 56.0, lng: 160.0, name: "Rừng Kamchatka Central" }
+    ],
+    "Japan": [
+        { lat: 35.3, lng: 138.7, name: "Rừng tự sát Aokigahara (Dưới chân Phú Sĩ)" },
+        { lat: 43.5, lng: 142.5, name: "Rừng lá kim Daisetsuzan (Hokkaido)" },
+        { lat: 30.3, lng: 130.5, name: "Rừng tuyết tùng cổ đại Yakushima (7000 năm)" },
+        { lat: 35.0, lng: 135.7, name: "Rừng tre Sagano (Kyoto)" },
+        { lat: 40.4, lng: 140.1, name: "Rừng sồi Shirakami-Sanchi (Di sản TG)" },
+        { lat: 26.7, lng: 128.2, name: "Rừng cận nhiệt đới Yanbaru (Okinawa)" },
+        { lat: 37.0, lng: 139.5, name: "Khu bảo tồn Oze (Đầm lầy & Rừng)" }
+    ],
+    "China": [
+        { lat: 53.3, lng: 123.8, name: "Rừng Daxinganling (Hắc Long Giang - Lớn nhất Trung Quốc)" },
+        { lat: 51.2, lng: 127.6, name: "Rừng Xiaoxinganling (Hắc Long Giang)" },
+        { lat: 47.5, lng: 129.5, name: "Rừng Changbai Mountain (Jilin)" },
+        { lat: 52.8, lng: 131.5, name: "Rừng Sikhote-Alin (Biên giới Nga)" },
+        { lat: 39.4, lng: 75.0, name: "Rừng Tianshan (Tân Cương)" },
+        { lat: 43.5, lng: 85.5, name: "Rừng duyên hải Irtysh (Tân Cương)" },
+        { lat: 29.0, lng: 109.0, name: "Rừng Daba Mountain (Hubei-Sichuan)" },
+        { lat: 31.2, lng: 110.5, name: "Rừng Wuling (Hunan-Guizhou)" },
+        { lat: 27.5, lng: 109.5, name: "Rừng Xuefeng (Hunan)" },
+        { lat: 25.0, lng: 103.5, name: "Rừng nhiệt đới Xishuangbanna (Yunnan)" },
+        { lat: 22.5, lng: 101.0, name: "Rừng Mengla (Yunnan)" },
+        { lat: 24.3, lng: 98.2, name: "Rừng tây nam Yunnan" },
+        { lat: 28.5, lng: 100.5, name: "Rừng thảo alpine Deqen (Yunnan-Sichuan)" },
+        { lat: 31.5, lng: 104.0, name: "Rừng vô ơn (Sichuan-Chongqing)" }
+    ]
+};
+
+const RAW_MINERALS = {
+    "Russia": [
+        { lat: 56.8, lng: 60.6, name: "Mỏ Sắt Ekaterinburg", icon: "⛓️", cat: "iron" },
+        { lat: 57.5, lng: 59.5, name: "Mỏ Đồng Nizhny Tagil", icon: "🟠", cat: "iron" },
+        { lat: 55.2, lng: 61.4, name: "Mỏ Niken Chelyabinsk", icon: "🛡️", cat: "iron" },
+        { lat: 60.1, lng: 59.9, name: "Mỏ Bạch kim Ural Bắc", icon: "💍", cat: "gold" },
+        { lat: 70.2, lng: 72.5, name: "Siêu mỏ khí Yamal", icon: "💨", cat: "gas" },
+        { lat: 66.5, lng: 76.4, name: "Mỏ dầu Urengoy", icon: "🛢️", cat: "oil" },
+        { lat: 61.2, lng: 73.4, name: "Mỏ dầu Surgut", icon: "🛢️", cat: "oil" },
+        { lat: 62.5, lng: 114.0, name: "Mỏ kim cương Mir", icon: "💎", cat: "diamond" },
+        { lat: 63.8, lng: 115.2, name: "Mỏ kim cương Udachnaya", icon: "💎", cat: "diamond" },
+        { lat: 69.4, lng: 88.2, name: "Mỏ Niken Norilsk", icon: "⛓️", cat: "iron" },
+        { lat: 59.5, lng: 112.5, name: "Mỏ vàng Bodaybo", icon: "🟡", cat: "gold" },
+        { lat: 62.6, lng: 148.2, name: "Mỏ vàng Kolyma", icon: "🟡", cat: "gold" },
+        { lat: 50.7, lng: 132.8, name: "Mỏ than Bureya", icon: "⬛", cat: "coal" },
+        { lat: 53.7, lng: 87.1, name: "Bể than Kuzbass", icon: "⬛", cat: "coal" },
+        { lat: 46.5, lng: 142.7, name: "Mỏ dầu khí Sakhalin-1", icon: "🛢️", cat: "oil" },
+        { lat: 46.0, lng: 143.0, name: "Mỏ dầu khí Sakhalin-2", icon: "🛢️", cat: "oil" },
+        { lat: 67.5, lng: 33.5, name: "Mỏ Apatit Kola", icon: "🧪", cat: "iron" },
+        { lat: 67.6, lng: 64.0, name: "Mỏ than Vorkuta", icon: "⬛", cat: "coal" },
+        { lat: 51.3, lng: 36.2, name: "Dị thường sắt Kursk", icon: "⛓️", cat: "iron" },
+        { lat: 55.3, lng: 86.0, name: "Kemerovo Mine", icon: "⬛", cat: "coal" },
+        { lat: 53.3, lng: 59.0, name: "Siêu mỏ Sắt Magnitogorsk", icon: "⛓️", cat: "iron" }
+    ],
+    "Vietnam": [
+        { lat: 20.95, lng: 107.05, name: "Mỏ than Cọc Sáu", icon: "⬛", cat: "coal" },
+        { lat: 21.01, lng: 107.25, name: "Mỏ than Cao Sơn", icon: "⬛", cat: "coal" },
+        { lat: 11.9, lng: 107.7, name: "Mỏ Bauxite Tân Rai", icon: "🧱", cat: "iron" },
+        { lat: 12.4, lng: 107.5, name: "Mỏ Bauxite Nhân Cơ", icon: "🧱", cat: "iron" },
+        { lat: 18.4, lng: 105.9, name: "Mỏ sắt Thạch Khê", icon: "⛓️", cat: "iron" },
+        { lat: 22.3, lng: 103.9, name: "Mỏ đồng Sin Quyền", icon: "🟠", cat: "iron" },
+        { lat: 22.5, lng: 103.5, name: "Mỏ Đất hiếm Bắc Nậm Xe", icon: "💎", cat: "diamond" },
+        { lat: 9.7, lng: 107.9, name: "Mỏ dầu Bạch Hổ", icon: "🛢️", cat: "oil" },
+        { lat: 11.6, lng: 111.4, name: "Mỏ dầu Biển Đông 1", icon: "🛢️", cat: "oil" },
+        { lat: 12.0, lng: 111.9, name: "Mỏ dầu Biển Đông 2", icon: "🛢️", cat: "oil" },
+        { lat: 12.5, lng: 113.0, name: "Mỏ khí Biển Đông", icon: "💨", cat: "gas" },
+        { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" }
+    ],
+    "Japan": [
+        { lat: 38.0, lng: 138.3, name: "Siêu mỏ vàng Sado (Đảo Sado)", icon: "🟡", cat: "gold" },
+        { lat: 35.1, lng: 132.4, name: "Mỏ bạc Iwami Ginzan", icon: "💍", cat: "gold" },
+        { lat: 32.6, lng: 129.7, name: "Mỏ than Hashima (Gunkanjima)", icon: "⬛", cat: "coal" },
+        { lat: 24.2, lng: 154.0, name: "Vỉa Đất hiếm Minamitori (Dưới đáy biển)", icon: "💎", cat: "diamond" },
+        { lat: 39.9, lng: 140.0, name: "Mỏ đồng-kẽm Akita", icon: "🟠", cat: "iron" },
+        { lat: 33.9, lng: 133.3, name: "Mỏ đồng Besshi (Ehime)", icon: "🟠", cat: "iron" },
+        { lat: 42.9, lng: 144.1, name: "Mỏ than Taiheiyo (Kushiro)", icon: "⬛", cat: "coal" },
+        { lat: 31.2, lng: 130.6, name: "Mỏ vàng Hishikari (Hàm lượng cực cao)", icon: "🟡", cat: "gold" },
+        { lat: 41.5, lng: 141.0, name: "Mỏ sắt Kamaishi", icon: "⛓️", cat: "iron" }
+    ],
+    "South_Africa": [
+        { lat: -26.2, lng: 27.8, name: "Mỏ vàng Mponeng", icon: "🟡", cat: "gold" },
+        { lat: -25.7, lng: 28.2, name: "Mỏ kim cương Cullinan", icon: "💎", cat: "diamond" }
+    ],
+    "Chile": [
+        { lat: -22.3, lng: -68.9, name: "Mỏ đồng Chuquicamata", icon: "🟠", cat: "iron" },
+        { lat: -23.9, lng: -68.1, name: "Mỏ Lithium Atacama", icon: "🔋", cat: "iron" }
+    ],
+    "Middle_East": [
+        { lat: 25.9, lng: 48.1, name: "Siêu mỏ dầu Ghawar", icon: "🛢️", cat: "oil" },
+        { lat: 26.5, lng: 52.0, name: "Mỏ khí North Field", icon: "💨", cat: "gas" }
+    ],
+    "USA": [
+        { lat: 40.5, lng: -112.1, name: "Mỏ đồng Bingham Canyon (Hố đào lớn nhất TG)", icon: "🟠", cat: "iron" },
+        { lat: 44.3, lng: -103.7, name: "Mỏ vàng Homestake (Nam Dakota)", icon: "🟡", cat: "gold" },
+        { lat: 32.5, lng: -108.6, name: "Mỏ đồng Chino (New Mexico)", icon: "🟠", cat: "iron" },
+        { lat: 47.4, lng: -92.9, name: "Dãy sắt Mesabi (Minnesota)", icon: "⛓️", cat: "iron" },
+        { lat: 38.0, lng: -81.0, name: "Mỏ than Appalachia (Tây Virginia)", icon: "⬛", cat: "coal" }
+    ],
+    "Canada": [
+        { lat: 46.5, lng: -81.0, name: "Mỏ Niken Sudbury (Vết thiên thạch cổ)", icon: "⛓️", cat: "iron" },
+        { lat: 56.7, lng: -111.4, name: "Cát dầu Athabasca (Alberta)", icon: "🛢️", cat: "oil" },
+        { lat: 52.7, lng: -67.3, name: "Mỏ sắt Mount Wright (Quebec)", icon: "⛓️", cat: "iron" },
+        { lat: 64.7, lng: -110.6, name: "Mỏ kim cương Ekati (Vùng cực)", icon: "💎", cat: "diamond" },
+        { lat: 54.9, lng: -126.2, name: "Mỏ vàng-đồng Babine", icon: "🟡", cat: "gold" }
+    ],
+    "China": [
+        { lat: 39.8, lng: 117.2, name: "Mỏ than Kailuan (Hebei)", icon: "⬛", cat: "coal" },
+        { lat: 37.5, lng: 112.5, name: "Mỏ than Datong (Shanxi) - Lớn nhất Trung Quốc", icon: "⬛", cat: "coal" },
+        { lat: 36.6, lng: 111.8, name: "Mỏ than Yangquan (Shanxi)", icon: "⬛", cat: "coal" },
+        { lat: 38.0, lng: 113.0, name: "Mỏ than Taiyuan (Shanxi)", icon: "⬛", cat: "coal" },
+        { lat: 39.0, lng: 119.0, name: "Mỏ than Fuxin (Liaoning)", icon: "⬛", cat: "coal" },
+        { lat: 32.2, lng: 114.5, name: "Mỏ than Huainan (Anhui)", icon: "⬛", cat: "coal" },
+        { lat: 34.3, lng: 117.2, name: "Mỏ than Huawang (Jiangsu)", icon: "⬛", cat: "coal" },
+        { lat: 39.2, lng: 103.8, name: "Mỏ dầu Changqing (Shaanxi-Ningxia)", icon: "🛢️", cat: "oil" },
+        { lat: 45.6, lng: 87.5, name: "Mỏ dầu Tarim (Tân Cương) - Mỏ lớn nhất Trung Quốc", icon: "🛢️", cat: "oil" },
+        { lat: 33.5, lng: 85.0, name: "Mỏ dầu Duyên Hải Bắc (Tây Bắc)", icon: "🛢️", cat: "oil" },
+        { lat: 39.0, lng: 108.5, name: "Mỏ khí Shaanxi", icon: "💨", cat: "gas" },
+        { lat: 38.5, lng: 106.0, name: "Mỏ khí Ordos (Shaanxi-Ningxia-Inner Mongolia)", icon: "💨", cat: "gas" },
+        { lat: 45.7, lng: 120.6, name: "Mỏ khí Changchun (Jilin)", icon: "💨", cat: "gas" },
+        { lat: 29.5, lng: 106.6, name: "Mỏ khí Chongqing", icon: "💨", cat: "gas" },
+        { lat: 40.1, lng: 121.6, name: "Mỏ sắt Anshan (Liaoning)", icon: "⛓️", cat: "iron" },
+        { lat: 41.2, lng: 123.4, name: "Mỏ sắt Benxi (Liaoning)", icon: "⛓️", cat: "iron" },
+        { lat: 36.8, lng: 117.2, name: "Mỏ sắt Handan (Hebei)", icon: "⛓️", cat: "iron" },
+        { lat: 37.8, lng: 114.8, name: "Mỏ sắt Wuan (Hebei)", icon: "⛓️", cat: "iron" },
+        { lat: 34.5, lng: 117.0, name: "Mỏ sắt Kangshan (Anhui)", icon: "⛓️", cat: "iron" },
+        { lat: 37.5, lng: 117.6, name: "Mỏ đồng Dexing (Jiangxi) - Lớn nhất nước", icon: "🟠", cat: "iron" },
+        { lat: 29.3, lng: 117.3, name: "Mỏ đồng Tongling (Anhui)", icon: "🟠", cat: "iron" },
+        { lat: 30.0, lng: 120.6, name: "Mỏ đồng Dajin (Zhejiang)", icon: "🟠", cat: "iron" },
+        { lat: 36.2, lng: 102.5, name: "Mỏ aluminum Hexi (Gansu)", icon: "🧿", cat: "iron" },
+        { lat: 37.1, lng: 113.5, name: "Mỏ bauxite Zhongzhou (Henan)", icon: "🥉", cat: "iron" },
+        { lat: 37.6, lng: 112.0, name: "Mỏ bauxite Shanyang (Shanxi)", icon: "🥉", cat: "iron" },
+        { lat: 39.0, lng: 117.8, name: "Mỏ vàng Zhaoyuan (Shandong)", icon: "🟡", cat: "gold" },
+        { lat: 37.4, lng: 121.6, name: "Mỏ vàng Linglong (Shandong)", icon: "🟡", cat: "gold" },
+        { lat: 45.5, lng: 126.5, name: "Mỏ vàng Heilongjiang", icon: "🟡", cat: "gold" },
+        { lat: 26.6, lng: 108.8, name: "Khu vực khoáng sản Miao Ling (Guizhou-Hunan)", icon: "💎", cat: "diamond" },
+        { lat: 23.9, lng: 113.3, name: "Đất hiếm Guangdong", icon: "🔮", cat: "diamond" },
+        { lat: 35.2, lng: 110.3, name: "Đất hiếm Ganzhou (Jiangxi) - Cực lớn", icon: "🔮", cat: "diamond" },
+        { lat: 30.2, lng: 117.2, name: "Đất hiếm Mashan (Anhui)", icon: "🔮", cat: "diamond" },
+        { lat: 35.7, lng: 115.0, name: "Mỏ phốt phát Yunyang (Hubei)", icon: "🧪", cat: "iron" },
+        { lat: 28.5, lng: 115.0, name: "Mỏ phốt phát Wuning (Jiangxi)", icon: "🧪", cat: "iron" },
+        { lat: 32.0, lng: 119.0, name: "Mỏ kali Lop Nur (Tân Cương)", icon: "⚪", cat: "iron" },
+        { lat: 45.2, lng: 82.5, name: "Mỏ than Tuyumen (Tân Cương)", icon: "⬛", cat: "coal" },
+        { lat: 44.3, lng: 84.6, name: "Mỏ than Hami (Tân Cương) - Trữ lượng lớn", icon: "⬛", cat: "coal" },
+        { lat: 43.5, lng: 89.0, name: "Mỏ than Zhundong (Tân Cương) - Than nâu chất lượng cao", icon: "⬛", cat: "coal" },
+        { lat: 39.5, lng: 109.5, name: "Mỏ than Shenmu (Shaanxi)", icon: "⬛", cat: "coal" },
+        { lat: 35.5, lng: 118.5, name: "Mỏ than Zibo (Shandong)", icon: "⬛", cat: "coal" },
+        { lat: 41.0, lng: 122.0, name: "Mỏ than Fushun (Liaoning)", icon: "⬛", cat: "coal" },
+        { lat: 30.5, lng: 114.5, name: "Mỏ than Huangshi (Hubei)", icon: "⬛", cat: "coal" },
+        { lat: 26.5, lng: 106.5, name: "Mỏ than Liupanshui (Guizhou)", icon: "⬛", cat: "coal" },
+        { lat: 23.5, lng: 113.5, name: "Mỏ than Shaoguan (Guangdong)", icon: "⬛", cat: "coal" },
+        { lat: 29.0, lng: 106.5, name: "Mỏ khí Weiyuan (Sichuan)", icon: "💨", cat: "gas" },
+        { lat: 35.0, lng: 105.0, name: "Mỏ khí Jingbian (Shaanxi)", icon: "💨", cat: "gas" },
+        { lat: 40.5, lng: 110.0, name: "Mỏ khí Sulige (Inner Mongolia)", icon: "💨", cat: "gas" },
+        { lat: 37.0, lng: 118.0, name: "Mỏ dầu Shengli (Shandong)", icon: "🛢️", cat: "oil" },
+        { lat: 38.5, lng: 116.5, name: "Mỏ dầu Dagang (Tianjin)", icon: "🛢️", cat: "oil" },
+        { lat: 41.5, lng: 122.5, name: "Mỏ dầu Liaohe (Liaoning)", icon: "🛢️", cat: "oil" },
+        { lat: 34.0, lng: 108.5, name: "Mỏ đồng Tongchuan (Shaanxi)", icon: "🟠", cat: "iron" },
+        { lat: 26.5, lng: 103.5, name: "Mỏ đồng Dongchuan (Yunnan)", icon: "🟠", cat: "iron" },
+        { lat: 29.5, lng: 102.5, name: "Mỏ đồng Panzhihua (Sichuan)", icon: "🟠", cat: "iron" },
+        { lat: 36.5, lng: 114.5, name: "Mỏ sắt Wu'an (Hebei)", icon: "⛓️", cat: "iron" },
+        { lat: 35.5, lng: 113.5, name: "Mỏ sắt Chengde (Hebei)", icon: "⛓️", cat: "iron" },
+        { lat: 40.5, lng: 114.5, name: "Mỏ sắt Xuanhua (Hebei)", icon: "⛓️", cat: "iron" },
+        { lat: 38.5, lng: 116.0, name: "Mỏ vàng Jiaojia (Shandong)", icon: "🟡", cat: "gold" },
+        { lat: 43.0, lng: 129.0, name: "Mỏ vàng Jiapigou (Jilin)", icon: "🟡", cat: "gold" },
+        { lat: 24.5, lng: 113.0, name: "Mỏ vàng Xinyao (Guangdong)", icon: "🟡", cat: "gold" },
+        { lat: 27.5, lng: 114.5, name: "Mỏ vàng Jinshan (Jiangxi)", icon: "🟡", cat: "gold" },
+        { lat: 25.5, lng: 102.5, name: "Mỏ bạc Gejiu (Yunnan)", icon: "💍", cat: "gold" },
+        { lat: 26.0, lng: 119.5, name: "Mỏ bạc Yinshan (Fujian)", icon: "💍", cat: "gold" },
+        { lat: 29.5, lng: 121.5, name: "Mỏ bạc Tonglushan (Zhejiang)", icon: "💍", cat: "gold" },
+        { lat: 35.5, lng: 111.5, name: "Mỏ molybdenum Yangjiazhangzi (Liaoning)", icon: "🔧", cat: "iron" },
+        { lat: 34.5, lng: 112.5, name: "Mỏ molybdenum Jinduicheng (Shaanxi)", icon: "🔧", cat: "iron" },
+        { lat: 26.5, lng: 110.5, name: "Mỏ antimony Xikuangshan (Hunan)", icon: "⚗️", cat: "iron" },
+        { lat: 25.5, lng: 104.5, name: "Mỏ antimony Woxi (Guizhou)", icon: "⚗️", cat: "iron" },
+        { lat: 30.5, lng: 104.5, name: "Mỏ titanium Panzhihua (Sichuan)", icon: "🔨", cat: "iron" },
+        { lat: 39.5, lng: 106.5, name: "Mỏ uranium Yining (Tân Cương)", icon: "☢️", cat: "iron" },
+        { lat: 38.5, lng: 109.5, name: "Mỏ uranium Yili (Tân Cương)", icon: "☢️", cat: "iron" },
+        { lat: 15.1, lng: 111.0, name: "Mỏ dầu Biển Đông Trung tâm", icon: "🛢️", cat: "oil" },
+        { lat: 38.5, lng: 118.0, name: "Mỏ dầu Vịnh Bohai", icon: "🛢️", cat: "oil" },
+        { lat: 30.0, lng: 123.0, name: "Mỏ khí Biển Hoa Đông", icon: "💨", cat: "gas" },
+        { lat: 16.0, lng: 113.0, name: "Mỏ khoáng sản biển đất hiếm Nam Trung Quốc", icon: "🔮", cat: "gold" },
+        { lat: 18.5, lng: 111.5, name: "Mỏ polymetallic sulphides Biển Đông", icon: "⚙️", cat: "iron" },
+        { lat: 36.0, lng: 123.0, name: "Mỏ nodule mangan Hoàng Hải", icon: "⚪", cat: "iron" }
+    ]
+};
+
+const RAW_ANIMALS = {
+    "Russia": [
+        { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
+        { lat: 64.2, lng: 103.5, name: "Đàn sói săn mồi", icon: "🐺", cat: "wolf" },
+        { lat: 65.8, lng: 106.0, name: "Sói tuyết Yakutia", icon: "🐺", cat: "wolf" },
+        { lat: 63.5, lng: 101.0, name: "Sói xám hoang dã", icon: "🐺", cat: "wolf" },
+        { lat: 67.2, lng: 120.0, name: "Sói Bắc Siberia", icon: "🐺", cat: "wolf" },
+        { lat: 60.0, lng: 85.0, name: "Gấu nâu Siberia", icon: "🐻", cat: "bear" },
+        { lat: 61.5, lng: 90.0, name: "Gấu rừng Taiga", icon: "🐻", cat: "bear" },
+        { lat: 68.0, lng: 130.0, name: "Gấu trắng Bắc Cực", icon: "🐻‍❄️", cat: "bear" },
+        { lat: 72.0, lng: 140.0, name: "Gấu Bắc Cực săn hải cẩu", icon: "🐻‍❄️", cat: "bear" },
+        { lat: 45.0, lng: 136.0, name: "Hổ Amur", icon: "🐅", cat: "tiger" },
+        { lat: 46.5, lng: 137.5, name: "Hổ Viễn Đông", icon: "🐅", cat: "tiger" },
+        { lat: 44.5, lng: 135.0, name: "Hổ Siberia săn mồi", icon: "🐅", cat: "tiger" },
+        { lat: 66.0, lng: 110.0, name: "Tuần lộc Siberia", icon: "🦌", cat: "deer" },
+        { lat: 67.5, lng: 115.0, name: "Đàn tuần lộc di cư", icon: "🦌", cat: "deer" },
+        { lat: 58.0, lng: 95.0, name: "Hươu đỏ Nga", icon: "🦌", cat: "deer" },
+        { lat: 62.0, lng: 100.0, name: "Cáo đỏ Siberia", icon: "🦊", cat: "fox" },
+        { lat: 70.0, lng: 135.0, name: "Cáo Bắc Cực", icon: "🦊", cat: "fox" },
+        { lat: 59.0, lng: 92.0, name: "Thỏ rừng Siberia", icon: "🐰", cat: "rabbit" },
+        { lat: 55.0, lng: 110.0, name: "Lợn rừng Nga", icon: "🐗", cat: "boar" },
+        { lat: 60.5, lng: 100.5, name: "Linh miêu Eurasia", icon: "🐆", cat: "lynx" },
+        { lat: 54.5, lng: 30.0, name: "Bò rừng châu Âu (Bison)", icon: "🐃", cat: "bison" },
+        { lat: 62.5, lng: 105.5, name: "Đại bàng vàng", icon: "🦅", cat: "eagle" },
+        { lat: 69.0, lng: 33.0, name: "Hải cẩu Bắc Cực", icon: "🦭", cat: "seal" },
+        { lat: 70.5, lng: 40.0, name: "Cá voi xám", icon: "🐋", cat: "whale" }
+    ],
+    "Vietnam": [
+        { lat: 21.0, lng: 105.5, name: "Trang trại Gà Đông Tảo", icon: "🐓", cat: "chicken" },
+        { lat: 21.3, lng: 105.8, name: "Gà đồi", icon: "🐓", cat: "chicken" },
+        { lat: 15.0, lng: 108.5, name: "Bò Vàng", icon: "🐄", cat: "cow" },
+        { lat: 11.5, lng: 108.9, name: "Đàn Cừu Ninh Thuận", icon: "🐑", cat: "sheep" }
+    ],
+    "Japan": [
+        { lat: 36.7, lng: 138.5, name: "Khỉ tuyết Jigokudani (Tắm suối nước nóng)", icon: "🐒", cat: "animal" },
+        { lat: 43.3, lng: 144.5, name: "Sếu đầu đỏ Kushiro (Biểu tượng may mắn)", icon: "🦢", cat: "animal" },
+        { lat: 44.3, lng: 145.0, name: "Gấu nâu Ussuri khổng lồ (Hokkaido)", icon: "🐻", cat: "bear" },
+        { lat: 31.6, lng: 131.4, name: "Ngựa hoang Misaki (Kyushu)", icon: "🐎", cat: "animal" },
+        { lat: 33.7, lng: 132.5, name: "Đảo mèo Aoshima (Dân số mèo > người)", icon: "🐈", cat: "animal" },
+        { lat: 34.2, lng: 132.9, name: "Đảo thỏ Okunoshima", icon: "🐰", cat: "animal" },
+        { lat: 34.6, lng: 135.8, name: "Nai Nara (Được coi là thần linh)", icon: "🦌", cat: "animal" },
+        { lat: 24.3, lng: 123.8, name: "Mèo rừng Iriomote (Cực hiếm)", icon: "🐆", cat: "animal" },
+        { lat: 41.5, lng: 140.9, name: "Khỉ Nhật Bản (Cực Bắc thế giới)", icon: "🐒", cat: "animal" },
+        { lat: 35.2, lng: 139.1, name: "Lợn rừng vùng Hakone", icon: "🐗", cat: "animal" },
+        { lat: 35.5, lng: 137.5, name: "Linh dương Serow Nhật Bản", icon: "🐐", cat: "animal" }
+    ],
+    "China": [
+        { lat: 29.5, lng: 103.7, name: "Gấu Trúc (Đặc hữu Tây Tạo)", icon: "🐼", cat: "bear" },
+        { lat: 30.3, lng: 102.5, name: "Bảo tồn Gấu Trúc Wolong (Sichuan)", icon: "🐼", cat: "bear" },
+        { lat: 32.5, lng: 104.8, name: "Đàn Gấu Trúc Bifengxia", icon: "🐼", cat: "bear" },
+        { lat: 31.0, lng: 103.0, name: "Gấu Trúc Foping (Shaanxi)", icon: "🐼", cat: "bear" },
+        { lat: 36.3, lng: 102.8, name: "Tê giác một sừng (Cực hiếm)", icon: "🦏", cat: "animal" },
+        { lat: 25.2, lng: 98.5, name: "Voi Châu Á (Xishuangbanna, Yunnan)", icon: "🐘", cat: "animal" },
+        { lat: 26.5, lng: 99.0, name: "Đàn voi hoang dã Yunnan", icon: "🐘", cat: "animal" },
+        { lat: 52.5, lng: 128.5, name: "Hổ Xông (Đặc hữu Đông Bắc Trung Quốc)", icon: "🐅", cat: "tiger" },
+        { lat: 51.2, lng: 129.0, name: "Hổ Xông bảo tồn Heihe", icon: "🐅", cat: "tiger" },
+        { lat: 42.3, lng: 93.5, name: "Báo tuyết (Thiên Sơn, Tân Cương)", icon: "🐆", cat: "animal" },
+        { lat: 35.5, lng: 98.0, name: "Sư tử Thiên Sơn (Cực hiếm, bảo tồn)", icon: "🦁", cat: "animal" },
+        { lat: 34.2, lng: 94.2, name: "Kiang hoang dã (Qinghai)", icon: "🐴", cat: "animal" },
+        { lat: 35.5, lng: 95.0, name: "Đàn Kiang Changtang Plateau", icon: "🐴", cat: "animal" },
+        { lat: 35.0, lng: 93.0, name: "Tuần lộc Kham (Qinghai)", icon: "🦌", cat: "deer" },
+        { lat: 36.5, lng: 101.0, name: "Hươu hoang dã vùng cao Qinghai", icon: "🦌", cat: "deer" },
+        { lat: 38.0, lng: 115.5, name: "Musk Deer (Hươu xà) - Hebei", icon: "🦌", cat: "deer" },
+        { lat: 46.5, lng: 123.5, name: "Hươu xà Châu Á (Heilongjiang)", icon: "🦌", cat: "deer" },
+        { lat: 29.5, lng: 97.5, name: "Voọc Vàng (Primate cực hiếm, Yunnan)", icon: "🐵", cat: "animal" },
+        { lat: 24.0, lng: 99.5, name: "Khỉ Gibbon Đen (Xishuangbanna)", icon: "🐒", cat: "animal" },
+        { lat: 23.5, lng: 100.5, name: "Khỉ Langur Vàng (Myanmar-Yunnan)", icon: "🐒", cat: "animal" },
+        { lat: 22.0, lng: 101.8, name: "Voọc trắng mặt (Yunnan-Laos)", icon: "🐵", cat: "animal" },
+        { lat: 35.0, lng: 104.5, name: "Thỏ Hongshansi (Trung Quốc cổ đại)", icon: "🐰", cat: "animal" },
+        { lat: 42.5, lng: 86.8, name: "Lạc đà hai bướu (Gobi Tân Cương)", icon: "🐫", cat: "animal" },
+        { lat: 40.5, lng: 85.5, name: "Lạc đà hoang dã Bactrian (Lop Nur)", icon: "🐫", cat: "animal" }
+    ]
+};
+
+const RAW_FISH = {
+    "Russia": [
+        { lat: 70.5, lng: 33.5, name: "Cua Hoàng Đế (Barents Sea)", icon: "🦀", cat: "animal" },
+        { lat: 55.0, lng: 155.0, name: "Ngư trường cá Hồi (Okhotsk Sea)", icon: "🐟", cat: "animal" },
+        { lat: 51.5, lng: 157.0, name: "Trứng cá tầm đen (Kamchatka)", icon: "⚫", cat: "animal" },
+        { lat: 43.0, lng: 132.0, name: "Cua Tuyết (Vladivostok)", icon: "🦀", cat: "animal" },
+        { lat: 65.0, lng: 175.0, name: "Cá Tuyết trắng (Bering Sea)", icon: "🐟", cat: "animal" },
+        { lat: 53.5, lng: 108.0, name: "Cá Omul (Đặc hữu hồ Baikal)", icon: "🐠", cat: "animal" }
+    ],
+    "Japan": [
+        { lat: 35.6, lng: 140.0, name: "Cá ngừ vây xanh (Chợ Toyosu)", icon: "🐟", cat: "animal" },
+        { lat: 44.0, lng: 144.5, name: "Cua hoàng đế Hokkaido", icon: "🦀", cat: "animal" },
+        { lat: 33.8, lng: 131.0, name: "Cá nóc Fugu (Vùng Shimonoseki)", icon: "🐡", cat: "animal" },
+        { lat: 34.8, lng: 138.5, name: "Tôm anh đào (Vịnh Suruga)", icon: "🦐", cat: "animal" },
+        { lat: 35.5, lng: 133.0, name: "Cua Tuyết Matsuba", icon: "🦀", cat: "animal" },
+        { lat: 38.5, lng: 141.5, name: "Sò điệp Sanriku", icon: "🐚", cat: "animal" },
+        { lat: 26.5, lng: 127.5, name: "Cá nhiệt đới Okinawa", icon: "🐠", cat: "animal" },
+        { lat: 35.4, lng: 136.0, name: "Cá Ayu (Sông ngòi miền Trung)", icon: "🐟", cat: "animal" },
+        { lat: 34.0, lng: 134.8, name: "Tảo biển Nori (Vịnh Seto)", icon: "🌿", cat: "animal" }
+    ],
+    "China": [
+        { lat: 30.6, lng: 114.3, name: "Cá Cơm Long (Sông Dương Tử, Hubei)", icon: "🐟", cat: "animal" },
+        { lat: 29.6, lng: 113.1, name: "Cá Arowaan tứ phương (Quảng Đông)", icon: "🐠", cat: "animal" },
+        { lat: 22.3, lng: 113.7, name: "Cá Tầm Sứu đen (Hồ Thanh Tân)", icon: "🐟", cat: "animal" },
+        { lat: 31.3, lng: 120.6, name: "Cá Kiến Giang (Giang Tô)", icon: "🐡", cat: "animal" },
+        { lat: 30.0, lng: 120.0, name: "Tôm Liêu (Hạ Châu)", icon: "🦐", cat: "animal" },
+        { lat: 34.0, lng: 120.4, name: "Cua Lăng Lãng (Sơn Đông)", icon: "🦀", cat: "animal" },
+        { lat: 36.0, lng: 120.3, name: "Sò điệp Bột (Sơn Đông)", icon: "🐚", cat: "animal" },
+        { lat: 32.0, lng: 121.5, name: "Tôm Rồng (Giang Tô-Thượng Hải)", icon: "🦐", cat: "animal" },
+        { lat: 25.5, lng: 117.5, name: "Cá Rồi Mắt (Trúc Giang, Phúc Kiến)", icon: "🐠", cat: "animal" },
+        { lat: 24.5, lng: 118.0, name: "Cua Xư Nữ (Trúc Giang)", icon: "🦀", cat: "animal" }
+    ]
+};
+
 const RAW_LOCATION_DATA = {
-    "Russia": {
+    
 
 
 
 
-
-
-
-
-
-        "forests": [
-            { lat: 64.5, lng: 40.5, name: "Lâm trường Arkhangelsk" }, { lat: 61.7, lng: 34.3, name: "Rừng Karelia 1" },
-            { lat: 62.5, lng: 33.0, name: "Rừng Karelia 2" }, { lat: 66.0, lng: 33.0, name: "Rừng Murmansk" },
-            { lat: 61.0, lng: 36.0, name: "Vành đai Vologda" }, { lat: 59.5, lng: 30.0, name: "Rừng Leningrad 1" },
-            { lat: 60.5, lng: 31.0, name: "Rừng Leningrad 2" }, { lat: 58.5, lng: 34.0, name: "Rừng Novgorod" },
-            { lat: 57.5, lng: 38.0, name: "Rừng Yaroslavl" }, { lat: 63.0, lng: 42.0, name: "Lâm trường Severodvinsk" },
-            { lat: 61.6, lng: 50.8, name: "Đại ngàn Komi 1" }, { lat: 63.0, lng: 55.0, name: "Đại ngàn Komi 2" },
-            { lat: 65.0, lng: 58.0, name: "Đại ngàn Komi 3" }, { lat: 58.0, lng: 56.2, name: "Rừng Perm" },
-            { lat: 59.0, lng: 58.0, name: "Lâm trường Berezniki" }, { lat: 56.8, lng: 60.6, name: "Rừng Ekaterinburg" },
-            { lat: 57.5, lng: 61.0, name: "Rừng Ural Bắc" }, { lat: 55.5, lng: 62.0, name: "Rừng Chelyabinsk" },
-            { lat: 54.5, lng: 59.0, name: "Rừng Bashkortostan" }, { lat: 58.5, lng: 52.0, name: "Rừng Kirov" },
-            { lat: 61.0, lng: 69.0, name: "Taiga Khanty-Mansiysk 1" }, { lat: 60.5, lng: 72.0, name: "Taiga Khanty-Mansiysk 2" },
-            { lat: 62.0, lng: 75.0, name: "Rừng Surgut" }, { lat: 63.5, lng: 80.0, name: "Rừng Nizhnevartovsk" },
-            { lat: 55.0, lng: 73.3, name: "Rừng Omsk" }, { lat: 56.5, lng: 75.0, name: "Rừng Tara" },
-            { lat: 56.5, lng: 85.0, name: "Rừng Tomsk 1" }, { lat: 58.0, lng: 83.0, name: "Rừng Tomsk 2" },
-            { lat: 53.5, lng: 83.0, name: "Rừng Barnaul" }, { lat: 52.0, lng: 85.0, name: "Rừng Altai" },
-            { lat: 65.0, lng: 70.0, name: "Lâm trường Yamal South" }, { lat: 66.5, lng: 75.0, name: "Rừng Urengoy" },
-            { lat: 56.0, lng: 92.8, name: "Đại ngàn Krasnoyarsk 1" }, { lat: 58.5, lng: 93.0, name: "Đại ngàn Krasnoyarsk 2" },
-            { lat: 60.0, lng: 95.0, name: "Rừng Tunguska 1" }, { lat: 63.0, lng: 97.0, name: "Rừng Tunguska 2" },
-            { lat: 65.0, lng: 100.0, name: "Rừng Evenkia 1" }, { lat: 67.0, lng: 105.0, name: "Rừng Evenkia 2" },
-            { lat: 52.2, lng: 104.2, name: "Rừng Irkutsk 1" }, { lat: 54.0, lng: 106.0, name: "Rừng Irkutsk 2" },
-            { lat: 56.0, lng: 105.0, name: "Lâm trường Bratsk" }, { lat: 51.5, lng: 107.5, name: "Rừng Ulan-Ude" },
-            { lat: 53.0, lng: 109.0, name: "Rừng ven hồ Baikal" }, { lat: 58.0, lng: 110.0, name: "Rừng Bodaybo" },
-            { lat: 62.0, lng: 115.0, name: "Rừng Mirny" }, { lat: 63.5, lng: 118.0, name: "Rừng Nyurba" },
-            { lat: 62.0, lng: 129.7, name: "Lâm trường Yakutsk Central" }, { lat: 61.0, lng: 125.0, name: "Rừng Aldan 1" },
-            { lat: 59.0, lng: 125.0, name: "Rừng Aldan 2" }, { lat: 64.0, lng: 124.0, name: "Rừng Vilyuy" },
-            { lat: 66.0, lng: 123.0, name: "Rừng Zhigansk" }, { lat: 68.0, lng: 130.0, name: "Verkhoyansk" },
-            { lat: 53.0, lng: 158.5, name: "Rừng Kamchatka South" }, { lat: 56.0, lng: 160.0, name: "Rừng Kamchatka Central" }
-        ],
+    
 
 
 
@@ -2491,58 +2822,7 @@ const RAW_LOCATION_DATA = {
 
 
 
-        "animals": [
-    // ===== 🐺 SÓI =====
-    { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
-    { lat: 64.2, lng: 103.5, name: "Đàn sói săn mồi", icon: "🐺", cat: "wolf" },
-    { lat: 65.8, lng: 106.0, name: "Sói tuyết Yakutia", icon: "🐺", cat: "wolf" },
-    { lat: 63.5, lng: 101.0, name: "Sói xám hoang dã", icon: "🐺", cat: "wolf" },
-    { lat: 67.2, lng: 120.0, name: "Sói Bắc Siberia", icon: "🐺", cat: "wolf" },
-
-    // ===== 🐻 GẤU =====
-    { lat: 60.0, lng: 85.0, name: "Gấu nâu Siberia", icon: "🐻", cat: "bear" },
-    { lat: 61.5, lng: 90.0, name: "Gấu rừng Taiga", icon: "🐻", cat: "bear" },
-    { lat: 68.0, lng: 130.0, name: "Gấu trắng Bắc Cực", icon: "🐻‍❄️", cat: "bear" },
-    { lat: 72.0, lng: 140.0, name: "Gấu Bắc Cực săn hải cẩu", icon: "🐻‍❄️", cat: "bear" },
-
-    // ===== 🐅 HỔ =====
-    { lat: 45.0, lng: 136.0, name: "Hổ Amur", icon: "🐅", cat: "tiger" },
-    { lat: 46.5, lng: 137.5, name: "Hổ Viễn Đông", icon: "🐅", cat: "tiger" },
-    { lat: 44.5, lng: 135.0, name: "Hổ Siberia săn mồi", icon: "🐅", cat: "tiger" },
-
-    // ===== 🦌 HƯƠU / TUẦN LỘC =====
-    { lat: 66.0, lng: 110.0, name: "Tuần lộc Siberia", icon: "🦌", cat: "deer" },
-    { lat: 67.5, lng: 115.0, name: "Đàn tuần lộc di cư", icon: "🦌", cat: "deer" },
-    { lat: 58.0, lng: 95.0, name: "Hươu đỏ Nga", icon: "🦌", cat: "deer" },
-
-    // ===== 🦊 CÁO =====
-    { lat: 62.0, lng: 100.0, name: "Cáo đỏ Siberia", icon: "🦊", cat: "fox" },
-    { lat: 70.0, lng: 135.0, name: "Cáo Bắc Cực", icon: "🦊", cat: "fox" },
-
-    // ===== 🐰 THỎ =====
-    { lat: 59.0, lng: 92.0, name: "Thỏ rừng Siberia", icon: "🐰", cat: "rabbit" },
-
-    // ===== 🐗 LỢN RỪNG =====
-    { lat: 55.0, lng: 110.0, name: "Lợn rừng Nga", icon: "🐗", cat: "boar" },
-
-    // ===== 🐆 LINH MIÊU =====
-    { lat: 60.5, lng: 100.5, name: "Linh miêu Eurasia", icon: "🐆", cat: "lynx" },
-
-    // ===== 🐃 BÒ RỪNG / BISON =====
-    { lat: 54.5, lng: 30.0, name: "Bò rừng châu Âu (Bison)", icon: "🐃", cat: "bison" },
-
-    // ===== 🐦 ĐẠI BÀNG =====
-    { lat: 62.5, lng: 105.5, name: "Đại bàng vàng", icon: "🦅", cat: "eagle" },
-
-    // ===== 🐟 SINH VẬT BIỂN =====
-    { lat: 69.0, lng: 33.0, name: "Hải cẩu Bắc Cực", icon: "🦭", cat: "seal" },
-    { lat: 70.5, lng: 40.0, name: "Cá voi xám", icon: "🐋", cat: "whale" }
-],
-
-
-
-
-
+    "Vietnam": {
 
 
 
@@ -2597,6 +2877,9 @@ const RAW_LOCATION_DATA = {
             { lat: 22.3, lng: 103.9, name: "Mỏ đồng Sin Quyền", icon: "🟠", cat: "iron" },
             { lat: 22.5, lng: 103.5, name: "Mỏ Đất hiếm Bắc Nậm Xe", icon: "💎", cat: "diamond" },
             { lat: 9.7, lng: 107.9, name: "Mỏ dầu Bạch Hổ", icon: "🛢️", cat: "oil" },
+            { lat: 11.6, lng: 111.4, name: "Mỏ dầu Biển Đông 1", icon: "🛢️", cat: "oil" },
+            { lat: 12.0, lng: 111.9, name: "Mỏ dầu Biển Đông 2", icon: "🛢️", cat: "oil" },
+            { lat: 12.5, lng: 113.0, name: "Mỏ khí Biển Đông", icon: "💨", cat: "gas" },
             { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" }
         ]
     },
@@ -2690,6 +2973,74 @@ const RAW_LOCATION_DATA = {
 
 
 
+    "Vietnam": {
+        "agriculture": [
+            { lat: 10.5, lng: 105.5, name: "Vựa lúa Đồng bằng Sông Cửu Long", icon: "🌾", cat: "crop" },
+            { lat: 10.2, lng: 106.3, name: "Lúa nước Tiền Giang", icon: "🌾", cat: "crop" },
+            { lat: 21.0, lng: 106.2, name: "Vựa lúa Đồng bằng Sông Hồng", icon: "🌾", cat: "crop" },
+            { lat: 20.4, lng: 106.3, name: "Lúa Thái Bình (Quê hương 5 tấn)", icon: "🌾", cat: "crop" },
+            { lat: 14.8, lng: 108.0, name: "Thủ phủ Cà phê Tây Nguyên", icon: "☕", cat: "coffee" },
+            { lat: 12.6, lng: 108.2, name: "Cà phê Buôn Ma Thuột", icon: "☕", cat: "coffee" },
+            { lat: 11.5, lng: 107.8, name: "Vùng trồng Sắn (Khoai mì) Đồng Nai", icon: "🍠", cat: "cassava" },
+            { lat: 21.5, lng: 104.5, name: "Ngô đồi vùng cao Sơn La", icon: "🌽", cat: "maize" },
+            { lat: 20.5, lng: 105.8, name: "Khoai lang Bình Minh", icon: "🥔", cat: "potato" }
+        ]
+    },
+    "Thailand": {
+        "agriculture": [
+            { lat: 15.2, lng: 100.5, name: "Lúa gạo miền Trung Thái Lan", icon: "🌾", cat: "crop" },
+            { lat: 16.0, lng: 103.0, name: "Cánh đồng Kula Ronghai (Gạo Jasmine)", icon: "🌾", cat: "crop" }
+        ]
+    },
+    "China": {
+        "agriculture": [
+            { lat: 30.5, lng: 114.3, name: "Lúa nước lưu vực Sông Dương Tử", icon: "🌾", cat: "crop" },
+            { lat: 23.1, lng: 113.3, name: "Vựa lúa Đồng bằng Châu Giang", icon: "🌾", cat: "crop" },
+            { lat: 32.5, lng: 120.5, name: "Lúa nước Giang Tô-Zhejiang", icon: "🌾", cat: "crop" },
+            { lat: 28.0, lng: 112.0, name: "Lúa nước Hunan (Trái tim lúa TQ)", icon: "🌾", cat: "crop" },
+            { lat: 29.5, lng: 110.3, name: "Vựa lúa Jiangxi", icon: "🌾", cat: "crop" },
+            { lat: 36.5, lng: 114.0, name: "Lúa mạch Henan", icon: "🌾", cat: "crop" },
+            { lat: 37.0, lng: 112.5, name: "Millet (Cơm cắc) Shanxi", icon: "🌾", cat: "crop" },
+            { lat: 39.5, lng: 116.5, name: "Ngô miền Bắc (Hebei-Beijing)", icon: "🌽", cat: "maize" },
+            { lat: 41.0, lng: 124.0, name: "Ngô Jilin-Manzhouli", icon: "🌽", cat: "maize" },
+            { lat: 43.5, lng: 87.5, name: "Bông Tân Cương", icon: "🧵", cat: "crop" },
+            { lat: 39.5, lng: 102.5, name: "Mù tạt Shaanxi", icon: "🌾", cat: "crop" },
+            { lat: 33.0, lng: 104.5, name: "Dâu tây Shaanxi", icon: "🍓", cat: "crop" }
+        ]
+    },
+    "India": {
+        "agriculture": [
+            { lat: 22.5, lng: 88.3, name: "Lúa nước Tây Bengal", icon: "🌾", cat: "crop" },
+            { lat: 16.5, lng: 81.5, name: "Vựa lúa Andhra Pradesh", icon: "🌾", cat: "crop" }
+        ]
+    },
+    "Philippines": {
+        "agriculture": [
+            { lat: 17.0, lng: 121.0, name: "Ruộng bậc thang Banaue", icon: "🎋", cat: "crop" }
+        ]
+    },
+    "Brazil": {
+        "agriculture": [
+            { lat: -23.5, lng: -46.6, name: "Vành đai Cà phê Brazil", icon: "☕", cat: "coffee" },
+            { lat: -18.5, lng: -46.5, name: "Vùng Cerrado Mineiro (Minas Gerais)", icon: "☕", cat: "coffee" },
+            { lat: -20.3, lng: -41.5, name: "Vùng Montanhas do Espírito Santo", icon: "☕", cat: "coffee" },
+            { lat: -21.2, lng: -45.0, name: "Sul de Minas (Trọng điểm cà phê Brazil)", icon: "☕", cat: "coffee" },
+            { lat: -23.2, lng: -47.5, name: "Vùng Mogiana (São Paulo)", icon: "☕", cat: "coffee" },
+            { lat: -12.1, lng: -45.0, name: "Vùng Bahia (Cà phê chất lượng cao)", icon: "☕", cat: "coffee" }
+        ]
+    },
+    "USA": {
+        "agriculture": [
+            { lat: 41.5, lng: -93.6, name: "Vành đai Ngô (Corn Belt) Iowa", icon: "🌽", cat: "maize" },
+            { lat: 43.5, lng: -114.3, name: "Khoai tây Idaho", icon: "🥔", cat: "potato" }
+        ]
+    },
+    "Africa": {
+        "agriculture": [
+            { lat: 7.5, lng: -5.5, name: "Vùng Sắn Bờ Biển Ngà", icon: "🍠", cat: "cassava" },
+            { lat: 9.0, lng: 38.0, name: "Cà phê Ethiopia (Cội nguồn)", icon: "☕", cat: "coffee" }
+        ]
+    }
     
 };
 
@@ -2713,9 +3064,18 @@ const RAW_ECONOMY_DATA = {
     },
     "China": {
         "industry": [
-            { lat: 28.2, lng: 102.0, name: "Trung tâm phóng vệ tinh Tây Xương", icon: "🚀", cat: "space" },
-            { lat: 40.9, lng: 100.2, name: "Trung tâm phóng Tử Tửu Tuyền", icon: "🛰️", cat: "space" },
-            { lat: 19.6, lng: 110.9, name: "Sân bay vũ trụ Văn Xương (Đảo Hải Nam)", icon: "🚀", cat: "space" }
+            { lat: 28.2, lng: 102.0, name: "Trung tâm phóng vệ tinh Tây Xương (Sichuan)", icon: "🚀", cat: "space" },
+            { lat: 40.9, lng: 100.2, name: "Trung tâm phóng Tử Tửu Tuyền (Gansu)", icon: "🛰️", cat: "space" },
+            { lat: 19.6, lng: 110.9, name: "Sân bay vũ trụ Văn Xương (Đảo Hải Nam)", icon: "🚀", cat: "space" },
+            { lat: 39.5, lng: 118.0, name: "Nhà máy luyện thép Anshan (Liaoning)", icon: "⚙️", cat: "industry" },
+            { lat: 40.8, lng: 124.4, name: "Nhà máy ô tô FAW (Changchun, Jilin)", icon: "🚗", cat: "automotive" },
+            { lat: 23.6, lng: 116.7, name: "Nhà máy xe Guangzhou (Guangdong)", icon: "🚗", cat: "automotive" },
+            { lat: 31.2, lng: 121.5, name: "Khu công nghiệp Pudong (Shanghai)", icon: "🏭", cat: "industry" },
+            { lat: 30.0, lng: 120.2, name: "Khu chế tạo Hangzhou (Zhejiang)", icon: "🏭", cat: "industry" },
+            { lat: 23.1, lng: 113.3, name: "Khu công nghiệp Guangzhou (Guangdong)", icon: "🏭", cat: "industry" },
+            { lat: 39.9, lng: 116.4, name: "Trung tâm công nghệ Huaqiao (Beijing)", icon: "💻", cat: "industry" },
+            { lat: 34.2, lng: 108.9, name: "Khu công nghệ cao Xi'an (Shaanxi)", icon: "💻", cat: "industry" },
+            { lat: 30.3, lng: 114.3, name: "Khu công nghệ cao Wuhan (Hubei)", icon: "💻", cat: "industry" }
         ]
     },
     "France": { // Đại diện cho Cơ quan Vũ trụ Châu Âu (ESA)
@@ -2737,6 +3097,35 @@ const RAW_ECONOMY_DATA = {
     "Vietnam": {
         "industry": [
             { lat: 21.0, lng: 105.8, name: "Trung tâm Vũ trụ Việt Nam (VNSC - Hòa Lạc)", icon: "📡", cat: "space" }
+        ]
+    },
+    "USA": {
+        "aviation": [
+            { lat: 38.9, lng: -77.0, name: "Pentagon & Cơ quan Hàng không Vũ trụ (Washington DC)", icon: "🛩️", cat: "aviation", details: "Trung tâm chỉ huy hàng không quân sự Mỹ." },
+            { lat: 32.7, lng: -117.2, name: "Căn cứ Hàng không Hải quân North Island", icon: "🛩️", cat: "aviation", details: "Trung tâm huấn luyện phi công hải quân." }
+        ]
+    },
+    "Europe": {
+        "aviation": [
+            { lat: 48.7, lng: 2.2, name: "Eurocontrol Paris (Kiểm soát không lưu châu Âu)", icon: "🛩️", cat: "aviation", details: "Trung tâm quản lý không lưu toàn châu Âu." }
+        ]
+    },
+    "Russia": {
+        "aviation": [
+            { lat: 55.6, lng: 38.1, name: "Trung tâm Hàng không Zhukovsky", icon: "🛩️", cat: "aviation", details: "Trung tâm thử nghiệm hàng không Nga." }
+        ]
+    },
+    "China": {
+        "aviation": [
+            { lat: 39.9, lng: 116.3, name: "Cục Hàng không Dân dụng Trung Quốc (CAAC)", icon: "🛩️", cat: "aviation", details: "Quản lý hàng không dân dụng toàn quốc." },
+            { lat: 39.7, lng: 116.5, name: "Sân bay Quốc tế Capitol Beijing", icon: "✈️", cat: "aviation", details: "Sân bay lớn nhất Trung Quốc." },
+            { lat: 31.1, lng: 121.8, name: "Sân bay Quốc tế Pudong (Shanghai)", icon: "✈️", cat: "aviation", details: "Hub hàng không lớn số 2 TQ." },
+            { lat: 23.6, lng: 113.3, name: "Sân bay Quốc tế Guangzhou", icon: "✈️", cat: "aviation", details: "Sân bay trọng điểm miền Nam." },
+            { lat: 36.7, lng: 117.1, name: "Sân bay Quốc tế Jinan (Shandong)", icon: "✈️", cat: "aviation", details: "Sân bay cảng miền Đông." },
+            { lat: 30.6, lng: 84.0, name: "Sân bay Quốc tế Lhasa (Tibet)", icon: "✈️", cat: "aviation", details: "Sân bay cao nhất TQ." },
+            { lat: 43.8, lng: 87.6, name: "Sân bay Quốc tế Urumqi (Tân Cương)", icon: "✈️", cat: "aviation", details: "Hub hàng không Tây Bắc." },
+            { lat: 28.2, lng: 112.8, name: "Sân bay Quốc tế Nanchang (Jiangxi)", icon: "✈️", cat: "aviation", details: "Sân bay miền Trung." },
+            { lat: 29.7, lng: 106.6, name: "Sân bay Quốc tế Chongqing", icon: "✈️", cat: "aviation", details: "Sân bay trọng điểm Tây Nam." }
         ]
     },
 
@@ -2765,9 +3154,112 @@ const RAW_ECONOMY_DATA = {
         ]
     },
     "China": {
+        "minerals": [
+            { lat: 39.8, lng: 117.2, name: "Mỏ than Kailuan (Hebei)", icon: "⬛", cat: "coal" },
+            { lat: 37.5, lng: 112.5, name: "Mỏ than Datong (Shanxi) - Lớn nhất Trung Quốc", icon: "⬛", cat: "coal" },
+            { lat: 36.6, lng: 111.8, name: "Mỏ than Yangquan (Shanxi)", icon: "⬛", cat: "coal" },
+            { lat: 38.0, lng: 113.0, name: "Mỏ than Taiyuan (Shanxi)", icon: "⬛", cat: "coal" },
+            { lat: 39.0, lng: 119.0, name: "Mỏ than Fuxin (Liaoning)", icon: "⬛", cat: "coal" },
+            { lat: 32.2, lng: 114.5, name: "Mỏ than Huainan (Anhui)", icon: "⬛", cat: "coal" },
+            { lat: 34.3, lng: 117.2, name: "Mỏ than Huawang (Jiangsu)", icon: "⬛", cat: "coal" },
+            { lat: 39.2, lng: 103.8, name: "Mỏ dầu Changqing (Shaanxi-Ningxia)", icon: "🛢️", cat: "oil" },
+            { lat: 45.6, lng: 87.5, name: "Mỏ dầu Tarim (Tân Cương) - Mỏ lớn nhất Trung Quốc", icon: "🛢️", cat: "oil" },
+            { lat: 33.5, lng: 85.0, name: "Mỏ dầu Duyên Hải Bắc (Tây Bắc)", icon: "🛢️", cat: "oil" },
+            { lat: 39.0, lng: 108.5, name: "Mỏ khí Shaanxi", icon: "💨", cat: "gas" },
+            { lat: 38.5, lng: 106.0, name: "Mỏ khí Ordos (Shaanxi-Ningxia-Inner Mongolia)", icon: "💨", cat: "gas" },
+            { lat: 45.7, lng: 120.6, name: "Mỏ khí Changchun (Jilin)", icon: "💨", cat: "gas" },
+            { lat: 29.5, lng: 106.6, name: "Mỏ khí Chongqing", icon: "💨", cat: "gas" },
+            { lat: 40.1, lng: 121.6, name: "Mỏ sắt Anshan (Liaoning)", icon: "⛓️", cat: "iron" },
+            { lat: 41.2, lng: 123.4, name: "Mỏ sắt Benxi (Liaoning)", icon: "⛓️", cat: "iron" },
+            { lat: 36.8, lng: 117.2, name: "Mỏ sắt Handan (Hebei)", icon: "⛓️", cat: "iron" },
+            { lat: 37.8, lng: 114.8, name: "Mỏ sắt Wuan (Hebei)", icon: "⛓️", cat: "iron" },
+            { lat: 34.5, lng: 117.0, name: "Mỏ sắt Kangshan (Anhui)", icon: "⛓️", cat: "iron" },
+            { lat: 37.5, lng: 117.6, name: "Mỏ đồng Dexing (Jiangxi) - Lớn nhất nước", icon: "🟠", cat: "iron" },
+            { lat: 29.3, lng: 117.3, name: "Mỏ đồng Tongling (Anhui)", icon: "🟠", cat: "iron" },
+            { lat: 30.0, lng: 120.6, name: "Mỏ đồng Dajin (Zhejiang)", icon: "🟠", cat: "iron" },
+            { lat: 36.2, lng: 102.5, name: "Mỏ aluminum Hexi (Gansu)", icon: "🧿", cat: "iron" },
+            { lat: 37.1, lng: 113.5, name: "Mỏ bauxite Zhongzhou (Henan)", icon: "🥉", cat: "iron" },
+            { lat: 37.6, lng: 112.0, name: "Mỏ bauxite Shanyang (Shanxi)", icon: "🥉", cat: "iron" },
+            { lat: 39.0, lng: 117.8, name: "Mỏ vàng Zhaoyuan (Shandong)", icon: "🟡", cat: "gold" },
+            { lat: 37.4, lng: 121.6, name: "Mỏ vàng Linglong (Shandong)", icon: "🟡", cat: "gold" },
+            { lat: 45.5, lng: 126.5, name: "Mỏ vàng Heilongjiang", icon: "🟡", cat: "gold" },
+            { lat: 26.6, lng: 108.8, name: "Khu vực khoáng sản Miao Ling (Guizhou-Hunan)", icon: "💎", cat: "diamond" },
+            { lat: 23.9, lng: 113.3, name: "Đất hiếm Guangdong", icon: "🔮", cat: "diamond" },
+            { lat: 35.2, lng: 110.3, name: "Đất hiếm Ganzhou (Jiangxi) - Cực lớn", icon: "🔮", cat: "diamond" },
+            { lat: 30.2, lng: 117.2, name: "Đất hiếm Mashan (Anhui)", icon: "🔮", cat: "diamond" },
+            { lat: 35.7, lng: 115.0, name: "Mỏ phốt phát Yunyang (Hubei)", icon: "🧪", cat: "iron" },
+            { lat: 28.5, lng: 115.0, name: "Mỏ phốt phát Wuning (Jiangxi)", icon: "🧪", cat: "iron" },
+            { lat: 32.0, lng: 119.0, name: "Mỏ kali Lop Nur (Tân Cương)", icon: "⚪", cat: "iron" },
+            { lat: 45.2, lng: 82.5, name: "Mỏ than Tuyumen (Tân Cương)", icon: "⬛", cat: "coal" },
+            { lat: 44.3, lng: 84.6, name: "Mỏ than Hami (Tân Cương) - Trữ lượng lớn", icon: "⬛", cat: "coal" }
+        ],
+        "forests": [
+            { lat: 53.3, lng: 123.8, name: "Rừng Daxinganling (Hắc Long Giang - Lớn nhất Trung Quốc)", icon: "🌲", cat: "wood" },
+            { lat: 51.2, lng: 127.6, name: "Rừng Xiaoxinganling (Hắc Long Giang)", icon: "🌲", cat: "wood" },
+            { lat: 47.5, lng: 129.5, name: "Rừng Changbai Mountain (Jilin)", icon: "🌲", cat: "wood" },
+            { lat: 52.8, lng: 131.5, name: "Rừng Sikhote-Alin (Biên giới Nga)", icon: "🌲", cat: "wood" },
+            { lat: 39.4, lng: 75.0, name: "Rừng Tianshan (Tân Cương)", icon: "🌲", cat: "wood" },
+            { lat: 43.5, lng: 85.5, name: "Rừng duyên hải Irtysh (Tân Cương)", icon: "🌲", cat: "wood" },
+            { lat: 29.0, lng: 109.0, name: "Rừng Daba Mountain (Hubei-Sichuan)", icon: "🌲", cat: "wood" },
+            { lat: 31.2, lng: 110.5, name: "Rừng Wuling (Hunan-Guizhou)", icon: "🌲", cat: "wood" },
+            { lat: 27.5, lng: 109.5, name: "Rừng Xuefeng (Hunan)", icon: "🌲", cat: "wood" },
+            { lat: 25.0, lng: 103.5, name: "Rừng nhiệt đới Xishuangbanna (Yunnan)", icon: "🌴", cat: "wood" },
+            { lat: 22.5, lng: 101.0, name: "Rừng Mengla (Yunnan)", icon: "🌴", cat: "wood" },
+            { lat: 24.3, lng: 98.2, name: "Rừng tây nam Yunnan", icon: "🌴", cat: "wood" },
+            { lat: 28.5, lng: 100.5, name: "Rừng thảo alpine Deqen (Yunnan-Sichuan)", icon: "🌲", cat: "wood" },
+            { lat: 31.5, lng: 104.0, name: "Rừng vô ơn (Sichuan-Chongqing)", icon: "🌲", cat: "wood" }
+        ],
+        "animals": [
+            { lat: 29.5, lng: 103.7, name: "Gấu Trúc (Đặc hữu Tây Tạo)", icon: "🐼", cat: "bear" },
+            { lat: 30.3, lng: 102.5, name: "Bảo tồn Gấu Trúc Wolong (Sichuan)", icon: "🐼", cat: "bear" },
+            { lat: 32.5, lng: 104.8, name: "Đàn Gấu Trúc Bifengxia", icon: "🐼", cat: "bear" },
+            { lat: 31.0, lng: 103.0, name: "Gấu Trúc Foping (Shaanxi)", icon: "🐼", cat: "bear" },
+            { lat: 36.3, lng: 102.8, name: "Tê giác một sừng (Cực hiếm)",  icon: "🦏", cat: "animal" },
+            { lat: 25.2, lng: 98.5, name: "Voi Châu Á (Xishuangbanna, Yunnan)", icon: "🐘", cat: "animal" },
+            { lat: 26.5, lng: 99.0, name: "Đàn voi hoang dã Yunnan", icon: "🐘", cat: "animal" },
+            { lat: 52.5, lng: 128.5, name: "Hổ Xông (Đặc hữu Đông Bắc Trung Quốc)", icon: "🐅", cat: "tiger" },
+            { lat: 51.2, lng: 129.0, name: "Hổ Xông bảo tồn Heihe", icon: "🐅", cat: "tiger" },
+            { lat: 42.3, lng: 93.5, name: "Báo tuyết (Thiên Sơn, Tân Cương)", icon: "🐆", cat: "animal" },
+            { lat: 35.5, lng: 98.0, name: "Sư tử Thiên Sơn (Cực hiếm, bảo tồn)", icon: "🦁", cat: "animal" },
+            { lat: 34.2, lng: 94.2, name: "Kiang hoang dã (Qinghai)", icon: "🐴", cat: "animal" },
+            { lat: 35.5, lng: 95.0, name: "Đàn Kiang Changtang Plateau", icon: "🐴", cat: "animal" },
+            { lat: 35.0, lng: 93.0, name: "Tuần lộc Kham (Qinghai)", icon: "🦌", cat: "deer" },
+            { lat: 36.5, lng: 101.0, name: "Hươu hoang dã vùng cao Qinghai", icon: "🦌", cat: "deer" },
+            { lat: 38.0, lng: 115.5, name: "Musk Deer (Hươu xà) - Hebei", icon: "🦌", cat: "deer" },
+            { lat: 46.5, lng: 123.5, name: "Hươu xà Châu Á (Heilongjiang)", icon: "🦌", cat: "deer" },
+            { lat: 29.5, lng: 97.5, name: "Voọc Vàng (Primate cực hiếm, Yunnan)", icon: "🐵", cat: "animal" },
+            { lat: 24.0, lng: 99.5, name: "Khỉ Gibbon Đen (Xishuangbanna)", icon: "🐒", cat: "animal" },
+            { lat: 23.5, lng: 100.5, name: "Khỉ Langur Vàng (Myanmar-Yunnan)", icon: "🐒", cat: "animal" },
+            { lat: 22.0, lng: 101.8, name: "Voọc trắng mặt (Yunnan-Laos)", icon: "🐵", cat: "animal" },
+            { lat: 35.0, lng: 104.5, name: "Thỏ Hongshansi (Trung Quốc cổ đại)", icon: "🐰", cat: "animal" },
+            { lat: 42.5, lng: 86.8, name: "Lạc đà hai bướu (Gobi Tân Cương)", icon: "🐫", cat: "animal" },
+            { lat: 40.5, lng: 85.5, name: "Lạc đà hoang dã Bactrian (Lop Nur)", icon: "🐫", cat: "animal" }
+        ],
+        "fish": [
+            { lat: 30.6, lng: 114.3, name: "Cá Cơm Long (Sông Dương Tử, Hubei)", icon: "🐟", cat: "animal" },
+            { lat: 29.6, lng: 113.1, name: "Cá Arowaan tứ phương (Quảng Đông)", icon: "🐠", cat: "animal" },
+            { lat: 22.3, lng: 113.7, name: "Cá Tầm Sứu đen (Hồ Thanh Tân)", icon: "🐟", cat: "animal" },
+            { lat: 31.3, lng: 120.6, name: "Cá Kiến Giang (Giang Tô)", icon: "🐡", cat: "animal" },
+            { lat: 30.0, lng: 120.0, name: "Tôm Liêu (Hạ Châu)", icon: "🦐", cat: "animal" },
+            { lat: 34.0, lng: 120.4, name: "Cua Lăng Lãng (Sơn Đông)", icon: "🦀", cat: "animal" },
+            { lat: 36.0, lng: 120.3, name: "Sò điệp Bột (Sơn Đông)", icon: "🐚", cat: "animal" },
+            { lat: 32.0, lng: 121.5, name: "Tôm Rồng (Giang Tô-Thượng Hải)", icon: "🦐", cat: "animal" },
+            { lat: 25.5, lng: 117.5, name: "Cá Rồi Mắt (Trúc Giang, Phúc Kiến)", icon: "🐠", cat: "animal" },
+            { lat: 24.5, lng: 118.0, name: "Cua Xư Nữ (Trúc Giang)", icon: "🦀", cat: "animal" }
+        ],
         "agriculture": [
             { lat: 30.5, lng: 114.3, name: "Lúa nước lưu vực Sông Dương Tử", icon: "🌾", cat: "crop" },
-            { lat: 23.1, lng: 113.3, name: "Vựa lúa Đồng bằng Châu Giang", icon: "🌾", cat: "crop" }
+            { lat: 23.1, lng: 113.3, name: "Vựa lúa Đồng bằng Châu Giang", icon: "🌾", cat: "crop" },
+            { lat: 32.5, lng: 120.5, name: "Lúa nước Giang Tô-Zhejiang", icon: "🌾", cat: "crop" },
+            { lat: 28.0, lng: 112.0, name: "Lúa nước Hunan (Trái tim lúa TQ)", icon: "🌾", cat: "crop" },
+            { lat: 29.5, lng: 110.3, name: "Vựa lúa Jiangxi", icon: "🌾", cat: "crop" },
+            { lat: 36.5, lng: 114.0, name: "Lúa mạch Henan", icon: "🌾", cat: "crop" },
+            { lat: 37.0, lng: 112.5, name: "Millet (Cơm cắc) Shanxi", icon: "🌾", cat: "crop" },
+            { lat: 39.5, lng: 116.5, name: "Ngô miền Bắc (Hebei-Beijing)", icon: "🌽", cat: "maize" },
+            { lat: 41.0, lng: 124.0, name: "Ngô Jilin-Manzhouli", icon: "🌽", cat: "maize" },
+            { lat: 43.5, lng: 87.5, name: "Bông Tân Cương", icon: "🧵", cat: "crop" },
+            { lat: 39.5, lng: 102.5, name: "Mù tạt Shaanxi", icon: "🌾", cat: "crop" },
+            { lat: 33.0, lng: 104.5, name: "Dâu tây Shaanxi", icon: "🍓", cat: "crop" }
         ]
     },
     "India": {
@@ -2916,17 +3408,67 @@ function loadEverything() {
     resourceData.length = 0;
     economyData.length = 0;
     
-    // Nạp Tài nguyên
+    // 1. Nạp Rừng
+    for (let country in RAW_FORESTS) {
+        RAW_FORESTS[country].forEach(item => {
+            resourceData.push({
+                ...item,
+                icon: item.icon || "🌲",
+                cat: item.cat || "wood",
+                name: `${item.name} (${country})`
+            });
+        });
+    }
+
+    // 2. Nạp Khoáng sản
+    for (let country in RAW_MINERALS) {
+        RAW_MINERALS[country].forEach(item => {
+            resourceData.push({
+                ...item,
+                icon: item.icon || "⛓️",
+                cat: item.cat || "iron",
+                name: `${item.name} (${country})`
+            });
+        });
+    }
+
+    // 3. Nạp Động vật
+    for (let country in RAW_ANIMALS) {
+        RAW_ANIMALS[country].forEach(item => {
+            let validCats = ['wolf', 'bear', 'tiger'];
+            let finalCat = validCats.includes(item.cat) ? item.cat : 'animal';
+            resourceData.push({
+                ...item,
+                icon: item.icon || "🐻",
+                cat: finalCat,
+                name: `${item.name} (${country})`
+            });
+        });
+    }
+
+    // 4. Nạp Cá và thủy sản
+    for (let country in RAW_FISH) {
+        RAW_FISH[country].forEach(item => {
+            resourceData.push({
+                ...item,
+                icon: item.icon || "🐟",
+                cat: item.cat || "animal",
+                name: `${item.name} (${country})`
+            });
+        });
+    }
+
+    // 5. Nạp Nông nghiệp và dữ liệu khác trong RAW_LOCATION_DATA
     for (let country in RAW_LOCATION_DATA) {
         for (let category in RAW_LOCATION_DATA[country]) {
             RAW_LOCATION_DATA[country][category].forEach(item => {
                 let finalIcon = item.icon;
                 if (!finalIcon && category === "forests") finalIcon = "🌲";
-                resourceData.push({ 
-                    ...item, 
+                resourceData.push({
+                    ...item,
                     icon: finalIcon || "❓",
                     cat: item.cat || (category === "forests" ? "wood" : category),
-                    name: `${item.name} (${country})` 
+                    name: `${item.name} (${country})`
                 });
             });
         }
@@ -2944,8 +3486,6 @@ function loadEverything() {
             });
         }
     }
-
-
 }
 
 function drawRailways() {
@@ -3017,8 +3557,25 @@ function drawRailways() {
 // ==========================================
 document.addEventListener('keydown', (e) => {
     const key = e.key.toLowerCase();
-    if (key === 'h') toggleUI();
-    if (key === 'c') takeScreenshot();
+    
+    // Ngăn chặn phím tắt khi đang gõ vào ô nhập liệu (input, select2, v.v.)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+
+    if (key === 'h') {
+        e.preventDefault();
+        toggleUI();
+    }
+    
+    if (key === 'c') {
+        e.preventDefault();
+        console.log("Phím C được nhấn - Bắt đầu chụp ảnh...");
+        takeScreenshot();
+    }
+    
+    if (key === 'k') {
+        e.preventDefault();
+        if (typeof toggleTimeline === 'function') toggleTimeline();
+    }
 });
 
 function toggleUI(state) {
@@ -3084,7 +3641,7 @@ function updateFilters() {
                     <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
                     <hr style="border-color: #333; margin: 5px 0;">
                     <div style="font-size: 12px; line-height: 1.4;">
-                        ${e.details ? e.details : "Hệ thống Athe-AI đang cập nhật thông tin chi tiết cho khu vực này..."}
+                        ${e.details ? e.details : "Hệ thống Athemianartory Geography đang cập nhật thông tin chi tiết về địa điểm này. Vui lòng quay lại sau để biết thêm chi tiết tại đây."}
                     </div>
                 </div>
             `;
@@ -3170,45 +3727,23 @@ function drawMaritime() {
 
 
 function generateAgriData() {
-
-    // Vành đai Cà phê
-    const coffeeHubs = [
-        { lat: 14.5, lng: 108.0 },
-        { lat: -15.0, lng: -45.0 }
+    const agriData = [
+        // ==================== VIỆT NAM ====================
+        { lat: 10.5, lng: 105.5, name: "Vựa lúa Đồng bằng Sông Cửu Long", icon: "🌾", cat: "crop", details: "Khu vực sản xuất lúa gạo lớn nhất Việt Nam." },
+        { lat: 10.2, lng: 106.3, name: "Lúa nước Tiền Giang", icon: "🌾", cat: "crop", details: "Vùng trồng lúa nước nổi tiếng ở miền Tây." },
+        { lat: 21.0, lng: 106.2, name: "Vựa lúa Đồng bằng Sông Hồng", icon: "🌾", cat: "crop", details: "Trung tâm sản xuất lúa gạo quan trọng của miền Bắc." },
+        { lat: 20.4, lng: 106.3, name: "Lúa Thái Bình (Quê hương 5 tấn)", icon: "🌾", cat: "crop", details: "Nổi tiếng với giống lúa năng suất cao." },
     ];
 
-    coffeeHubs.forEach(h => {
-        for (let i = 0; i < 30; i++) {
-            economyData.push({
-                lat: h.lat,
-                lng: h.lng,
-                cat: "coffee",
-                name: "Trang trại Cà phê",
-                icon: "☕"
-            });
-        }
+    agriData.forEach(item => {
+        economyData.push({
+            ...item,
+            name: `${item.name} (${item.details})`
+        });
     });
-
-
-    // Vựa lúa
-    const riceHubs = [
-        { lat: 10.5, lng: 105.5 },
-        { lat: 21.0, lng: 106.0 }
-    ];
-
-    riceHubs.forEach(h => {
-        for (let i = 0; i < 30; i++) {
-            economyData.push({
-                lat: h.lat,
-                lng: h.lng,
-                cat: "crop",
-                name: "Cánh đồng lúa nước",
-                icon: "🌾"
-            });
-        }
-    });
-
 }
+
+
 
 
 
@@ -3306,26 +3841,68 @@ function generateAgriData() {
 
 function generateAutomotiveData() {
     const autoData = [
-        // VINFAST & PHỤ TRỢ (Hải Phòng) - Căn chỉnh cực chuẩn
-        { lat: 20.83, lng: 106.72, name: "VinFast Hải Phòng", icon: "🚗", cat: "automotive", details: "Tổ hợp SX ô tô điện hiện đại nhất Đông Nam Á." },
-        { lat: 20.85, lng: 106.68, name: "KCN Tràng Duệ (Phụ trợ VinFast)", icon: "⚙️", cat: "automotive", details: "Nơi đặt các nhà máy linh kiện điện tử và nhựa bổ trợ." },
-        { lat: 20.81, lng: 106.75, name: "KCN Đình Vũ (Logistics Ô tô)", icon: "⚙️", cat: "automotive", details: "Trung tâm vận tải và kho bãi cho xe xuất khẩu." },
+        // ==================== VIỆT NAM ====================
+        { lat: 20.83, lng: 106.72, name: "VinFast Hải Phòng", icon: "🚗", cat: "automotive", details: "Tổ hợp sản xuất ô tô điện lớn nhất Đông Nam Á." },
+        { lat: 20.85, lng: 106.68, name: "KCN Tràng Duệ (VinFast phụ trợ)", icon: "⚙️", cat: "automotive", details: "Nhà máy linh kiện điện tử và nhựa ô tô." },
+        { lat: 20.81, lng: 106.75, name: "KCN Đình Vũ (Logistics VinFast)", icon: "⚙️", cat: "automotive", details: "Trung tâm logistics xuất khẩu xe." },
+        { lat: 15.42, lng: 108.41, name: "THACO Chu Lai", icon: "🚚", cat: "automotive", details: "Trung tâm sản xuất ô tô và xe tải lớn nhất Việt Nam." },
 
-        // THACO & PHỤ TRỢ (Quảng Nam)
-        { lat: 15.42, lng: 108.41, name: "THACO Chu Lai", icon: "🚚", cat: "automotive", details: "Trung tâm sản xuất ô tô đa dụng và xe tải lớn nhất VN." },
-        { lat: 15.45, lng: 108.38, name: "Cụm CN phụ trợ Tam Hiệp", icon: "⚙️", cat: "automotive", details: "Sản xuất linh kiện cơ khí, kính và ghế ô tô." },
+        // ==================== TRUNG QUỐC (Sản lượng lớn nhất thế giới) ====================
+        { lat: 31.23, lng: 121.47, name: "SAIC Motor Thượng Hải", icon: "🚗", cat: "automotive", details: "Tập đoàn ô tô lớn nhất Trung Quốc." },
+        { lat: 22.54, lng: 114.05, name: "BYD Shenzhen", icon: "⚡", cat: "automotive", details: "Nhà sản xuất xe điện lớn nhất thế giới." },
+        { lat: 39.90, lng: 116.41, name: "BAIC Group Bắc Kinh", icon: "🚗", cat: "automotive", details: "Một trong những ông lớn ô tô Trung Quốc." },
+        { lat: 30.58, lng: 114.27, name: "Dongfeng Motor Vũ Hán", icon: "🚗", cat: "automotive", details: "Hợp tác quốc tế mạnh mẽ." },
+        { lat: 23.13, lng: 113.26, name: "GAC Group Quảng Châu", icon: "🚗", cat: "automotive", details: "Trung tâm xe điện và truyền thống." },
+        { lat: 31.20, lng: 121.50, name: "Tesla Gigafactory Thượng Hải", icon: "⚡", cat: "automotive", details: "Nhà máy xe điện lớn nhất của Tesla ngoài Mỹ." },
+        { lat: 40.00, lng: 116.40, name: "Xiaomi Auto Bắc Kinh", icon: "🚗", cat: "automotive", details: "Nhà máy xe điện mới nổi của Xiaomi." },
 
-        // TOYOTA CITY (Nhật Bản) - Tọa độ nội đô, không ra biển
-        { lat: 35.10, lng: 137.01, name: "Toyota Headquarter", icon: "🚗", cat: "automotive", details: "Trụ sở điều hành toàn cầu của Toyota." },
-        { lat: 35.12, lng: 137.05, name: "Nhà máy Motomachi", icon: "⚙️", cat: "automotive", details: "Nơi sản xuất các dòng xe hạng sang và xe điện." },
+        // ==================== NHẬT BẢN ====================
+        { lat: 35.10, lng: 137.01, name: "Toyota City Aichi", icon: "🚗", cat: "automotive", details: "Trụ sở và nhà máy lớn nhất Toyota." },
+        { lat: 35.12, lng: 137.05, name: "Toyota Motomachi", icon: "⚙️", cat: "automotive", details: "Sản xuất xe cao cấp và xe điện." },
+        { lat: 35.45, lng: 139.63, name: "Nissan Yokohama", icon: "🚗", cat: "automotive", details: "Trụ sở Nissan." },
+        { lat: 34.69, lng: 135.50, name: "Honda Suzuka Mie", icon: "🏎️", cat: "automotive", details: "Nhà máy Honda nổi tiếng." },
 
-        // VOLKSWAGEN (Đức) - Cụm Wolfsburg
-        { lat: 52.42, lng: 10.78, name: "VW Wolfsburg Main Plant", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất Châu Âu." },
-        { lat: 52.40, lng: 10.75, name: "Khu chế tạo động cơ VW", icon: "⚙️", cat: "automotive", details: "Chuyên sản xuất hệ thống truyền động và động cơ." }
+        // ==================== HÀN QUỐC ====================
+        { lat: 37.39, lng: 126.98, name: "Hyundai Ulsan", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất thế giới của Hyundai." },
+        { lat: 35.54, lng: 129.31, name: "Hyundai Kia Hwaseong", icon: "🚗", cat: "automotive", details: "Sản xuất xe điện và cao cấp." },
+
+        // ==================== ĐỨC ====================
+        { lat: 52.42, lng: 10.78, name: "Volkswagen Wolfsburg", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất châu Âu." },
+        { lat: 48.78, lng: 9.18, name: "Mercedes-Benz Sindelfingen", icon: "🏎️", cat: "automotive", details: "Nhà máy xe sang Mercedes." },
+        { lat: 48.14, lng: 11.58, name: "BMW Munich", icon: "🚗", cat: "automotive", details: "Trụ sở và nhà máy BMW." },
+
+        // ==================== MỸ ====================
+        { lat: 42.33, lng: -83.05, name: "Detroit Auto Cluster", icon: "🚗", cat: "automotive", details: "Trung tâm ô tô truyền thống Mỹ." },
+        { lat: 30.27, lng: -97.74, name: "Tesla Giga Texas Austin", icon: "⚡", cat: "automotive", details: "Nhà máy xe điện lớn nhất Tesla." },
+        { lat: 37.55, lng: -122.31, name: "Tesla Fremont", icon: "⚡", cat: "automotive", details: "Nhà máy xe điện đầu tiên của Tesla." },
+        { lat: 42.28, lng: -83.21, name: "Ford Dearborn Truck", icon: "🚚", cat: "automotive", details: "Sản xuất F-150." },
+
+        // ==================== CÁC NƯỚC KHÁC (Ấn Độ, Mexico, Brazil, Thái Lan, Indonesia, Nam Phi...) ====================
+        { lat: 28.61, lng: 77.23, name: "Maruti Suzuki Gurgaon Ấn Độ", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất Ấn Độ." },
+        { lat: 19.43, lng: -99.13, name: "Puebla Mexico (VW & Audi)", icon: "🚗", cat: "automotive", details: "Cụm sản xuất lớn tại Mexico." },
+        { lat: -23.55, lng: -46.63, name: "São Paulo Auto Cluster Brazil", icon: "🚗", cat: "automotive", details: "Trung tâm ô tô lớn nhất Nam Mỹ." },
+        { lat: 13.76, lng: 100.53, name: "Toyota & Honda Bangkok Thái Lan", icon: "🚗", cat: "automotive", details: "Cụm sản xuất Đông Nam Á." },
+        { lat: -6.21, lng: 106.85, name: "Toyota Indonesia", icon: "🚗", cat: "automotive", details: "Nhà máy lớn tại Indonesia." },
+        { lat: -25.75, lng: 28.19, name: "BMW Rosslyn Nam Phi", icon: "🚗", cat: "automotive", details: "Nhà máy BMW tại châu Phi." },
+
+        // ==================== THÊM NHIỀU HÃNG KHÁC (Stellantis, Geely, Chery, Renault-Nissan...) ====================
+        { lat: 43.30, lng: 5.40, name: "Stellantis Pháp (Mulhouse)", icon: "🚗", cat: "automotive", details: "Nhà máy Stellantis châu Âu." },
+        { lat: 48.86, lng: 2.35, name: "Renault Paris Area", icon: "🚗", cat: "automotive", details: "Cụm sản xuất Renault." },
+        { lat: 31.23, lng: 121.47, name: "Geely Thượng Hải", icon: "🚗", cat: "automotive", details: "Tập đoàn mẹ của Volvo & Polestar." },
+        { lat: 23.13, lng: 113.26, name: "Chery Quảng Châu", icon: "🚗", cat: "automotive", details: "Nhà xuất khẩu xe Trung Quốc mạnh." }
     ];
 
+    // Push tất cả vào economyData
     autoData.forEach(item => economyData.push(item));
+
+    console.log(`✅ Đã thêm ${autoData.length} điểm sản xuất ô tô toàn cầu (tất cả hãng lớn, nhiều quốc gia) vào economyData`);
 }
+
+
+
+
+
+
 
 
 
@@ -3345,20 +3922,71 @@ function generateAutomotiveData() {
 
 function generateHeavyIndustryData() {
     const heavyData = [
-        // THÉP VIỆT NAM
-        { lat: 21.51, lng: 105.85, name: "Gang thép Thái Nguyên", icon: "🛡️", cat: "heavy_industry", details: "Sản xuất thép xây dựng, phôi thép lớn nhất miền Bắc." },
-        { lat: 18.06, lng: 106.42, name: "Formosa Hà Tĩnh (Khu luyện kim)", icon: "🏗️", cat: "heavy_industry", details: "Sản xuất thép cuộn cán nóng lớn nhất khu vực." },
+        // ==================== VIỆT NAM ====================
+        { lat: 21.51, lng: 105.85, name: "Gang thép Thái Nguyên", icon: "🛡️", cat: "heavy_industry", details: "Sản xuất thép xây dựng và phôi thép lớn nhất miền Bắc Việt Nam." },
+        { lat: 18.06, lng: 106.42, name: "Formosa Hà Tĩnh", icon: "🏗️", cat: "heavy_industry", details: "Khu liên hợp thép và luyện kim lớn nhất Việt Nam." },
+        { lat: 10.95, lng: 106.85, name: "Nhà máy Xi măng Bình Dương", icon: "🏭", cat: "heavy_industry", details: "Một trong những nhà máy xi măng lớn nhất miền Nam." },
 
-        // CÔNG NGHIỆP NẶNG ĐỨC (Vùng Ruhr)
-        { lat: 51.45, lng: 7.01, name: "ThyssenKrupp Steel", icon: "⛓️", cat: "heavy_industry", details: "Tập đoàn công nghiệp nặng hàng đầu thế giới." },
-        { lat: 51.51, lng: 7.46, name: "Cụm cơ khí Dortmund", icon: "🏗️", cat: "heavy_industry", details: "Chuyên chế tạo máy móc hạng nặng và thiết bị mỏ." },
+        // ==================== TRUNG QUỐC (Sản lượng thép lớn nhất thế giới) ====================
+        { lat: 31.23, lng: 121.47, name: "Baosteel Thượng Hải", icon: "⛓️", cat: "heavy_industry", details: "Tập đoàn thép lớn nhất Trung Quốc." },
+        { lat: 39.90, lng: 116.41, name: "Shougang Group Bắc Kinh", icon: "🏗️", cat: "heavy_industry", details: "Tập đoàn thép lịch sử của Trung Quốc." },
+        { lat: 30.58, lng: 114.27, name: "Wuhan Iron & Steel (WISCO)", icon: "🛡️", cat: "heavy_industry", details: "Một trong những nhà máy thép cổ xưa và lớn nhất Trung Quốc." },
+        { lat: 22.54, lng: 114.05, name: "BYD Heavy Industry Shenzhen", icon: "⚙️", cat: "heavy_industry", details: "Sản xuất pin và linh kiện công nghiệp nặng." },
 
-        // HOA KỲ (Vành đai thép)
-        { lat: 40.44, lng: -79.99, name: "U.S. Steel Pittsburgh", icon: "🛡️", cat: "heavy_industry", details: "Lịch sử ngành thép Hoa Kỳ, biểu tượng của sự trỗi dậy công nghiệp." }
+        // ==================== ẤN ĐỘ ====================
+        { lat: 22.72, lng: 86.18, name: "Tata Steel Jamshedpur", icon: "⛓️", cat: "heavy_industry", details: "Nhà máy thép lâu đời và lớn nhất Ấn Độ." },
+        { lat: 21.25, lng: 81.63, name: "Bhilai Steel Plant", icon: "🏭", cat: "heavy_industry", details: "Nhà máy thép công cộng lớn nhất Ấn Độ." },
+        { lat: 13.08, lng: 80.27, name: "SAIL - Salem Steel Plant", icon: "🛡️", cat: "heavy_industry", details: "Chuyên thép không gỉ." },
+
+        // ==================== MỸ ====================
+        { lat: 40.44, lng: -79.99, name: "U.S. Steel Pittsburgh", icon: "🛡️", cat: "heavy_industry", details: "Biểu tượng ngành thép lịch sử Hoa Kỳ." },
+        { lat: 41.50, lng: -81.69, name: "Cleveland-Cliffs Steel", icon: "⛓️", cat: "heavy_industry", details: "Nhà sản xuất thép phẳng lớn nhất Mỹ." },
+        { lat: 47.66, lng: -90.25, name: "Mesabi Range Iron Ore", icon: "⛏️", cat: "heavy_industry", details: "Vùng khai thác quặng sắt lớn nhất Mỹ." },
+
+        // ==================== ĐỨC (Vùng Ruhr - trung tâm công nghiệp châu Âu) ====================
+        { lat: 51.45, lng: 7.01, name: "ThyssenKrupp Steel Duisburg", icon: "⛓️", cat: "heavy_industry", details: "Tập đoàn công nghiệp nặng hàng đầu thế giới." },
+        { lat: 51.51, lng: 7.46, name: "Dortmund Heavy Machinery Cluster", icon: "🏗️", cat: "heavy_industry", details: "Cụm máy móc và thiết bị nặng." },
+        { lat: 51.23, lng: 6.78, name: "ArcelorMittal Duisburg", icon: "🛡️", cat: "heavy_industry", details: "Nhà máy thép lớn của ArcelorMittal tại Đức." },
+
+        // ==================== NHẬT BẢN ====================
+        { lat: 34.69, lng: 135.50, name: "Nippon Steel Osaka", icon: "⛓️", cat: "heavy_industry", details: "Tập đoàn thép lớn nhất Nhật Bản." },
+        { lat: 33.59, lng: 130.40, name: "Nippon Steel Yawata", icon: "🏭", cat: "heavy_industry", details: "Nhà máy thép lịch sử." },
+
+        // ==================== HÀN QUỐC ====================
+        { lat: 35.54, lng: 129.31, name: "POSCO Pohang", icon: "⛓️", cat: "heavy_industry", details: "Nhà máy thép lớn nhất Hàn Quốc." },
+        { lat: 35.10, lng: 129.04, name: "POSCO Gwangyang", icon: "🏗️", cat: "heavy_industry", details: "Một trong những nhà máy thép hiện đại nhất thế giới." },
+
+        // ==================== BRAZIL ====================
+        { lat: -19.92, lng: -43.94, name: "Usiminas Belo Horizonte", icon: "🛡️", cat: "heavy_industry", details: "Tập đoàn thép lớn của Brazil." },
+        { lat: -23.55, lng: -46.63, name: "CSN Volta Redonda", icon: "🏭", cat: "heavy_industry", details: "Nhà máy thép cổ xưa của Brazil." },
+
+        // ==================== NGA ====================
+        { lat: 55.75, lng: 37.62, name: "Severstal Moscow Area", icon: "⛓️", cat: "heavy_industry", details: "Một trong những nhà máy thép lớn của Nga." },
+        { lat: 53.24, lng: 34.36, name: "Novolipetsk Steel (NLMK)", icon: "🛡️", cat: "heavy_industry", details: "Nhà máy thép hiện đại của Nga." },
+
+        // ==================== ÚC & NAM PHI ====================
+        { lat: -33.87, lng: 151.21, name: "BlueScope Steel Port Kembla", icon: "⛓️", cat: "heavy_industry", details: "Nhà máy thép lớn nhất Úc." },
+        { lat: -26.20, lng: 28.04, name: "ArcelorMittal Vanderbijlpark", icon: "🛡️", cat: "heavy_industry", details: "Nhà máy thép lớn nhất Nam Phi." },
+
+        // ==================== CÁC KHU VỰC KHÁC ====================
+        { lat: 19.43, lng: -99.13, name: "Ternium Mexico", icon: "🏗️", cat: "heavy_industry", details: "Cụm công nghiệp thép Mexico." },
+        { lat: 41.01, lng: 28.97, name: "Erdemir Turkey", icon: "⛓️", cat: "heavy_industry", details: "Nhà máy thép lớn của Thổ Nhĩ Kỳ." },
+        { lat: -6.21, lng: 106.85, name: "Krakatau Steel Indonesia", icon: "🛡️", cat: "heavy_industry", details: "Nhà máy thép quốc gia Indonesia." }
     ];
 
     heavyData.forEach(item => economyData.push(item));
+
+    console.log(`✅ Đã thêm ${heavyData.length} điểm công nghiệp nặng toàn cầu vào economyData`);
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3646,6 +4274,9 @@ generateTransportData();     // Cảng biển, sân bay, ga tàu
 generateAutomotiveData();    // Ô tô
 generateCoffeeBelt();        // Cà phê toàn cầu
 
+// 3. Vẽ các điểm tài nguyên và kinh tế theo trạng thái bộ lọc hiện tại
+updateFilters();
+
 // 3. QUAN TRỌNG: Gọi hàm tổng để hiển thị tất cả lên bản đồ
 updateFilters();
 
@@ -3728,90 +4359,20 @@ console.log("Hệ thống Athemianarotry Geography: Tài nguyên đã sẵn sàn
 
 
 
-// --- HÀM TẠO SÓNG XUNG KÍCH (SHOCKWAVE) ---
 
-// Sói gọi hàm này khi muốn có vụ nổ: createShockwave(16.0, 108.0, 500000); // 500km radius
-function createShockwave(lat, lng, maxRadius) {
-    // 1. Vòng tròn đại diện cho sóng xung kích
-    var shockwave = L.circle([lat, lng], {
-        radius: 0, // Bắt đầu từ 0
-        color: '#ffcc00', // Màu vàng chanh (bắt mắt trên nền đen)
-        fillColor: '#fff', // Màu trắng bên trong (nhìn cho "bóng")
-        fillOpacity: 0.8,
-        weight: 3
-    }).addTo(map);
 
-    // 2. Animation: Làm cho vòng tròn lan rộng ra
-    var currentRadius = 0;
-    var animationInterval = setInterval(function() {
-        currentRadius += maxRadius / 50; // Tốc độ lan
-        shockwave.setRadius(currentRadius);
-        
-        // Làm mờ dần khi lan rộng
-        var currentOpacity = 0.8 * (1 - currentRadius / maxRadius);
-        shockwave.setStyle({ fillOpacity: currentOpacity, opacity: currentOpacity });
 
-        // Dừng và xóa khi đạt bán kính tối đa
-        if (currentRadius >= maxRadius) {
-            clearInterval(animationInterval);
-            map.removeLayer(shockwave);
-        }
-    }, 20); // 20ms mỗi khung hình (50fps) - Rất mượt trên RTX 3050
-}
 
-// --- TẠO KHÓI NỔ (GIF ICON) ---
-var smokeIcon = L.icon({
-    iconUrl: 'https://media.giphy.com/media/uQPh295V2/giphy.gif', // Link GIF khói nấm (hoặc link ảnh của Sói)
-    iconSize: [100, 100], // Chỉnh kích thước cho hợp với map
-    iconAnchor: [50, 50] // Tâm của ảnh nằm đúng tọa độ
-});
 
-// Thả khói tại một tọa độ cụ thể
-function dropSmoke(lat, lng) {
-    var smoke = L.marker([lat, lng], {icon: smokeIcon}).addTo(map);
-    // Sau 10 giây (hoặc tùy GIF) thì xóa khói đi
-    setTimeout(() => { map.removeLayer(smoke); }, 10000); 
-}
 
 
 
-let startPoint = null;
-let missileControl = document.getElementById('missile-control');
 
-// 1. Kích đúp để chọn điểm phóng
-// Double click trên map = Tạo bệ phóng + Tự động tạo Keyframe
-map.on('dblclick', function(e) {
-    startPoint = e.latlng;
 
-    // Hiển thị control tên lửa
-    missileControl.style.display = 'block';
 
-    // Tạo marker tạm thời đánh dấu điểm phóng
-    L.circleMarker(startPoint, {
-        color: '#ff0000',
-        radius: 6,
-        fillOpacity: 0.9,
-        className: 'glowing-missile'
-    }).addTo(map).bindPopup("Điểm phóng").openPopup();
 
-    // Tự động tạo Keyframe ngay lập tức (theo yêu cầu mới của bạn)
-    recordAction(startPoint, map.getCenter(), 2000, 100000);
-});
 
-map.on('click', function(e) {
-    if (!startPoint) return;
-    
-    let targetPoint = e.latlng;
-    let speed = parseInt(document.getElementById('flight-speed').value);
-    let radius = parseInt(document.getElementById('shock-radius').value) * 1000;
 
-    // THAY VÌ BẮN NGAY, CHÚNG TA GHI VÀO KEYFRAME
-    recordAction(startPoint, targetPoint, speed, radius);
-    
-    startPoint = null;
-    document.getElementById('missile-control').style.display = 'none';
-    alert("Đã thêm Keyframe vào dòng thời gian. Nhấn SPACE để chạy phim!");
-});
 
 
 
@@ -3906,87 +4467,35 @@ map.on('click', function(e) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Gọi lần đầu khi load (nếu timeline mở sẵn)
+// ====================== KHỞI TẠO TOÀN BỘ KHI TRANG LOAD ======================
 window.addEventListener('load', () => {
+    console.log("🚀 Trang đã load hoàn tất - Khởi tạo Athe Studio");
+
+    // 1. Khôi phục trạng thái ticker từ cài đặt (nếu có) - PHẢI TRƯỚC fetchDailyNews
+    if (typeof initTickerState === "function") {
+        initTickerState();
+    }
+
+    // 2. Khởi tạo ticker tin tức (chạy ngay lập tức và lặp mỗi 30 giây)
+    fetchDailyNews();
+
+    // 3. Nếu timeline đang mở sẵn thì gắn sự kiện track
     if (document.getElementById('keyframe-panel').classList.contains('active')) {
         attachTrackClickListeners();
     }
-});
 
-// Tăng độ mượt khi lăn chuột trên #tracks-wrapper
-document.addEventListener('DOMContentLoaded', () => {
+    // 4. Tăng độ mượt khi lăn chuột trên timeline
     const wrapper = document.getElementById('tracks-wrapper');
-    if (!wrapper) return;
-
-    wrapper.addEventListener('wheel', function(e) {
-        // Ngăn lăn chuột lan ra ngoài (nếu đang ở timeline)
-        if (document.getElementById('keyframe-panel').classList.contains('active')) {
-            e.preventDefault(); // Ngăn scroll trang chính
-        }
-        
-        // Tăng tốc độ cuộn (tùy chỉnh deltaY nếu muốn nhanh/chậm hơn)
-        const scrollSpeed = 3; // Càng lớn càng nhanh
-        wrapper.scrollTop += e.deltaY * scrollSpeed;
-    }, { passive: false }); // { passive: false } để preventDefault hoạt động
+    if (wrapper) {
+        wrapper.addEventListener('wheel', function(e) {
+            if (document.getElementById('keyframe-panel').classList.contains('active')) {
+                e.preventDefault();   // Ngăn scroll trang chính
+            }
+            const scrollSpeed = 3;    // Tăng tốc độ cuộn
+            wrapper.scrollTop += e.deltaY * scrollSpeed;
+        }, { passive: false });
+    }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Hàm lấy tin CHI TIẾT, DÀI từ NewsAPI với key của bạn
@@ -4033,18 +4542,18 @@ async function fetchDailyNews() {
     } catch (err) {
         console.error("Lỗi NewsAPI:", err);
         // Fallback SIÊU DÀI nếu lỗi (để không bị ngắn)
-        const fallback = "Breaking: Liên Hợp Quốc triệu tập khẩn cấp về xung đột Trung Đông – Hội đồng Bảo an họp kín để thảo luận giải pháp hòa bình hôm nay • Nga tăng cường lực lượng quân sự ở Bắc Cực – Triển khai thêm tàu ngầm hạt nhân và hệ thống phòng thủ tên lửa mới • Việt Nam ký thỏa thuận hợp tác năng lượng với BRICS – Tập trung vào năng lượng tái tạo, giảm phát thải carbon và phát triển bền vững • EU áp đặt lệnh trừng phạt mới với một số quốc gia – Ảnh hưởng nghiêm trọng đến xuất khẩu dầu mỏ, khí đốt và hàng hóa chiến lược • Trung Quốc thử nghiệm vệ tinh lượng tử mới – Bước tiến lớn trong công nghệ bảo mật thông tin quốc gia và quân sự • Bầu cử Mỹ 2028 đang nóng lên – Các ứng viên tổng thống bắt đầu chiến dịch tranh cử sớm và tranh luận gay gắt • ASEAN đạt thỏa thuận thương mại tự do mới với Ấn Độ – Mở rộng thị trường xuất khẩu hàng hóa, dịch vụ và đầu tư song phương • Ukraine nhận gói viện trợ quân sự lớn từ NATO – Bao gồm hệ thống phòng không Patriot, tên lửa tầm xa và thiết bị tình báo hiện đại • Tin nóng thế giới cập nhật hàng ngày – Theo dõi để nắm bắt thông tin chính xác, kịp thời và toàn diện • ";
+        const fallback = "...";
         document.querySelectorAll('.ticker-content span').forEach(span => {
             span.textContent = fallback;
         });
     }
+
+    // Chạy lần đầu ngay khi load
+    await updateTicker();
+
+    // Sau đó lặp lại mỗi 30 giây (không bao giờ dừng)
+    setInterval(updateTicker, 30000);
 }
-
-// Gọi ngay khi load trang
-fetchDailyNews();
-
-// Cập nhật mỗi 24 giờ (86400000 ms) - hoặc reload để lấy tin mới
-setInterval(fetchDailyNews, 86400000);
 
 
 
@@ -4107,6 +4616,25 @@ function closeSettingsModal() {
 function toggleNewsTicker(checked) {
     const ticker = document.getElementById('news-ticker');
     if (ticker) ticker.style.display = checked ? 'block' : 'none';
+    // Lưu cài đặt vào localStorage
+    localStorage.setItem('tickerEnabled', checked);
+}
+
+// Khởi tạo trạng thái ticker từ localStorage khi trang tải
+function initTickerState() {
+    const tickerCheckbox = document.getElementById('toggle-ticker');
+    const savedState = localStorage.getItem('tickerEnabled');
+    
+    if (savedState !== null) {
+        // Nếu có lưu trữ, sử dụng giá trị đó
+        const isEnabled = savedState === 'true';
+        tickerCheckbox.checked = isEnabled;
+        toggleNewsTicker(isEnabled);
+    } else {
+        // Nếu chưa có cài đặt, mặc định BẬT ticker
+        tickerCheckbox.checked = true;
+        toggleNewsTicker(true);
+    }
 }
 
 // Tắt/mở hiển thị tình hình chính trị
@@ -4304,30 +4832,208 @@ async function fetchWiki(countryName) {
 
 // ====================== SIÊU CƠ SỞ DỮ LIỆU ĐỊA CHÍ NGOẠI TUYẾN 2025 (HÀNH CHÍNH TOÀN CẦU) ======================
 const WORLD_OFFLINE_DB = {
-    "Vietnam": { capital: "Hà Nội", pop: "101,500,000", area: "331,212", provinces: ["An Giang","Bà Rịa – Vũng Tàu","Bắc Giang","Bắc Kạn","Bạc Liêu","Bắc Ninh","Bến Tre","Bình Định","Bình Dương","Bình Phước","Bình Thuận","Cà Mau","Cần Thơ","Cao Bằng","Đà Nẵng","Đắk Lắk","Đắk Nông","Điện Biên","Đồng Nai","Đồng Tháp","Gia Lai","Hà Giang","Hà Nam","Hà Nội","Hà Tĩnh","Hải Dương","Hải Phòng","Hậu Giang","Hòa Bình","Hưng Yên","Khánh Hòa","Kiên Giang","Kon Tum","Lai Châu","Lâm Đồng","Lạng Sơn","Lào Cai","Long An","Nam Định","Nghệ An","Ninh Bình","Ninh Thuận","Phú Thọ","Phú Yên","Quảng Bình","Quảng Nam","Quảng Ngãi","Quảng Ninh","Quảng Trị","Sóc Trăng","Sơn La","Tây Ninh","Thái Bình","Thái Nguyên","Thanh Hóa","Thừa Thiên Huế","Tiền Giang","TP. Hồ Chí Minh","Trà Vinh","Tuyên Quang","Vĩnh Long","Vĩnh Phúc","Yên Bái"] },
-    "Russia": { capital: "Moscow", pop: "144,000,000", area: "17,098,242", provinces: ["Moscow","Saint Petersburg","Adygea","Altai Republic","Altai Krai","Amur Oblast","Arkhangelsk Oblast","Astrakhan Oblast","Bashkortostan","Belgorod Oblast","Bryansk Oblast","Buryatia","Chechnya","Chelyabinsk Oblast","Chukotka","Chuvashia","Dagestan","Ingushetia","Irkutsk Oblast","Ivanovo Oblast","Jewish Autonomous Oblast","Kabardino-Balkaria","Kaliningrad Oblast","Kalmykia","Kaluga Oblast","Kamchatka Krai","Karachay-Cherkessia","Karelia","Kemerovo Oblast","Khabarovsk Krai","Khakassia","Khanty-Mansi","Kirov Oblast","Komi Republic","Kostroma Oblast","Krasnodar Krai","Krasnoyarsk Krai","Kurgan Oblast","Kursk Oblast","Leningrad Oblast","Lipetsk Oblast","Magadan Oblast","Mari El","Mordovia","Moscow Oblast","Murmansk Oblast","Nenets","Nizhny Novgorod Oblast","North Ossetia-Alania","Novgorod Oblast","Novosibirsk Oblast","Omsk Oblast","Orenburg Oblast","Oryol Oblast","Penza Oblast","Perm Krai","Primorsky Krai","Pskov Oblast","Rostov Oblast","Ryazan Oblast","Sakha","Sakhalin Oblast","Samara Oblast","Saratov Oblast","Sevastopol","Smolensk Oblast","Stavropol Krai","Sverdlovsk Oblast","Tambov Oblast","Tatarstan","Tomsk Oblast","Tula Oblast","Tuva","Tyumen Oblast","Udmurtia","Ulyanovsk Oblast","Vladimir Oblast","Volgograd Oblast","Vologda Oblast","Voronezh Oblast","Yamalo-Nenets","Yaroslavl Oblast","Zabaykalsky Krai"] },
-    "China": { capital: "Bắc Kinh", pop: "1,425,000,000", area: "9,596,961", provinces: ["An Huy","Bắc Kinh","Chiết Giang","Cam Túc","Cát Lâm","Giang Tô","Giang Tây","Hà Bắc","Hà Nam","Hải Nam","Hắc Long Giang","Hồ Bắc","Hồ Nam","Liêu Ninh","Ninh Hạ","Nội Mông","Phúc Kiến","Quảng Đông","Quảng Tây","Quý Châu","Sơn Đông","Sơn Tây","Tân Cương","Tây Tạng","Thanh Hải","Thiểm Tây","Thiên Tân","Thượng Hải","Trùng Khánh","Tứ Xuyên","Vân Nam","Đài Loan","Hồng Kông","Ma Cao"] },
-    "USA": { capital: "Washington, D.C.", pop: "342,000,000", area: "9,833,517", provinces: ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"] },
-    "Japan": { capital: "Tokyo", pop: "122,000,000", area: "377,975", provinces: ["Aichi","Akita","Aomori","Chiba","Ehime","Fukui","Fukuoka","Fukushima","Gifu","Gunma","Hiroshima","Hokkaido","Hyogo","Ibaraki","Ishikawa","Iwate","Kagawa","Kagoshima","Kanagawa","Kochi","Kumamoto","Kyoto","Mie","Miyagi","Miyazaki","Nagano","Nagasaki","Nara","Niigata","Oita","Okayama","Okinawa","Osaka","Saga","Saitama","Shiga","Shimane","Shizuoka","Tochigi","Tokushima","Tokyo","Tottori","Toyama","Wakayama","Yamagata","Yamaguchi","Yamanashi"] },
-    "France": { capital: "Paris", pop: "68,200,000", area: "551,695", provinces: ["Auvergne-Rhône-Alpes","Bourgogne-Franche-Comté","Bretagne","Centre-Val de Loire","Corse","Grand Est","Hauts-de-France","Île-de-France","Normandie","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d'Azur"] },
-    "Germany": { capital: "Berlin", pop: "84,500,000", area: "357,022", provinces: ["Baden-Württemberg","Bavaria","Berlin","Brandenburg","Bremen","Hamburg","Hesse","Lower Saxony","Mecklenburg-Vorpommern","North Rhine-Westphalia","Rhineland-Palatinate","Saarland","Saxony","Saxony-Anhalt","Schleswig-Holstein","Thuringia"] },
-    "India": { capital: "New Delhi", pop: "1,450,000,000", area: "3,287,263", provinces: ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"] },
-    "Indonesia": { capital: "Nusantara", pop: "282,000,000", area: "1,904,569", provinces: ["Aceh","Bali","Banten","Bengkulu","Gorontalo","Jakarta","Jambi","Jawa Barat","Jawa Tengah","Jawa Timur","Kalimantan Barat","Kalimantan Selatan","Kalimantan Tengah","Kalimantan Timur","Kalimantan Utara","Kepulauan Bangka Belitung","Kepulauan Riau","Lampung","Maluku","Maluku Utara","Nusa Tenggara Barat","Nusa Tenggara Timur","Papua","Papua Barat","Papua Pegunungan","Papua Selatan","Papua Tengah","Papua Barat Daya","Riau","Sulawesi Barat","Sulawesi Selatan","Sulawesi Tengah","Sulawesi Tenggara","Sulawesi Utara","Sumatera Barat","Sumatera Selatan","Sumatera Utara","Yogyakarta"] },
-    "Thailand": { capital: "Bangkok", pop: "72,100,000", area: "513,120", provinces: ["Bangkok","Amnat Charoen","Ang Thong","Bueng Kan","Buriram","Chachoengsao","Chai Nat","Chaiyaphum","Chanthaburi","Chiang Mai","Chiang Rai","Chonburi","Chumphon","Kalasin","Kamphaeng Phet","Kanchanaburi","Khon Kaen","Krabi","Lampang","Lamphun","Loei","Lopburi","Mae Hong Son","Maha Sarakham","Mukdahan","Nakhon Nayok","Nakhon Pathom","Nakhon Phanom","Nakhon Ratchasima","Nakhon Sawan","Nakhon Si Thammarat","Nan","Narathiwat","Nong Bua Lamphu","Nong Khai","Nonthaburi","Pathum Thani","Pattani","Phang Nga","Phatthalung","Phayao","Phetchabun","Phetchaburi","Phichit","Phitsanulok","Phra Nakhon Si Ayutthaya","Phrae","Phuket","Prachinburi","Prachuap Khiri Khan","Ranong","Ratchaburi","Rayong","Roi Et","Sa Kaeo","Sakon Nakhon","Samut Prakan","Samut Sakhon","Samut Songkhram","Saraburi","Satun","Sing Buri","Sisaket","Songkhla","Sukhothai","Suphan Buri","Surat Thani","Surin","Tak","Trang","Trat","Ubon Ratchathani","Udon Thani","Uthai Thani","Uttaradit","Yala","Yasothon"] },
-    "Philippines": { capital: "Manila", pop: "119,000,000", area: "300,000", provinces: ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan","Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Cagayan","Camarines Norte","Camarines Sur","Camiguin","Capiz","Catanduanes","Cavite","Cebu","Cotabato","Davao de Oro","Davao del Norte","Davao del Sur","Davao Occidental","Davao Oriental","Dinagat Islands","Eastern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur","Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao del Norte","Maguindanao del Sur","Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental","Northern Samar","Nueva Ecija","Nueva Vizcaya","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon","Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat","Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur","Zamboanga Sibugay","Metro Manila"] },
-    "Malaysia": { capital: "Kuala Lumpur", pop: "35,500,000", area: "330,803", provinces: ["Johor","Kedah","Kelantan","Melaka","Negeri Sembilan","Pahang","Perak","Perlis","Pulau Pinang","Sabah","Sarawak","Selangor","Terengganu","Kuala Lumpur","Labuan","Putrajaya"] },
-    "Myanmar": { capital: "Naypyidaw", pop: "55,200,000", area: "676,578", provinces: ["Ayeyarwady","Bago","Magway","Mandalay","Sagaing","Tanintharyi","Yangon","Chin","Kachin","Kayah","Kayin","Mon","Rakhine","Shan","Naypyidaw"] },
-    "Laos": { capital: "Vientiane", pop: "7,700,000", area: "236,800", provinces: ["Vientiane Prefecture","Attapeu","Bokeo","Bolikhamsai","Champasak","Houaphan","Khammouane","Luang Namtha","Luang Prabang","Oudomxay","Phongsaly","Salavan","Savannakhet","Sayaboury","Sekong","Vientiane Province","Xaisomboun","Xieng Khouang"] },
-    "Cambodia": { capital: "Phnom Penh", pop: "17,200,000", area: "181,035", provinces: ["Phnom Penh","Banteay Meanchey","Battambang","Kampong Cham","Kampong Chhnang","Kampong Speu","Kampong Thom","Kampot","Kandal","Koh Kong","Kratié","Mondulkiri","Oddar Meanchey","Pailin","Preah Sihanouk","Preah Vihear","Prey Veng","Pursat","Ratanakiri","Siem Reap","Stung Treng","Svay Rieng","Takéo","Tboung Khmum","Kep"] },
-    "South Korea": { capital: "Seoul", pop: "51,800,000", area: "100,210", provinces: ["Seoul","Busan","Daegu","Incheon","Gwangju","Daejeon","Ulsan","Sejong","Gyeonggi","Gangwon","Chungcheongbuk","Chungcheongnam","Jeollabuk","Jeollanam","Gyeongsangbuk","Gyeongsangnam","Jeju"] },
-    "United Kingdom": { capital: "London", pop: "68,500,000", area: "242,495", provinces: ["England","Scotland","Wales","Northern Ireland"] },
+    "Afghanistan": { capital: "Kabul", pop: "43,000,000", area: "652,230", provinces: ["Badakhshan","Badghis","Baghlan","Balkh","Bamyan","Daykundi","Farah","Faryab","Ghazni","Ghor","Helmand","Herat","Jowzjan","Kabul","Kandahar","Kapisa","Khost","Kunar","Kunduz","Laghman","Logar","Nangarhar","Nimruz","Nuristan","Paktia","Paktika","Panjshir","Parwan","Samangan","Sar-e Pol","Takhar","Urozgan","Wardak","Zabul"] },
+    
+    "Albania": { capital: "Tirana", pop: "2,800,000", area: "28,748", provinces: ["Berat","Dibër","Durrës","Elbasan","Fier","Gjirokastër","Korçë","Kukës","Lezhë","Shkodër","Tirana","Vlorë"] },
+  
+    "Algeria": { capital: "Algiers", pop: "45,000,000", area: "2,381,741", provinces: ["Adrar","Aïn Defla","Aïn Témouchent","Algiers","Annaba","Batna","Béchar","Béjaïa","Biskra","Blida","Bordj Bou Arréridj","Bouira","Boumerdès","Chlef","Constantine","Djelfa","El Bayadh","El Oued","El Tarf","Ghardaïa","Guelma","Illizi","Jijel","Khenchela","Laghouat","Mascara","Médéa","Mila","Mostaganem","M'Sila","Naâma","Oran","Ouargla","Oum El Bouaghi","Relizane","Saïda","Sétif","Sidi Bel Abbès","Skikda","Souk Ahras","Tamanghasset","Tébessa","Tiaret","Tindouf","Tipaza","Tissemsilt","Tizi Ouzou","Tlemcen"] },
+   
+    "Andorra": { capital: "Andorra la Vella", pop: "80,000", area: "468", provinces: ["Andorra la Vella","Canillo","Encamp","Escaldes-Engordany","La Massana","Ordino","Sant Julià de Lòria"] },
+  
+    "Angola": { capital: "Luanda", pop: "37,000,000", area: "1,246,700", provinces: ["Bengo","Benguela","Bié","Cabinda","Cuando Cubango","Cuanza Norte","Cuanza Sul","Cunene","Huambo","Huíla","Luanda","Lunda Norte","Lunda Sul","Malanje","Moxico","Namibe","Uíge","Zaire"] },
+    "Antigua and Barbuda": { capital: "St. John's", pop: "100,000", area: "442", provinces: ["Antigua","Barbuda","Redonda"] },
+    "Argentina": { capital: "Buenos Aires", pop: "46,000,000", area: "2,780,400", provinces: ["Buenos Aires","Catamarca","Chaco","Chubut","Córdoba","Corrientes","Entre Ríos","Formosa","Jujuy","La Pampa","La Rioja","Mendoza","Misiones","Neuquén","Río Negro","Salta","San Juan","San Luis","Santa Cruz","Santa Fe","Santiago del Estero","Tierra del Fuego","Tucumán"] },
+    "Armenia": { capital: "Yerevan", pop: "2,800,000", area: "29,743", provinces: ["Aragatsotn","Ararat","Armavir","Gegharkunik","Kotayk","Lori","Shirak","Syunik","Tavush","Vayots Dzor","Yerevan"] },
+    "Australia": { capital: "Canberra", pop: "27,200,000", area: "7,692,024", provinces: ["Australian Capital Territory","New South Wales","Northern Territory","Queensland","South Australia","Tasmania","Victoria","Western Australia"] },
+    "Austria": { capital: "Vienna", pop: "9,100,000", area: "83,879", provinces: ["Burgenland","Carinthia","Lower Austria","Salzburg","Styria","Tyrol","Upper Austria","Vienna","Vorarlberg"] },
+    "Azerbaijan": { capital: "Baku", pop: "10,200,000", area: "86,600", provinces: ["Absheron","Agdam","Agdash","Agjabadi","Astara","Baku","Balakan","Barda","Beylagan","Bilasuvar","Dashkasan","Fuzuli","Ganja","Gobustan","Goranboy","Goychay","Goygol","Hajigabul","Imishli","Ismailli","Jabrayil","Jalilabad","Kalbajar","Kurdamir","Lankaran","Lankaran District","Lerik","Masally","Mingachevir","Naftalan","Nakhchivan","Neftchala","Oghuz","Ordubad","Qabala","Qakh","Qazakh","Quba","Qubadli","Qusar","Saatly","Sabirabad","Sadarak","Salyan","Shabran","Shaki","Shamakh","Shamakhi","Shamkir","Shirvan","Shusha","Siazan","Sumgait","Tartar","Tovuz","Ujar","Yardimli","Yevlakh","Zangilan","Zaqatala","Zardab"] },
+    "Bahamas": { capital: "Nassau", pop: "410,000", area: "13,943", provinces: ["Acklins","Berry Islands","Bimini","Black Point","Cat Island","Central Abaco","Central Andros","Central Eleuthera","City of Freeport","Crooked Island","East Grand Bahama","Exuma","Grand Cay","Harbour Island","Hope Town","Inagua","Long Island","Mangrove Cay","Mayaguana","Moore's Island","New Providence","North Abaco","North Andros","North Eleuthera","Ragged Island","Rum Cay","San Salvador","South Abaco","South Andros","South Eleuthera","Spanish Wells","West Grand Bahama"] },
+    "Bahrain": { capital: "Manama", pop: "1,500,000", area: "765", provinces: ["Capital","Muharraq","Northern","Southern"] },
+    "Bangladesh": { capital: "Dhaka", pop: "173,000,000", area: "147,570", provinces: ["Barisal","Chittagong","Dhaka","Khulna","Mymensingh","Rajshahi","Rangpur","Sylhet"] },
+    "Barbados": { capital: "Bridgetown", pop: "280,000", area: "430", provinces: ["Christ Church","Saint Andrew","Saint George","Saint James","Saint John","Saint Joseph","Saint Lucy","Saint Michael","Saint Peter","Saint Philip","Saint Thomas"] },
+    "Belarus": { capital: "Minsk", pop: "9,200,000", area: "207,600", provinces: ["Brest","Gomel","Grodno","Minsk","Mogilev","Vitebsk"] },
+    "Belgium": { capital: "Brussels", pop: "11,800,000", area: "30,528", provinces: ["Antwerp","East Flanders","Flemish Brabant","Hainaut","Liège","Limburg","Luxembourg","Namur","Walloon Brabant","West Flanders"] },
+    "Belize": { capital: "Belmopan", pop: "410,000", area: "22,966", provinces: ["Belize","Cayo","Corozal","Orange Walk","Stann Creek","Toledo"] },
+    "Benin": { capital: "Porto-Novo", pop: "13,800,000", area: "112,622", provinces: ["Alibori","Atakora","Atlantique","Borgou","Collines","Donga","Kouffo","Littoral","Mono","Ouémé","Plateau","Zou"] },
+    "Bhutan": { capital: "Thimphu", pop: "780,000", area: "38,394", provinces: ["Bumthang","Chhukha","Dagana","Gasa","Haa","Lhuntse","Mongar","Paro","Pemagatshel","Punakha","Samdrup Jongkhar","Samtse","Sarpang","Thimphu","Trashigang","Trashiyangtse","Trongsa","Tsirang","Wangdue Phodrang","Zhemgang"] },
+    "Bolivia": { capital: "Sucre (constitutional), La Paz (administrative)", pop: "12,400,000", area: "1,098,581", provinces: ["Beni","Chuquisaca","Cochabamba","La Paz","Oruro","Pando","Potosí","Santa Cruz","Tarija"] },
+    "Bosnia and Herzegovina": { capital: "Sarajevo", pop: "3,200,000", area: "51,197", provinces: ["Federation of Bosnia and Herzegovina","Republika Srpska","Brčko District"] },
+    "Botswana": { capital: "Gaborone", pop: "2,700,000", area: "581,730", provinces: ["Central","Ghanzi","Kgalagadi","Kgatleng","Kweneng","North-East","North-West","South-East","Southern"] },
     "Brazil": { capital: "Brasília", pop: "218,000,000", area: "8,515,767", provinces: ["Acre","Alagoas","Amapá","Amazonas","Bahia","Ceará","Distrito Federal","Espírito Santo","Goiás","Maranhão","Mato Grosso","Mato Grosso do Sul","Minas Gerais","Pará","Paraíba","Paraná","Pernambuco","Piauí","Rio de Janeiro","Rio Grande do Norte","Rio Grande do Sul","Rondônia","Roraima","Santa Catarina","São Paulo","Sergipe","Tocantins"] },
-    "Australia": { capital: "Canberra", pop: "27,200,000", area: "7,692,024", provinces: ["New South Wales","Victoria","Queensland","Western Australia","South Australia","Tasmania","Northern Territory","Australian Capital Territory"] },
+    "Brunei": { capital: "Bandar Seri Begawan", pop: "450,000", area: "5,765", provinces: ["Belait","Brunei-Muara","Temburong","Tutong"] },
+    "Bulgaria": { capital: "Sofia", pop: "6,400,000", area: "110,879", provinces: ["Blagoevgrad","Burgas","Dobrich","Gabrovo","Haskovo","Kardzhali","Kyustendil","Lovech","Montana","Pazardzhik","Pernik","Pleven","Plovdiv","Razgrad","Ruse","Shumen","Silistra","Sliven","Smolyan","Sofia","Sofia City","Stara Zagora","Targovishte","Varna","Veliko Tarnovo","Vidin","Vratsa","Yambol"] },
+    "Burkina Faso": { capital: "Ouagadougou", pop: "23,000,000", area: "274,200", provinces: ["Boucle du Mouhoun","Cascades","Centre","Centre-Est","Centre-Nord","Centre-Ouest","Centre-Sud","Est","Hauts-Bassins","Nord","Plateau-Central","Sahel","Sud-Ouest"] },
+    "Burundi": { capital: "Gitega", pop: "13,200,000", area: "27,834", provinces: ["Bubanza","Bujumbura Mairie","Bujumbura Rural","Bururi","Cankuzo","Cibitoke","Gitega","Karuzi","Kayanza","Kirundo","Makamba","Muramvya","Muyinga","Mwaro","Ngozi","Rumonge","Rutana","Ruyigi"] },
+    "Cambodia": { capital: "Phnom Penh", pop: "17,200,000", area: "181,035", provinces: ["Banteay Meanchey","Battambang","Kampong Cham","Kampong Chhnang","Kampong Speu","Kampong Thom","Kampot","Kandal","Kep","Koh Kong","Kratié","Mondulkiri","Oddar Meanchey","Pailin","Phnom Penh","Preah Sihanouk","Preah Vihear","Prey Veng","Pursat","Ratanakiri","Siem Reap","Stung Treng","Svay Rieng","Takéo","Tboung Khmum"] },
+    "Cameroon": { capital: "Yaoundé", pop: "28,000,000", area: "475,442", provinces: ["Adamawa","Centre","East","Far North","Littoral","North","Northwest","South","Southwest","West"] },
     "Canada": { capital: "Ottawa", pop: "40,500,000", area: "9,984,670", provinces: ["Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Nova Scotia","Ontario","Prince Edward Island","Quebec","Saskatchewan","Northwest Territories","Nunavut","Yukon"] },
-    "Italy": { capital: "Rome", pop: "58,800,000", area: "301,340", provinces: ["Abruzzo","Basilicata","Calabria","Campania","Emilia-Romagna","Friuli-Venezia Giulia","Lazio","Liguria","Lombardy","Marche","Molise","Piedmont","Puglia","Sardinia","Sicily","Tuscany","Trentino-Alto Adige","Umbria","Valle d'Aosta","Veneto"] },
-    "Spain": { capital: "Madrid", pop: "47,800,000", area: "505,992", provinces: ["Andalusia","Aragon","Asturias","Balearic Islands","Basque Country","Canary Islands","Cantabria","Castile-La Mancha","Castile and León","Catalonia","Extremadura","Galicia","La Rioja","Madrid","Murcia","Navarre","Valencian Community"] },
-    "Ukraine": { capital: "Kyiv", pop: "37,000,000", area: "603,628", provinces: ["Kyiv","Cherkasy","Chernihiv","Chernivtsi","Crimea","Dnipropetrovsk","Donetsk","Ivano-Frankivsk","Kharkiv","Kherson","Khmelnytskyi","Kirovohrad","Luhansk","Lviv","Mykolaiv","Odesa","Poltava","Rivne","Sevastopol","Sumy","Ternopil","Vinnytsia","Volyn","Zakarpattia","Zaporizhzhia","Zhytomyr"] },
-    "Poland": { capital: "Warsaw", pop: "37,500,000", area: "312,696", provinces: ["Greater Poland","Kuyavian-Pomeranian","Lesser Poland","Łódź","Lower Silesian","Lublin","Lubusz","Masovian","Opole","Podlaskie","Pomeranian","Silesian","Subcarpathian","Holy Cross","Warmian-Masurian","West Pomeranian"] }
+    "Cape Verde": { capital: "Praia", pop: "600,000", area: "4,033", provinces: ["Boa Vista","Brava","Maio","Mosteiros","Paul","Porto Novo","Praia","Ribeira Brava","Ribeira Grande","Sal","Santa Catarina","Santa Cruz","São Domingos","São Filipe","São Lourenço dos Órgãos","São Miguel","São Nicolau","São Vicente","Tarrafal","Tarrafal de São Nicolau"] },
+    "Central African Republic": { capital: "Bangui", pop: "5,400,000", area: "622,984", provinces: ["Bamingui-Bangoran","Bangui","Basse-Kotto","Haute-Kotto","Haut-Mbomou","Kémo","Lobaye","Mambéré-Kadéï","Mbomou","Nana-Grébizi","Nana-Mambéré","Ombella-M'Poko","Ouaka","Ouham","Ouham-Pendé","Vakaga"] },
+    "Chad": { capital: "N'Djamena", pop: "18,500,000", area: "1,284,000", provinces: ["Batha","Borkou","Chari-Baguirmi","Ennedi","Guéra","Hadjer-Lamis","Kanem","Lac","Logone Occidental","Logone Oriental","Mandoul","Mayo-Kébbi Est","Mayo-Kébbi Ouest","Moyen-Chari","Ouaddaï","Salamat","Sila","Tandjilé","Tibesti","Ville de N'Djamena","Wadi Fira"] },
+    "Chile": { capital: "Santiago", pop: "19,500,000", area: "756,102", provinces: ["Arica y Parinacota","Tarapacá","Antofagasta","Atacama","Coquimbo","Valparaíso","Metropolitana de Santiago","O'Higgins","Maule","Ñuble","Biobío","Araucanía","Los Ríos","Los Lagos","Aysén","Magallanes y de la Antártica Chilena"] },
+    "China": { capital: "Beijing", pop: "1,425,000,000", area: "9,596,961", provinces: ["Anhui","Beijing","Chongqing","Fujian","Gansu","Guangdong","Guangxi","Guizhou","Hainan","Hebei","Heilongjiang","Henan","Hubei","Hunan","Inner Mongolia","Jiangsu","Jiangxi","Jilin","Liaoning","Ningxia","Qinghai","Shaanxi","Shandong","Shanghai","Shanxi","Sichuan","Tianjin","Tibet","Xinjiang","Yunnan","Zhejiang","Hong Kong","Macau"] },
+    "Colombia": { capital: "Bogotá", pop: "52,000,000", area: "1,141,748", provinces: ["Amazonas","Antioquia","Arauca","Atlántico","Bolívar","Boyacá","Caldas","Caquetá","Casanare","Cauca","Cesar","Chocó","Córdoba","Cundinamarca","Guainía","Guaviare","Huila","La Guajira","Magdalena","Meta","Nariño","Norte de Santander","Putumayo","Quindío","Risaralda","San Andrés y Providencia","Santander","Sucre","Tolima","Valle del Cauca","Vaupés","Vichada"] },
+    "Comoros": { capital: "Moroni", pop: "850,000", area: "2,235", provinces: ["Grande Comore","Anjouan","Mohéli"] },
+    "Congo (Brazzaville)": { capital: "Brazzaville", pop: "6,100,000", area: "342,000", provinces: ["Bouenza","Brazzaville","Cuvette","Cuvette-Ouest","Kouilou","Lékoumou","Likouala","Niari","Plateaux","Pointe-Noire","Pool","Sangha"] },
+    "Congo (Kinshasa)": { capital: "Kinshasa", pop: "105,000,000", area: "2,344,858", provinces: ["Kinshasa","Kongo Central","Kwango","Kwilu","Mai-Ndombe","Kasaï","Kasaï-Central","Kasaï-Oriental","Lomami","Sankuru","Maniema","South Kivu","North Kivu","Ituri","Haut-Uele","Tshopo","Bas-Uele","Haut-Katanga","Lualaba","Tanganyika"] },
+    "Costa Rica": { capital: "San José", pop: "5,200,000", area: "51,100", provinces: ["Alajuela","Cartago","Guanacaste","Heredia","Limón","Puntarenas","San José"] },
+    "Croatia": { capital: "Zagreb", pop: "3,800,000", area: "56,594", provinces: ["Zagreb","Krapina-Zagorje","Sisak-Moslavina","Karlovac","Varaždin","Koprivnica-Križevci","Bjelovar-Bilogora","Primorje-Gorski Kotar","Lika-Senj","Virovitica-Podravina","Požega-Slavonia","Brod-Posavina","Zadar","Osijek-Baranja","Šibenik-Knin","Vukovar-Syrmia","Split-Dalmatia","Istria","Dubrovnik-Neretva","Međimurje"] },
+    "Cuba": { capital: "Havana", pop: "11,000,000", area: "109,884", provinces: ["Pinar del Río","Artemisa","Havana","Mayabeque","Matanzas","Cienfuegos","Villa Clara","Sancti Spíritus","Ciego de Ávila","Camagüey","Las Tunas","Holguín","Granma","Santiago de Cuba","Guantánamo","Isla de la Juventud"] },
+    "Cyprus": { capital: "Nicosia", pop: "1,300,000", area: "9,251", provinces: ["Nicosia","Limassol","Larnaca","Famagusta","Paphos","Kyrenia"] },
+    "Czech Republic": { capital: "Prague", pop: "10,500,000", area: "78,871", provinces: ["Prague","Central Bohemian","South Bohemian","Plzeň","Karlovy Vary","Ústí nad Labem","Liberec","Hradec Králové","Pardubice","Olomouc","Moravian-Silesian","South Moravian","Zlín","Vysočina"] },
+    "Denmark": { capital: "Copenhagen", pop: "5,900,000", area: "42,933", provinces: ["Capital Region","Zealand","Southern Denmark","Central Denmark","North Denmark"] },
+    "Djibouti": { capital: "Djibouti", pop: "1,100,000", area: "23,200", provinces: ["Ali Sabieh","Arta","Dikhil","Djibouti","Obock","Tadjourah"] },
+    "Dominica": { capital: "Roseau", pop: "73,000", area: "751", provinces: ["Saint Andrew","Saint David","Saint George","Saint John","Saint Joseph","Saint Luke","Saint Mark","Saint Patrick","Saint Paul","Saint Peter"] },
+    "Dominican Republic": { capital: "Santo Domingo", pop: "11,300,000", area: "48,671", provinces: ["Azua","Bahoruco","Barahona","Dajabón","Distrito Nacional","Duarte","Elías Piña","El Seibo","Espaillat","Hato Mayor","Hermanas Mirabal","Independencia","La Altagracia","La Romana","La Vega","María Trinidad Sánchez","Monseñor Nouel","Monte Cristi","Monte Plata","Pedernales","Peravia","Puerto Plata","Samaná","Sánchez Ramírez","San Cristóbal","San José de Ocoa","San Juan","San Pedro de Macorís","Santiago","Santiago Rodríguez","Santo Domingo","Valverde"] },
+    "Ecuador": { capital: "Quito", pop: "18,200,000", area: "283,561", provinces: ["Azuay","Bolívar","Cañar","Carchi","Chimborazo","Cotopaxi","El Oro","Esmeraldas","Galápagos","Guayas","Imbabura","Loja","Los Ríos","Manabí","Morona Santiago","Napo","Orellana","Pastaza","Pichincha","Santa Elena","Santo Domingo de los Tsáchilas","Sucumbíos","Tungurahua","Zamora Chinchipe"] },
+    "Egypt": { capital: "Cairo", pop: "112,000,000", area: "1,001,450", provinces: ["Alexandria","Aswan","Asyut","Beheira","Beni Suef","Cairo","Dakahlia","Damietta","Faiyum","Gharbia","Giza","Ismailia","Kafr El Sheikh","Luxor","Matruh","Minya","Monufia","New Valley","North Sinai","Port Said","Qalyubia","Qena","Red Sea","Sharqia","Sohag","South Sinai","Suez"] },
+    "El Salvador": { capital: "San Salvador", pop: "6,400,000", area: "21,041", provinces: ["Ahuachapán","Cabañas","Chalatenango","Cuscatlán","La Libertad","La Paz","La Unión","Morazán","San Miguel","San Salvador","San Vicente","Santa Ana","Sonsonate","Usulután"] },
+    "Equatorial Guinea": { capital: "Malabo", pop: "1,700,000", area: "28,051", provinces: ["Annobón","Bioko Norte","Bioko Sur","Centro Sur","Kié-Ntem","Litoral","Wele-Nzas"] },
+    "Eritrea": { capital: "Asmara", pop: "3,700,000", area: "117,600", provinces: ["Anseba","Debub","Debubawi Keyih Bahri","Gash-Barka","Maekel","Semienawi Keyih Bahri"] },
+    "Estonia": { capital: "Tallinn", pop: "1,300,000", area: "45,227", provinces: ["Harju","Hiiu","Ida-Viru","Jõgeva","Järva","Lääne","Lääne-Viru","Põlva","Pärnu","Rapla","Saare","Tartu","Valga","Viljandi","Võru"] },
+    "Eswatini": { capital: "Mbabane", pop: "1,200,000", area: "17,364", provinces: ["Hhohho","Lubombo","Manzini","Shiselweni"] },
+    "Ethiopia": { capital: "Addis Ababa", pop: "126,000,000", area: "1,104,300", provinces: ["Addis Ababa","Afar","Amhara","Benishangul-Gumuz","Dire Dawa","Gambela","Harari","Oromia","Sidama","Somali","South Ethiopia","South West Ethiopia","Tigray"] },
+    "Fiji": { capital: "Suva", pop: "930,000", area: "18,274", provinces: ["Ba","Bua","Cakaudrove","Kadavu","Lau","Lomaiviti","Macuata","Nadroga-Navosa","Naitasiri","Namosi","Ra","Rewa","Rotuma","Serua","Tailevu"] },
+    "Finland": { capital: "Helsinki", pop: "5,600,000", area: "338,145", provinces: ["Åland","Central Finland","Central Ostrobothnia","Eastern Finland","Kainuu","Kymenlaakso","Lapland","North Karelia","Northern Ostrobothnia","Ostrobothnia","Pirkanmaa","Satakunta","South Karelia","Southern Ostrobothnia","Southern Savonia","Southwest Finland","Tavastia Proper","Uusimaa"] },
+    "France": { capital: "Paris", pop: "68,200,000", area: "551,695", provinces: ["Auvergne-Rhône-Alpes","Bourgogne-Franche-Comté","Bretagne","Centre-Val de Loire","Corse","Grand Est","Hauts-de-France","Île-de-France","Normandie","Nouvelle-Aquitaine","Occitanie","Pays de la Loire","Provence-Alpes-Côte d'Azur"] },
+    "Gabon": { capital: "Libreville", pop: "2,400,000", area: "267,667", provinces: ["Estuaire","Haut-Ogooué","Moyen-Ogooué","Ngounié","Nyanga","Ogooué-Ivindo","Ogooué-Lolo","Ogooué-Maritime","Woleu-Ntem"] },
+    "Gambia": { capital: "Banjul", pop: "2,700,000", area: "11,295", provinces: ["Banjul","Central River","Lower River","North Bank","Upper River","West Coast"] },
+    "Georgia": { capital: "Tbilisi", pop: "3,700,000", area: "69,700", provinces: ["Abkhazia","Adjara","Guria","Imereti","Kakheti","Kvemo Kartli","Mtskheta-Mtianeti","Racha-Lechkhumi and Kvemo Svaneti","Samegrelo-Zemo Svaneti","Samtskhe-Javakheti","Shida Kartli","Tbilisi"] },
+    "Germany": { capital: "Berlin", pop: "84,500,000", area: "357,022", provinces: ["Baden-Württemberg","Bavaria","Berlin","Brandenburg","Bremen","Hamburg","Hesse","Lower Saxony","Mecklenburg-Vorpommern","North Rhine-Westphalia","Rhineland-Palatinate","Saarland","Saxony","Saxony-Anhalt","Schleswig-Holstein","Thuringia"] },
+    "Ghana": { capital: "Accra", pop: "34,000,000", area: "238,535", provinces: ["Ahafo","Ashanti","Bono","Bono East","Central","Eastern","Greater Accra","North East","Northern","Oti","Savannah","Upper East","Upper West","Volta","Western","Western North"] },
+    "Greece": { capital: "Athens", pop: "10,300,000", area: "131,957", provinces: ["Attica","Central Greece","Central Macedonia","Crete","Eastern Macedonia and Thrace","Epirus","Ionian Islands","North Aegean","Peloponnese","South Aegean","Thessaly","Western Greece","Western Macedonia"] },
+    "Grenada": { capital: "St. George's", pop: "125,000", area: "344", provinces: ["Carriacou and Petite Martinique","Saint Andrew","Saint David","Saint George","Saint John","Saint Mark","Saint Patrick"] },
+    "Guatemala": { capital: "Guatemala City", pop: "18,500,000", area: "108,889", provinces: ["Alta Verapaz","Baja Verapaz","Chimaltenango","Chiquimula","El Progreso","Escuintla","Guatemala","Huehuetenango","Izabal","Jalapa","Jutiapa","Petén","Quetzaltenango","Quiché","Retalhuleu","Sacatepéquez","San Marcos","Santa Rosa","Sololá","Suchitepéquez","Totonicapán","Zacapa"] },
+    "Guinea": { capital: "Conakry", pop: "14,000,000", area: "245,857", provinces: ["Boké","Conakry","Faranah","Kankan","Kindia","Labé","Mamou","Nzérékoré"] },
+    "Guinea-Bissau": { capital: "Bissau", pop: "2,100,000", area: "36,125", provinces: ["Bafatá","Biombo","Bissau","Bolama","Cacheu","Gabú","Oio","Quinara","Tombali"] },
+    "Guyana": { capital: "Georgetown", pop: "810,000", area: "214,969", provinces: ["Barima-Waini","Cuyuni-Mazaruni","Demerara-Mahaica","East Berbice-Corentyne","Essequibo Islands-West Demerara","Mahaica-Berbice","Pomeroon-Supenaam","Potaro-Siparuni","Upper Demerara-Berbice","Upper Takutu-Upper Essequibo"] },
+    "Haiti": { capital: "Port-au-Prince", pop: "11,800,000", area: "27,750", provinces: ["Artibonite","Centre","Grand'Anse","Nippes","Nord","Nord-Est","Nord-Ouest","Ouest","Sud","Sud-Est"] },
+    "Honduras": { capital: "Tegucigalpa", pop: "10,500,000", area: "112,492", provinces: ["Atlántida","Choluteca","Colón","Comayagua","Copán","Cortés","El Paraíso","Francisco Morazán","Gracias a Dios","Intibucá","Islas de la Bahía","La Paz","Lempira","Ocotepeque","Olancho","Santa Bárbara","Valle","Yoro"] },
+    "Hungary": { capital: "Budapest", pop: "9,600,000", area: "93,030", provinces: ["Bács-Kiskun","Baranya","Békés","Borsod-Abaúj-Zemplén","Budapest","Csongrád-Csanád","Fejér","Győr-Moson-Sopron","Hajdú-Bihar","Heves","Jász-Nagykun-Szolnok","Komárom-Esztergom","Nógrád","Pest","Somogy","Szabolcs-Szatmár-Bereg","Tolna","Vas","Veszprém","Zala"] },
+    "Iceland": { capital: "Reykjavík", pop: "380,000", area: "103,000", provinces: ["Capital Region","Southern Peninsula","Western Region","Westfjords","Northwest","Northeast","East","South"] },
+    "India": { capital: "New Delhi", pop: "1,450,000,000", area: "3,287,263", provinces: ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"] },
+    "Indonesia": { capital: "Jakarta (de jure), Nusantara (planned)", pop: "282,000,000", area: "1,904,569", provinces: ["Aceh","Bali","Banten","Bengkulu","Gorontalo","Jakarta","Jambi","Jawa Barat","Jawa Tengah","Jawa Timur","Kalimantan Barat","Kalimantan Selatan","Kalimantan Tengah","Kalimantan Timur","Kalimantan Utara","Kepulauan Bangka Belitung","Kepulauan Riau","Lampung","Maluku","Maluku Utara","Nusa Tenggara Barat","Nusa Tenggara Timur","Papua","Papua Barat","Papua Pegunungan","Papua Selatan","Papua Tengah","Papua Barat Daya","Riau","Sulawesi Barat","Sulawesi Selatan","Sulawesi Tengah","Sulawesi Tenggara","Sulawesi Utara","Sumatera Barat","Sumatera Selatan","Sumatera Utara","Yogyakarta"] },
+    "Iran": { capital: "Tehran", pop: "89,000,000", area: "1,648,195", provinces: ["Alborz","Ardabil","Bushehr","Chaharmahal and Bakhtiari","East Azerbaijan","Isfahan","Fars","Gilan","Golestan","Hamedan","Hormozgan","Ilam","Kerman","Kermanshah","Khuzestan","Kohgiluyeh and Boyer-Ahmad","Kurdistan","Lorestan","Markazi","Mazandaran","North Khorasan","Qazvin","Qom","Razavi Khorasan","Semnan","Sistan and Baluchestan","South Khorasan","Tehran","West Azerbaijan","Yazd","Zanjan"] },
+    "Iraq": { capital: "Baghdad", pop: "45,000,000", area: "438,317", provinces: ["Al Anbar","Babil","Baghdad","Basra","Dhi Qar","Diyala","Duhok","Erbil","Karbala","Kirkuk","Maysan","Muthanna","Najaf","Nineveh","Qadisiyyah","Saladin","Sulaymaniyah","Wasit"] },
+    "Ireland": { capital: "Dublin", pop: "5,300,000", area: "70,273", provinces: ["Carlow","Cavan","Clare","Cork","Donegal","Dublin","Galway","Kerry","Kildare","Kilkenny","Laois","Leitrim","Limerick","Longford","Louth","Mayo","Meath","Monaghan","Offaly","Roscommon","Sligo","Tipperary","Waterford","Westmeath","Wexford","Wicklow"] },
+    "Israel": { capital: "Jerusalem", pop: "9,800,000", area: "20,770", provinces: ["Central","Haifa","Jerusalem","Northern","Southern","Tel Aviv"] },
+    "Italy": { capital: "Rome", pop: "58,800,000", area: "301,340", provinces: ["Abruzzo","Aosta Valley","Apulia","Basilicata","Calabria","Campania","Emilia-Romagna","Friuli-Venezia Giulia","Lazio","Liguria","Lombardy","Marche","Molise","Piedmont","Sardinia","Sicily","Trentino-Alto Adige","Tuscany","Umbria","Veneto"] },
+    "Jamaica": { capital: "Kingston", pop: "2,800,000", area: "10,991", provinces: ["Clarendon","Hanover","Kingston","Manchester","Portland","Saint Andrew","Saint Ann","Saint Catherine","Saint Elizabeth","Saint James","Saint Mary","Saint Thomas","Trelawny","Westmoreland"] },
+    "Japan": { capital: "Tokyo", pop: "122,000,000", area: "377,975", provinces: ["Aichi","Akita","Aomori","Chiba","Ehime","Fukui","Fukuoka","Fukushima","Gifu","Gunma","Hiroshima","Hokkaido","Hyogo","Ibaraki","Ishikawa","Iwate","Kagawa","Kagoshima","Kanagawa","Kochi","Kumamoto","Kyoto","Mie","Miyagi","Miyazaki","Nagano","Nagasaki","Nara","Niigata","Oita","Okayama","Okinawa","Osaka","Saga","Saitama","Shiga","Shimane","Shizuoka","Tochigi","Tokushima","Tokyo","Tottori","Toyama","Wakayama","Yamagata","Yamaguchi","Yamanashi"] },
+    "Jordan": { capital: "Amman", pop: "11,500,000", area: "89,342", provinces: ["Ajloun","Amman","Aqaba","Balqa","Irbid","Jarash","Karak","Ma'an","Madaba","Mafraq","Tafilah","Zarqa"] },
+    "Kazakhstan": { capital: "Astana", pop: "20,000,000", area: "2,724,900", provinces: ["Akmola","Aktobe","Almaty","Atyrau","East Kazakhstan","Karaganda","Kostanay","Kyzylorda","Mangystau","North Kazakhstan","Pavlodar","Turkistan","West Kazakhstan","Zhambyl"] },
+    "Kenya": { capital: "Nairobi", pop: "55,000,000", area: "580,367", provinces: ["Baringo","Bomet","Bungoma","Busia","Elgeyo-Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita-Taveta","Tana River","Tharaka-Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"] },
+    "Kiribati": { capital: "South Tarawa", pop: "130,000", area: "811", provinces: ["Gilbert Islands","Line Islands","Phoenix Islands"] },
+    "Kuwait": { capital: "Kuwait City", pop: "4,300,000", area: "17,818", provinces: ["Al Ahmadi","Al Farwaniyah","Al Jahra","Capital","Hawalli","Mubarak Al-Kabeer"] },
+    "Kyrgyzstan": { capital: "Bishkek", pop: "6,800,000", area: "199,951", provinces: ["Batken","Chüy","Jalal-Abad","Naryn","Osh","Talas","Issyk-Kul"] },
+    "Laos": { capital: "Vientiane", pop: "7,700,000", area: "236,800", provinces: ["Attapeu","Bokeo","Bolikhamsai","Champasak","Houaphan","Khammouane","Luang Namtha","Luang Prabang","Oudomxay","Phongsaly","Salavan","Savannakhet","Sayaboury","Sekong","Vientiane","Vientiane Prefecture","Xaisomboun","Xieng Khouang"] },
+    "Latvia": { capital: "Riga", pop: "1,800,000", area: "64,589", provinces: ["Aglona","Aizkraukle","Alūksne","Babīte","Baldone","Baltinava","Bauska","Beverīna","Brocēni","Burtnieki","Carnikava","Cēsis","Cesvaine","Cibla","Dagda","Daugavpils","Daugavpils Municipality","Dobele","Dundaga","Durbe","Engure","Ērgļi","Garkalne","Gulbene","Iecava","Ikšķile","Ilūkste","Inčukalns","Jaunjelgava","Jaunpiebalga","Jaunpils","Jēkabpils","Jelgava","Jelgava Municipality","Jūrmala","Kandava","Kocēni","Koknese","Krāslava","Krimulda","Krustpils","Kuldīga","Ķegums","Ķekava","Lielvārde","Limbaži","Līgatne","Līvāni","Lubāna","Ludza","Madona","Mazsalaca","Mālpils","Mārupe","Mērsrags","Naukšēni","Nereta","Nīca","Ogre","Olaine","Ozolnieki","Pārgauja","Pāvilosta","Pļaviņas","Preiļi","Priekule","Priekuļi","Rauna","Rēzekne","Rēzekne Municipality","Riebiņi","Rīga","Rojas","Ropaži","Rucava","Rugāji","Rundāle","Rūjiena","Sala","Salacgrīva","Salaspils","Saldus","Saulkrasti","Sēja","Sigulda","Skrīveri","Skrunda","Smiltene","Stopiņi","Strenči","Talsi","Tērvete","Tukums","Vaiņode","Valka","Valmiera","Varakļāni","Vārkava","Vecpiebalga","Vecumnieki","Ventspils","Ventspils Municipality","Viesīte","Viļaka","Viļāni","Zilupe"] },
+    "Lebanon": { capital: "Beirut", pop: "5,300,000", area: "10,452", provinces: ["Akkar","Baalbek-Hermel","Beirut","Beqaa","Mount Lebanon","Nabatieh","North","South"] },
+    "Lesotho": { capital: "Maseru", pop: "2,300,000", area: "30,355", provinces: ["Berea","Butha-Buthe","Leribe","Mafeteng","Maseru","Mohale's Hoek","Mokhotlong","Qacha's Nek","Quthing","Thaba-Tseka"] },
+    "Liberia": { capital: "Monrovia", pop: "5,400,000", area: "111,369", provinces: ["Bomi","Bong","Gbarpolu","Grand Bassa","Grand Cape Mount","Grand Gedeh","Grand Kru","Lofa","Margibi","Maryland","Montserrado","Nimba","River Cess","River Gee","Sinoe"] },
+    "Libya": { capital: "Tripoli", pop: "7,000,000", area: "1,759,540", provinces: ["Al Wahat","Benghazi","Derna","Ghat","Jabal al Akhdar","Jabal al Gharbi","Jafara","Jufra","Kufra","Marj","Misrata","Murqub","Nalut","Nuqat al Khams","Sabha","Sirte","Tripoli","Wadi al Hayaa","Wadi al Shatii","Zawiya"] },
+    "Liechtenstein": { capital: "Vaduz", pop: "40,000", area: "160", provinces: ["Balzers","Eschen","Gamprin","Mauren","Planken","Ruggell","Schaan","Schellenberg","Triesen","Triesenberg","Vaduz"] },
+    "Lithuania": { capital: "Vilnius", pop: "2,800,000", area: "65,300", provinces: ["Alytus","Kaunas","Klaipėda","Marijampolė","Panevėžys","Šiauliai","Tauragė","Telšiai","Utena","Vilnius"] },
+    "Luxembourg": { capital: "Luxembourg City", pop: "660,000", area: "2,586", provinces: ["Capellen","Clervaux","Diekirch","Echternach","Esch-sur-Alzette","Grevenmacher","Luxembourg","Mersch","Redange","Remich","Vianden","Wiltz"] },
+    "Madagascar": { capital: "Antananarivo", pop: "30,000,000", area: "587,041", provinces: ["Alaotra Mangoro","Amoron'i Mania","Analamanga","Analanjirofo","Androy","Anosy","Atsimo-Andrefana","Atsimo-Atsinanana","Atsinanana","Betsiboka","Boeny","Bongolava","Diana","Haute Matsiatra","Ihorombe","Itasy","Melaky","Menabe","Sava","Sofia","Vakinankaratra","Vatovavy-Fitovinany"] },
+    "Malawi": { capital: "Lilongwe", pop: "21,000,000", area: "118,484", provinces: ["Central","Northern","Southern"] },
+    "Malaysia": { capital: "Kuala Lumpur (official), Putrajaya (administrative)", pop: "35,500,000", area: "330,803", provinces: ["Johor","Kedah","Kelantan","Malacca","Negeri Sembilan","Pahang","Penang","Perak","Perlis","Sabah","Sarawak","Selangor","Terengganu","Kuala Lumpur","Labuan","Putrajaya"] },
+    "Maldives": { capital: "Malé", pop: "520,000", area: "298", provinces: ["Addu","Alif Alif","Alif Dhaalu","Baa","Dhaalu","Faafu","Gaafu Alif","Gaafu Dhaalu","Gnaviyani","Haa Alif","Haa Dhaalu","Kaafu","Laamu","Lhaviyani","Meemu","Noonu","Raa","Shaviyani","Thaa","Vaavu"] },
+    "Mali": { capital: "Bamako", pop: "23,000,000", area: "1,240,192", provinces: ["Bamako","Gao","Kayes","Kidal","Koulikoro","Mopti","Ségou","Sikasso","Tombouctou"] },
+    "Malta": { capital: "Valletta", pop: "540,000", area: "316", provinces: ["Attard","Balzan","Birgu","Birkirkara","Birżebbuġa","Cospicua","Dingli","Fgura","Floriana","Fontana","Għajnsielem","Għarb","Għargħur","Għaxaq","Gżira","Ħamrun","Iklin","Isla","Kalkara","Kerċem","Kirkop","Lija","Luqa","Marsa","Marsaskala","Marsaxlokk","Mdina","Mellieħa","Mġarr","Mosta","Mqabba","Msida","Mtarfa","Munxar","Nadur","Naxxar","Paola","Pembroke","Pietà","Qala","Qormi","Qrendi","Rabat","Rabat Gozo","Safi","San Ġwann","Sannat","Santa Luċija","Santa Venera","Senglea","Siġġiewi","Sliema","St Julian's","St Paul's Bay","Swieqi","Ta' Xbiex","Tarxien","Valletta","Victoria","Xagħra","Xewkija","Xgħajra","Żabbar","Żebbuġ","Żebbuġ Gozo","Żejtun","Żurrieq"] },
+    "Marshall Islands": { capital: "Majuro", pop: "60,000", area: "181", provinces: ["Ailinglaplap","Ailuk","Arno","Aur","Bikini","Ebon","Enewetak","Jabat","Jaluit","Kili","Kwajalein","Lae","Lib","Likiep","Majuro","Maloelap","Mejit","Mili","Namdrik","Namu","Rongelap","Ujae","Utirik","Wotho","Wotje"] },
+    "Mauritania": { capital: "Nouakchott", pop: "4,900,000", area: "1,030,700", provinces: ["Adrar","Assaba","Brakna","Dakhlet Nouadhibou","Gorgol","Guidimaka","Hodh Ech Chargui","Hodh El Gharbi","Inchiri","Nouakchott","Tagant","Tiris Zemmour","Trarza"] },
+    "Mauritius": { capital: "Port Louis", pop: "1,300,000", area: "2,040", provinces: ["Agaléga","Black River","Flacq","Grand Port","Moka","Pamplemousses","Plaines Wilhems","Port Louis","Rivière du Rempart","Rodrigues","Savanne"] },
+    "Mexico": { capital: "Mexico City", pop: "130,000,000", area: "1,964,375", provinces: ["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Coahuila","Colima","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"] },
+    "Micronesia": { capital: "Palikir", pop: "110,000", area: "702", provinces: ["Chuuk","Kosrae","Pohnpei","Yap"] },
+    "Moldova": { capital: "Chișinău", pop: "2,500,000", area: "33,851", provinces: ["Anenii Noi","Basarabeasca","Bălți","Briceni","Cahul","Cantemir","Călărași","Căușeni","Chișinău","Cimișlia","Criuleni","Dondușeni","Drochia","Dubăsari","Edineț","Fălești","Florești","Gagauzia","Glodeni","Hîncești","Ialoveni","Leova","Nisporeni","Ocnița","Orhei","Rezina","Rîșcani","Sîngerei","Șoldănești","Soroca","Ștefan Vodă","Strășeni","Taraclia","Telenești","Ungheni"] },
+    "Monaco": { capital: "Monaco", pop: "40,000", area: "2.02", provinces: ["Monaco-Ville","La Condamine","Monte Carlo","Fontvieille"] },
+    "Mongolia": { capital: "Ulaanbaatar", pop: "3,400,000", area: "1,564,116", provinces: ["Arkhangai","Bayan-Ölgii","Bayankhongor","Bulgan","Darkhan-Uul","Dornod","Dornogovi","Dundgovi","Govi-Altai","Govisümber","Khentii","Khovd","Khövsgöl","Ömnögovi","Övörkhangai","Selenge","Sükhbaatar","Töv","Uvs","Zavkhan","Ulaanbaatar"] },
+    "Montenegro": { capital: "Podgorica", pop: "620,000", area: "13,812", provinces: ["Andrijevica","Bar","Berane","Bijelo Polje","Budva","Cetinje","Danilovgrad","Gusinje","Herceg Novi","Kolašin","Kotor","Mojkovac","Nikšić","Petnjica","Plav","Pljevlja","Plužine","Podgorica","Rožaje","Šavnik","Tivat","Ulcinj","Žabljak"] },
+    "Morocco": { capital: "Rabat", pop: "38,000,000", area: "446,550", provinces: ["Tanger-Tétouan-Al Hoceïma","L'Oriental","Fès-Meknès","Rabat-Salé-Kénitra","Béni Mellal-Khénifra","Casablanca-Settat","Marrakech-Safi","Drâa-Tafilalet","Souss-Massa","Guelmim-Oued Noun","Laâyoune-Sakia El Hamra","Dakhla-Oued Ed-Dahab"] },
+    "Mozambique": { capital: "Maputo", pop: "34,000,000", area: "801,590", provinces: ["Cabo Delgado","Gaza","Inhambane","Manica","Maputo","Maputo City","Nampula","Niassa","Sofala","Tete","Zambezia"] },
+    "Myanmar": { capital: "Naypyidaw", pop: "55,200,000", area: "676,578", provinces: ["Ayeyarwady","Bago","Chin","Kachin","Kayah","Kayin","Magway","Mandalay","Mon","Naypyidaw","Rakhine","Sagaing","Shan","Tanintharyi","Yangon"] },
+    "Namibia": { capital: "Windhoek", pop: "2,600,000", area: "824,292", provinces: ["Erongo","Hardap","Karas","Kavango East","Kavango West","Khomas","Kunene","Ohangwena","Omaheke","Omusati","Oshana","Oshikoto","Otjozondjupa","Zambezi"] },
+    "Nauru": { capital: "Yaren", pop: "12,000", area: "21", provinces: ["Aiwo","Anabar","Anetan","Anibare","Baiti","Boe","Buada","Denigomodu","Ewa","Ijuw","Meneng","Nibok","Uaboe","Yaren"] },
+    "Nepal": { capital: "Kathmandu", pop: "30,900,000", area: "147,181", provinces: ["Bagmati","Gandaki","Karnali","Koshi","Lumbini","Madhesh","Sudurpashchim"] },
+    "Netherlands": { capital: "Amsterdam (official), The Hague (seat of government)", pop: "18,000,000", area: "41,543", provinces: ["Drenthe","Flevoland","Friesland","Gelderland","Groningen","Limburg","North Brabant","North Holland","Overijssel","South Holland","Utrecht","Zeeland"] },
+    "New Zealand": { capital: "Wellington", pop: "5,200,000", area: "268,021", provinces: ["Auckland","Bay of Plenty","Canterbury","Chatham Islands","Gisborne","Hawke's Bay","Manawatū-Whanganui","Marlborough","Nelson","Northland","Otago","Southland","Taranaki","Tasman","Waikato","Wellington","West Coast"] },
+    "Nicaragua": { capital: "Managua", pop: "7,000,000", area: "130,373", provinces: ["Boaco","Carazo","Chinandega","Chontales","Costa Caribe Norte","Costa Caribe Sur","Estelí","Granada","Jinotega","León","Madriz","Managua","Masaya","Matagalpa","Nueva Segovia","Río San Juan","Rivas"] },
+    "Niger": { capital: "Niamey", pop: "27,000,000", area: "1,267,000", provinces: ["Agadez","Diffa","Dosso","Maradi","Niamey","Tahoua","Tillabéri","Zinder"] },
+    "Nigeria": { capital: "Abuja", pop: "230,000,000", area: "923,769", provinces: ["Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno","Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","Gombe","Imo","Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa","Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba","Yobe","Zamfara","FCT"] },
+    "North Korea": { capital: "Pyongyang", pop: "26,000,000", area: "120,538", provinces: ["Chagang","Hamgyong-bukto","Hamgyong-namdo","Hwanghae-bukto","Hwanghae-namdo","Kangwon","Pyongan-bukto","Pyongan-namdo","Ryanggang","Rason","Pyongyang"] },
+    "North Macedonia": { capital: "Skopje", pop: "2,000,000", area: "25,713", provinces: ["Eastern","Northeastern","Pelagonia","Polog","Skopje","Southeastern","Southwestern","Vardar"] },
+    "Norway": { capital: "Oslo", pop: "5,500,000", area: "385,207", provinces: ["Agder","Innlandet","Møre og Romsdal","Nordland","Oslo","Rogaland","Troms og Finnmark","Trøndelag","Vestfold og Telemark","Vestland","Viken"] },
+    "Oman": { capital: "Muscat", pop: "4,700,000", area: "309,500", provinces: ["Ad Dakhiliyah","Ad Dhahirah","Al Batinah North","Al Batinah South","Al Buraymi","Al Wusta","Ash Sharqiyah North","Ash Sharqiyah South","Dhofar","Musandam","Muscat"] },
+    "Pakistan": { capital: "Islamabad", pop: "240,000,000", area: "881,913", provinces: ["Azad Kashmir","Balochistan","Gilgit-Baltistan","Islamabad","Khyber Pakhtunkhwa","Punjab","Sindh"] },
+    "Palau": { capital: "Ngerulmud", pop: "18,000", area: "459", provinces: ["Aimeliik","Airai","Angaur","Hatohobei","Kayangel","Koror","Melekeok","Ngaraard","Ngarchelong","Ngardmau","Ngatpang","Ngchesar","Ngeremlengui","Ngiwal","Peleliu","Sonsorol"] },
+    "Palestine": { capital: "Ramallah (administrative), East Jerusalem (claimed)", pop: "5,500,000", area: "6,020", provinces: ["Gaza","West Bank"] },
+    "Panama": { capital: "Panama City", pop: "4,500,000", area: "75,417", provinces: ["Bocas del Toro","Chiriquí","Coclé","Colón","Darién","Emberá-Wounaan","Guna Yala","Herrera","Los Santos","Ngäbe-Buglé","Panamá","Panamá Oeste","Veraguas"] },
+    "Papua New Guinea": { capital: "Port Moresby", pop: "10,000,000", area: "462,840", provinces: ["Bougainville","Central","Chimbu","Eastern Highlands","East New Britain","East Sepik","Enga","Gulf","Hela","Jiwaka","Madang","Manus","Milne Bay","Morobe","National Capital","New Ireland","Northern","Southern Highlands","Western","Western Highlands","West New Britain","West Sepik"] },
+    "Paraguay": { capital: "Asunción", pop: "6,800,000", area: "406,752", provinces: ["Alto Paraguay","Alto Paraná","Amambay","Boquerón","Caaguazú","Caazapá","Canindeyú","Central","Concepción","Cordillera","Guairá","Itapúa","Misiones","Ñeembucú","Paraguarí","Presidente Hayes","San Pedro"] },
+    "Peru": { capital: "Lima", pop: "34,000,000", area: "1,285,216", provinces: ["Amazonas","Ancash","Apurímac","Arequipa","Ayacucho","Cajamarca","Callao","Cusco","Huancavelica","Huánuco","Ica","Junín","La Libertad","Lambayeque","Lima","Loreto","Madre de Dios","Moquegua","Pasco","Piura","Puno","San Martín","Tacna","Tumbes","Ucayali"] },
+    "Philippines": { capital: "Manila", pop: "119,000,000", area: "300,000", provinces: ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan","Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Cagayan","Camarines Norte","Camarines Sur","Camiguin","Capiz","Catanduanes","Cavite","Cebu","Cotabato","Davao de Oro","Davao del Norte","Davao del Sur","Davao Occidental","Davao Oriental","Dinagat Islands","Eastern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur","Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao del Norte","Maguindanao del Sur","Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental","Northern Samar","Nueva Ecija","Nueva Vizcaya","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon","Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat","Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur","Zamboanga Sibugay","Metro Manila"] },
+    "Poland": { capital: "Warsaw", pop: "37,500,000", area: "312,696", provinces: ["Greater Poland","Kuyavian-Pomeranian","Lesser Poland","Łódź","Lower Silesian","Lublin","Lubusz","Masovian","Opole","Podlaskie","Pomeranian","Silesian","Subcarpathian","Holy Cross","Warmian-Masurian","West Pomeranian"] },
+    "Portugal": { capital: "Lisbon", pop: "10,300,000", area: "92,212", provinces: ["Aveiro","Azores","Beja","Braga","Bragança","Castelo Branco","Coimbra","Évora","Faro","Guarda","Leiria","Lisbon","Madeira","Portalegre","Porto","Santarém","Setúbal","Viana do Castelo","Vila Real","Viseu"] },
+    "Qatar": { capital: "Doha", pop: "2,700,000", area: "11,586", provinces: ["Ad Dawhah","Al Khor","Al Rayyan","Al Wakrah","Madinat ash Shamal","Umm Salal"] },
+    "Romania": { capital: "Bucharest", pop: "18,900,000", area: "238,397", provinces: ["Alba","Arad","Argeș","Bacău","Bihor","Bistrița-Năsăud","Botoșani","Brăila","Brașov","București","Buzău","Călărași","Caraș-Severin","Cluj","Constanța","Covasna","Dâmbovița","Dolj","Galați","Giurgiu","Gorj","Harghita","Hunedoara","Ialomița","Iași","Ilfov","Maramureș","Mehedinți","Mureș","Neamț","Olt","Prahova","Sălaj","Satu Mare","Sibiu","Suceava","Teleorman","Timiș","Tulcea","Vâlcea","Vaslui","Vrancea"] },
+    "Russia": { capital: "Moscow", pop: "144,000,000", area: "17,098,242", provinces: ["Adygea","Altai Republic","Altai Krai","Amur Oblast","Arkhangelsk Oblast","Astrakhan Oblast","Bashkortostan","Belgorod Oblast","Bryansk Oblast","Buryatia","Chechnya","Chelyabinsk Oblast","Chukotka","Chuvashia","Dagestan","Ingushetia","Irkutsk Oblast","Ivanovo Oblast","Jewish Autonomous Oblast","Kabardino-Balkaria","Kaliningrad Oblast","Kalmykia","Kaluga Oblast","Kamchatka Krai","Karachay-Cherkessia","Karelia","Kemerovo Oblast","Khabarovsk Krai","Khakassia","Khanty-Mansi","Kirov Oblast","Komi","Kostroma Oblast","Krasnodar Krai","Krasnoyarsk Krai","Kurgan Oblast","Kursk Oblast","Leningrad Oblast","Lipetsk Oblast","Magadan Oblast","Mari El","Mordovia","Moscow","Moscow Oblast","Murmansk Oblast","Nenets","Nizhny Novgorod Oblast","North Ossetia-Alania","Novgorod Oblast","Novosibirsk Oblast","Omsk Oblast","Orenburg Oblast","Oryol Oblast","Penza Oblast","Perm Krai","Primorsky Krai","Pskov Oblast","Rostov Oblast","Ryazan Oblast","Sakha","Sakhalin Oblast","Samara Oblast","Saratov Oblast","Sevastopol","Smolensk Oblast","Stavropol Krai","Sverdlovsk Oblast","Tambov Oblast","Tatarstan","Tomsk Oblast","Tula Oblast","Tuva","Tyumen Oblast","Udmurtia","Ulyanovsk Oblast","Vladimir Oblast","Volgograd Oblast","Vologda Oblast","Voronezh Oblast","Yamalo-Nenets","Yaroslavl Oblast","Zabaykalsky Krai"] },
+    "Rwanda": { capital: "Kigali", pop: "14,000,000", area: "26,338", provinces: ["Eastern","Kigali","Northern","Southern","Western"] },
+    "Saint Kitts and Nevis": { capital: "Basseterre", pop: "48,000", area: "261", provinces: ["Saint Anne Sandy Point","Saint George Basseterre","Saint George Gingerland","Saint James Windward","Saint John Capisterre","Saint John Figtree","Saint Mary Cayon","Saint Paul Capisterre","Saint Peter Basseterre","Saint Thomas Lowland","Saint Thomas Middle Island","Trinity Palmetto Point","Nevis"] },
+    "Saint Lucia": { capital: "Castries", pop: "180,000", area: "616", provinces: ["Anse la Raye","Canaries","Castries","Choiseul","Dennery","Gros Islet","Laborie","Micoud","Praslin","Soufrière","Vieux Fort"] },
+    "Saint Vincent and the Grenadines": { capital: "Kingstown", pop: "110,000", area: "389", provinces: ["Charlotte","Grenadines","Saint Andrew","Saint David","Saint George","Saint Patrick"] },
+    "Samoa": { capital: "Apia", pop: "200,000", area: "2,831", provinces: ["A'ana","Aiga-i-le-Tai","Atua","Fa'asaleleaga","Gaga'emauga","Gagaifomauga","Palauli","Satupa'itea","Tuamasaga","Va'a-o-Fonoti","Vaisigano"] },
+    "San Marino": { capital: "San Marino", pop: "34,000", area: "61", provinces: ["Acquaviva","Borgo Maggiore","Chiesanuova","Domagnano","Faetano","Fiorentino","Montegiardino","San Marino","Serravalle"] },
+    "São Tomé and Príncipe": { capital: "São Tomé", pop: "230,000", area: "964", provinces: ["Água Grande","Cantagalo","Caué","Lembá","Lobata","Mé-Zóchi","Príncipe","São Tomé"] },
+    "Saudi Arabia": { capital: "Riyadh", pop: "37,000,000", area: "2,149,690", provinces: ["Al Bahah","Al Hudud ash Shamaliyah","Al Jawf","Al Madinah","Al Qasim","Ar Riyad","Ash Sharqiyah","Asir","Ha'il","Jazan","Makkah","Najran","Tabuk"] },
+    "Senegal": { capital: "Dakar", pop: "18,000,000", area: "196,722", provinces: ["Dakar","Diourbel","Fatick","Kaffrine","Kaolack","Kédougou","Kolda","Louga","Matam","Saint-Louis","Sédhiou","Tambacounda","Thiès","Ziguinchor"] },
+    "Serbia": { capital: "Belgrade", pop: "6,600,000", area: "77,474", provinces: ["Belgrade","Bor","Braničevo","Central Banat","Jablanica","Kolubara","Mačva","Moravica","Nišava","North Banat","North Bačka","Pirot","Podunavlje","Pomoravlje","Rasina","Raška","South Banat","South Bačka","Srem","Šumadija","Toplica","West Bačka","Zaječar","Zlatibor"] },
+    "Seychelles": { capital: "Victoria", pop: "100,000", area: "459", provinces: ["Anse aux Pins","Anse Boileau","Anse Etoile","Anse Royale","Au Cap","Baie Lazare","Baie Sainte Anne","Beau Vallon","Bel Air","Bel Ombre","Cascade","English River","Glacis","Grand Anse Mahe","Grand Anse Praslin","Inner Islands","La Digue","La Riviere Anglaise","Les Mamelles","Mont Buxton","Mont Fleuri","Plaisance","Pointe La Rue","Port Glaud","Roche Caiman","Saint Louis","Takamaka"] },
+    "Sierra Leone": { capital: "Freetown", pop: "8,600,000", area: "71,740", provinces: ["Eastern","Northern","Southern","Western Area"] },
+    "Singapore": { capital: "Singapore", pop: "5,900,000", area: "728", provinces: ["Central","East","North","North-East","West"] },
+    "Slovakia": { capital: "Bratislava", pop: "5,400,000", area: "49,035", provinces: ["Banská Bystrica","Bratislava","Košice","Nitra","Prešov","Trenčín","Trnava","Žilina"] },
+    "Slovenia": { capital: "Ljubljana", pop: "2,100,000", area: "20,273", provinces: ["Ajdovščina","Bled","Bohinj","Borovnica","Bovec","Brda","Brezovica","Cankova","Celje","Cerklje na Gorenjskem","Cerknica","Cerkno","Cerkvenjak","Destrnik","Divača","Dobje","Dobrepolje","Dobrna","Dobrova-Polhov Gradec","Dol pri Ljubljani","Domžale","Dornava","Dravograd","Duplek","Gorenja Vas-Poljane","Gorišnica","Gorje","Gornja Radgona","Gornji Grad","Gornji Petrovci","Grad","Grosuplje","Hajdina","Hoče-Slivnica","Hodoš","Horjul","Hrastnik","Hrpelje-Kozina","Idrija","Ig","Ilirska Bistrica","Ivančna Gorica","Izola","Jesenice","Jezersko","Juršinci","Kamnik","Kanal","Kidričevo","Kobarid","Kobilje","Kočevje","Komen","Komenda","Koper","Kostanjevica na Krki","Kostel","Kozje","Kranj","Kranjska Gora","Križevci","Krško","Kungota","Kuzma","Laško","Lenart","Lendava","Litija","Ljubljana","Ljubno","Ljutomer","Log-Dragomer","Logatec","Loška Dolina","Loški Potok","Lovrenc na Pohorju","Luče","Lukovica","Majšperk","Makole","Maribor","Markovci","Medvode","Mengš","Metlika","Mežica","Miklavž na Dravskem Polju","Miren-Kostanjevica","Mirna","Mirna Peč","Mislinja","Mokronog-Trebelno","Moravče","Moravske Toplice","Mozirje","Murska Sobota","Muta","Naklo","Nazarje","Nova Gorica","Novo Mesto","Odranci","Oplotnica","Ormož","Osilnica","Pesnica","Piran","Pivka","Podčetrtek","Podlehnik","Podvelka","Poljčane","Polzela","Postojna","Prebold","Preddvor","Prevalje","Ptuj","Puconci","Radenci","Radeče","Radlje ob Dravi","Radovljica","Ravne na Koroškem","Razkrižje","Rečica ob Savinji","Renče-Vogrsko","Ribnica","Ribnica na Pohorju","Rogaška Slatina","Rogašovci","Rogatec","Ruše","Selnica ob Dravi","Semič","Sevnica","Sežana","Slovenj Gradec","Slovenska Bistrica","Slovenske Konjice","Sodražica","Solčava","Središče ob Dravi","Starše","Straža","Sveta Ana","Sveta Andraž v Slovenskih Goricah","Sveti Jurij ob Ščavnici","Sveti Tomaž","Šalovci","Šempeter-Vrtojba","Šenčur","Šentilj","Šentjernej","Šentjur","Šentrupert","Škocjan","Škofja Loka","Škofljica","Šmarje pri Jelšah","Šmarješke Toplice","Šmartno ob Paki","Šmartno pri Litiji","Šoštanj","Štore","Tabor","Tišina","Tolmin","Trbovlje","Trebnje","Trnovska Vas","Tržič","Turnišče","Velenje","Velika Polana","Velike Lašče","Veržej","Videm","Vipava","Vitanje","Vodice","Vojnik","Vransko","Vrhnika","Vuzenica","Zagorje ob Savi","Zavrč","Zreče","Žalec","Železniki","Žiri","Žirovnica","Žužemberk"] },
+    "Solomon Islands": { capital: "Honiara", pop: "740,000", area: "28,896", provinces: ["Central","Choiseul","Guadalcanal","Honiara","Isabel","Makira-Ulawa","Malaita","Rennell and Bellona","Temotu","Western"] },
+    "Somalia": { capital: "Mogadishu", pop: "18,000,000", area: "637,657", provinces: ["Awdal","Bakool","Banaadir","Bari","Bay","Galguduud","Gedo","Hiiraan","Lower Juba","Lower Shabelle","Middle Juba","Middle Shabelle","Mudug","Nugal","Sanaag","Sool","Togdheer","Woqooyi Galbeed"] },
+    "South Africa": { capital: "Pretoria (administrative), Cape Town (legislative), Bloemfontein (judicial)", pop: "61,000,000", area: "1,221,037", provinces: ["Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo","Mpumalanga","North West","Northern Cape","Western Cape"] },
+    "South Korea": { capital: "Seoul", pop: "51,800,000", area: "100,210", provinces: ["Seoul","Busan","Daegu","Incheon","Gwangju","Daejeon","Ulsan","Sejong","Gyeonggi","Gangwon","Chungcheongbuk","Chungcheongnam","Jeollabuk","Jeollanam","Gyeongsangbuk","Gyeongsangnam","Jeju"] },
+    "South Sudan": { capital: "Juba", pop: "11,000,000", area: "644,329", provinces: ["Central Equatoria","Eastern Equatoria","Jonglei","Lakes","Northern Bahr el Ghazal","Unity","Upper Nile","Warrap","Western Bahr el Ghazal","Western Equatoria"] },
+    "Spain": { capital: "Madrid", pop: "47,800,000", area: "505,992", provinces: ["Andalusia","Aragon","Asturias","Balearic Islands","Basque Country","Canary Islands","Cantabria","Castile and León","Castile-La Mancha","Catalonia","Ceuta","Extremadura","Galicia","La Rioja","Madrid","Melilla","Murcia","Navarre","Valencian Community"] },
+    "Sri Lanka": { capital: "Sri Jayawardenepura Kotte (administrative), Colombo (commercial)", pop: "22,000,000", area: "65,610", provinces: ["Central","Eastern","North Central","Northern","North Western","Sabaragamuwa","Southern","Uva","Western"] },
+    "Sudan": { capital: "Khartoum", pop: "48,000,000", area: "1,861,484", provinces: ["Al Jazirah","Al Qadarif","Blue Nile","Central Darfur","East Darfur","Kassala","Khartoum","North Darfur","North Kordofan","Northern","Red Sea","River Nile","Sennar","South Darfur","South Kordofan","West Darfur","West Kordofan","White Nile"] },
+    "Suriname": { capital: "Paramaribo", pop: "620,000", area: "163,821", provinces: ["Brokopondo","Commewijne","Coronie","Marowijne","Nickerie","Para","Paramaribo","Saramacca","Sipaliwini","Wanica"] },
+    "Sweden": { capital: "Stockholm", pop: "10,500,000", area: "450,295", provinces: ["Blekinge","Dalarna","Gävleborg","Gotland","Halland","Jämtland","Jönköping","Kalmar","Kronoberg","Norrbotten","Örebro","Östergötland","Skåne","Södermanland","Stockholm","Uppsala","Värmland","Västerbotten","Västernorrland","Västmanland","Västra Götaland"] },
+    "Switzerland": { capital: "Bern", pop: "8,800,000", area: "41,285", provinces: ["Aargau","Appenzell Ausserrhoden","Appenzell Innerrhoden","Basel-Landschaft","Basel-Stadt","Bern","Fribourg","Geneva","Glarus","Graubünden","Jura","Lucerne","Neuchâtel","Nidwalden","Obwalden","Schaffhausen","Schwyz","Solothurn","St. Gallen","Thurgau","Ticino","Uri","Valais","Vaud","Zug","Zürich"] },
+    "Syria": { capital: "Damascus", pop: "23,000,000", area: "185,180", provinces: ["Al-Hasakah","Al-Qamishli","Aleppo","As-Suwayda","Damascus","Daraa","Deir ez-Zor","Hama","Homs","Idlib","Latakia","Quneitra","Raqqa","Rif Dimashq","Tartus"] },
+    "Taiwan": { capital: "Taipei", pop: "23,000,000", area: "36,193", provinces: ["Changhua","Chiayi","Hsinchu","Hualien","Kaohsiung","Keelung","Kinmen","Lienchiang","Miaoli","Nantou","New Taipei","Pingtung","Taichung","Tainan","Taipei","Taitung","Taoyuan","Yilan","Yunlin"] },
+    "Tajikistan": { capital: "Dushanbe", pop: "10,100,000", area: "143,100", provinces: ["Dushanbe","Gorno-Badakhshan","Khatlon","Sughd","Districts of Republican Subordination"] },
+    "Tanzania": { capital: "Dodoma", pop: "67,000,000", area: "947,300", provinces: ["Arusha","Dar es Salaam","Dodoma","Geita","Iringa","Kagera","Katavi","Kigoma","Kilimanjaro","Lindi","Manyara","Mara","Mbeya","Morogoro","Mtwara","Mwanza","Njombe","Pemba North","Pemba South","Pwani","Rukwa","Ruvuma","Shinyanga","Simiyu","Singida","Songwe","Tabora","Tanga","Zanzibar Central","Zanzibar North","Zanzibar Urban/West"] },
+    "Thailand": { capital: "Bangkok", pop: "72,100,000", area: "513,120", provinces: ["Amnat Charoen","Ang Thong","Bueng Kan","Buriram","Chachoengsao","Chai Nat","Chaiyaphum","Chanthaburi","Chiang Mai","Chiang Rai","Chonburi","Chumphon","Kalasin","Kamphaeng Phet","Kanchanaburi","Khon Kaen","Krabi","Lampang","Lamphun","Loei","Lopburi","Mae Hong Son","Maha Sarakham","Mukdahan","Nakhon Nayok","Nakhon Pathom","Nakhon Phanom","Nakhon Ratchasima","Nakhon Sawan","Nakhon Si Thammarat","Nan","Narathiwat","Nong Bua Lamphu","Nong Khai","Nonthaburi","Pathum Thani","Pattani","Phang Nga","Phatthalung","Phayao","Phetchabun","Phetchaburi","Phichit","Phitsanulok","Phra Nakhon Si Ayutthaya","Phrae","Phuket","Prachinburi","Prachuap Khiri Khan","Ranong","Ratchaburi","Rayong","Roi Et","Sa Kaeo","Sakon Nakhon","Samut Prakan","Samut Sakhon","Samut Songkhram","Saraburi","Satun","Sing Buri","Sisaket","Songkhla","Sukhothai","Suphan Buri","Surat Thani","Surin","Tak","Trang","Trat","Ubon Ratchathani","Udon Thani","Uthai Thani","Uttaradit","Yala","Yasothon"] },
+    "Timor-Leste": { capital: "Dili", pop: "1,400,000", area: "14,874", provinces: ["Aileu","Ainaro","Baucau","Bobonaro","Cova Lima","Dili","Ermera","Lautém","Likisá","Manatuto","Manufahi","Oecusse","Viqueque"] },
+    "Togo": { capital: "Lomé", pop: "9,000,000", area: "56,785", provinces: ["Centrale","Kara","Maritime","Plateaux","Savanes"] },
+    "Tonga": { capital: "Nuku'alofa", pop: "100,000", area: "747", provinces: ["Eua","Ha'apai","Niuas","Tongatapu","Vava'u"] },
+    "Trinidad and Tobago": { capital: "Port of Spain", pop: "1,400,000", area: "5,130", provinces: ["Arima","Chaguanas","Couva-Tabaquite-Talparo","Diego Martin","Mayaro-Rio Claro","Penal-Debe","Point Fortin","Port of Spain","Princes Town","San Fernando","Sangre Grande","Siparia","Tobago","Tunapuna-Piarco"] },
+    "Tunisia": { capital: "Tunis", pop: "12,500,000", area: "163,610", provinces: ["Ariana","Béja","Ben Arous","Bizerte","Gabès","Gafsa","Jendouba","Kairouan","Kasserine","Kebili","Kef","Mahdia","Manouba","Medenine","Monastir","Nabeul","Sfax","Sidi Bouzid","Siliana","Sousse","Tataouine","Tozeur","Tunis","Zaghouan"] },
+    "Turkey": { capital: "Ankara", pop: "86,000,000", area: "783,562", provinces: ["Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin","Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul","İzmir","Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kırıkkale","Kırklareli","Kırşehir","Kilis","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir","Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Şanlıurfa","Siirt","Sinop","Şırnak","Sivas","Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"] },
+    "Turkmenistan": { capital: "Ashgabat", pop: "6,500,000", area: "488,100", provinces: ["Ahal","Ashgabat","Balkan","Daşoguz","Lebap","Mary"] },
+    "Tuvalu": { capital: "Funafuti", pop: "12,000", area: "26", provinces: ["Funafuti","Nanumaga","Nanumea","Niutao","Nui","Nukufetau","Nukulaelae","Vaitupu"] },
+    "Uganda": { capital: "Kampala", pop: "49,000,000", area: "241,038", provinces: ["Abim","Adjumani","Agago","Alebtong","Amolatar","Amudat","Amuria","Amuru","Apac","Arua","Budaka","Bududa","Bugiri","Buhweju","Buikwe","Bukedea","Bukomansimbi","Bukwo","Bulambuli","Buliisa","Bundibugyo","Bushenyi","Busia","Butaleja","Buvuma","Buyende","Dokolo","Gomba","Gulu","Hoima","Ibanda","Iganga","Isingiro","Jinja","Kaabong","Kabale","Kabarole","Kaberamaido","Kalangala","Kaliro","Kalungu","Kampala","Kamuli","Kamwenge","Kanungu","Kapchorwa","Kasese","Katakwi","Kayunga","Kibaale","Kiboga","Kibuku","Kiryandongo","Kisoro","Kitgum","Koboko","Kole","Kotido","Kumi","Kween","Kyankwanzi","Kyegegwa","Kyenjojo","Kyotera","Lamwo","Lira","Luuka","Luwero","Lwengo","Lyantonde","Manafwa","Maracha","Masaka","Masindi","Mayuge","Mbale","Mbarara","Mitooma","Mityana","Moroto","Moyo","Mpigi","Mubende","Mukono","Nakapiripirit","Nakaseke","Nakasongola","Namayingo","Namutumba","Napak","Nebbi","Ngora","Ntoroko","Ntungamo","Nwoya","Omoro","Otuke","Oyam","Pader","Pakwach","Pallisa","Rakai","Rubanda","Rubirizi","Rukiga","Rukungiri","Sembabule","Serere","Sheema","Sironko","Soroti","Tororo","Wakiso","Yumbe","Zombo"] },
+    "Ukraine": { capital: "Kyiv", pop: "37,000,000", area: "603,628", provinces: ["Cherkasy","Chernihiv","Chernivtsi","Dnipropetrovsk","Donetsk","Ivano-Frankivsk","Kharkiv","Kherson","Khmelnytskyi","Kirovohrad","Kyiv","Luhansk","Lviv","Mykolaiv","Odesa","Poltava","Rivne","Sumy","Ternopil","Vinnytsia","Volyn","Zakarpattia","Zaporizhzhia","Zhytomyr"] },
+    "United Arab Emirates": { capital: "Abu Dhabi", pop: "9,500,000", area: "83,600", provinces: ["Abu Dhabi","Ajman","Dubai","Fujairah","Ras Al Khaimah","Sharjah","Umm Al Quwain"] },
+    "United Kingdom": { capital: "London", pop: "68,500,000", area: "242,495", provinces: ["England","Scotland","Wales","Northern Ireland"] },
+    "United States": { capital: "Washington, D.C.", pop: "342,000,000", area: "9,833,517", provinces: ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"] },
+    "Uruguay": { capital: "Montevideo", pop: "3,400,000", area: "176,215", provinces: ["Artigas","Canelones","Cerro Largo","Colonia","Durazno","Flores","Florida","Lavalleja","Maldonado","Montevideo","Paysandú","Río Negro","Rivera","Rocha","Salto","San José","Soriano","Tacuarembó","Treinta y Tres"] },
+    "Uzbekistan": { capital: "Tashkent", pop: "36,000,000", area: "448,978", provinces: ["Andijan","Bukhara","Fergana","Jizzakh","Karakalpakstan","Kashkadarya","Khorezm","Namangan","Navoi","Samarkand","Sirdaryo","Surkhandarya","Tashkent","Tashkent Region"] },
+    "Vanuatu": { capital: "Port Vila", pop: "320,000", area: "12,189", provinces: ["Malampa","Penama","Sanma","Shefa","Tafea","Torba"] },
+    "Vatican City": { capital: "Vatican City", pop: "800", area: "0.44", provinces: ["Vatican City"] },
+    "Venezuela": { capital: "Caracas", pop: "28,000,000", area: "916,445", provinces: ["Amazonas","Anzoátegui","Apure","Aragua","Barinas","Bolívar","Carabobo","Cojedes","Delta Amacuro","Falcón","Guárico","Lara","Mérida","Miranda","Monagas","Nueva Esparta","Portuguesa","Sucre","Táchira","Trujillo","Vargas","Yaracuy","Zulia"] },
+    "Vietnam": { capital: "Hanoi", pop: "101,500,000", area: "331,212", provinces: ["An Giang","Bà Rịa – Vũng Tàu","Bắc Giang","Bắc Kạn","Bạc Liêu","Bắc Ninh","Bến Tre","Bình Định","Bình Dương","Bình Phước","Bình Thuận","Cà Mau","Cần Thơ","Cao Bằng","Đà Nẵng","Đắk Lắk","Đắk Nông","Điện Biên","Đồng Nai","Đồng Tháp","Gia Lai","Hà Giang","Hà Nam","Hà Nội","Hà Tĩnh","Hải Dương","Hải Phòng","Hậu Giang","Hòa Bình","Hưng Yên","Khánh Hòa","Kiên Giang","Kon Tum","Lai Châu","Lâm Đồng","Lạng Sơn","Lào Cai","Long An","Nam Định","Nghệ An","Ninh Bình","Ninh Thuận","Phú Thọ","Phú Yên","Quảng Bình","Quảng Nam","Quảng Ngãi","Quảng Ninh","Quảng Trị","Sóc Trăng","Sơn La","Tây Ninh","Thái Bình","Thái Nguyên","Thanh Hóa","Thừa Thiên Huế","Tiền Giang","TP. Hồ Chí Minh","Trà Vinh","Tuyên Quang","Vĩnh Long","Vĩnh Phúc","Yên Bái"] },
+    "Yemen": { capital: "Sana'a", pop: "34,000,000", area: "527,968", provinces: ["Abyan","Aden","Al Bayda","Al Dhale'e","Al Hudaydah","Al Jawf","Al Mahrah","Al Mahwit","Amanat Al Asimah","Amran","Dhamar","Hajjah","Ibb","Lahij","Marib","Raymah","Saada","Sana'a","Shabwah","Socotra","Taiz"] },
+    "Zambia": { capital: "Lusaka", pop: "20,000,000", area: "752,618", provinces: ["Central","Copperbelt","Eastern","Luapula","Lusaka","Muchinga","Northern","Northwestern","Southern","Western"] },
+    "United States": { capital: "Washington, D.C.", pop: "342,000,000",  area: "9,833,517", provinces: ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"] 
+},
+    "Greenland": { capital: "Nuuk", pop: "56,000", area: "2,166,086", provinces: ["Avannaata","Kujalleq","Qeqertalik","Qeqqata","Sermersooq"] },
+    "Zimbabwe": { capital: "Harare", pop: "16,000,000", area: "390,757", provinces: ["Bulawayo","Harare","Manicaland","Mashonaland Central","Mashonaland East","Mashonaland West","Masvingo","Matabeleland North","Matabeleland South","Midlands"] }
 };
 
 // 2. Hàm lấy thông tin Thủ đô & Bang (Tích hợp Offline + Online)
@@ -4493,47 +5199,6 @@ document.head.appendChild(styleSheet);
 
 
 
-// ====================== CONTEXT MENU CHO KEYFRAME ======================
-function showKeyframeContextMenu(e, keyframeElement, actionId) {
-    hideAllContextMenus();
-
-    const menu = document.createElement('div');
-    menu.id = 'context-menu';
-    menu.style.cssText = `
-        position:absolute; 
-        left:${e.pageX}px; 
-        top:${e.pageY}px; 
-        background:rgba(0,0,0,0.95); 
-        border:1px solid #00ffff; 
-        border-radius:6px; 
-        padding:8px 0; 
-        z-index:100001; 
-        min-width:160px;
-    `;
-
-    menu.innerHTML = `
-        <div onclick="deleteKeyframe(${actionId});" 
-             style="padding:10px 16px; color:#00ffff; cursor:pointer; font-size:14px;">
-            🗑️ Xóa Keyframe này
-        </div>
-    `;
-
-    document.body.appendChild(menu);
-}
-
-function hideAllContextMenus() {
-    document.querySelectorAll('#context-menu').forEach(m => m.remove());
-}
-
-function deleteKeyframe(actionId) {
-    actions = actions.filter(a => a.id !== actionId);
-    
-    if (selectedTrack) {
-        renderKeyframesOnTrack(selectedTrack.dataset.trackId);
-    }
-    
-    hideAllContextMenus();
-}
 
 
 
@@ -4559,102 +5224,6 @@ function deleteKeyframe(actionId) {
 
 
 
-
-// ====================== CLEAR / RESET TIMELINE ======================
-function clearKeyframes() {
-    // Dừng animation và tất cả tên lửa đang bay
-    if (typeof stopAnimation === "function") {
-        stopAnimation();
-    }
-
-    // Xóa hết dữ liệu keyframe
-    actions = [];
-    pausedTime = 0;
-
-    // Reset giao diện timeline về trạng thái ban đầu
-    const container = document.getElementById('timeline-container');
-    if (container) {
-        container.innerHTML = `
-            <div id="playhead">
-                <div class="playhead-marker"></div>
-            </div>
-        `;
-    }
-
-    // Reset thời gian hiển thị
-    const timeDisplay = document.getElementById('current-time-display');
-    if (timeDisplay) {
-        timeDisplay.innerText = "00:00:00.000";
-    }
-
-    console.log("✅ Đã RESET toàn bộ timeline");
-}
-
-
-console.log("Bất kỳ phím nào cũng ấn được:", e.key);
-// Event Space toàn cục - debug rõ ràng hơn
-document.addEventListener('keydown', function(e) {
-    if (e.code === 'Space' || e.key === ' ') {
-        e.preventDefault(); // Ngăn scroll trang
-
-        console.log("Space pressed! isPlaying =", isPlaying, "actions.length =", actions?.length || 0);
-
-        // Nếu chưa có keyframe nào thì báo
-        if (!actions || actions.length === 0) {
-            console.warn("Chưa có keyframe nào để play");
-            return;
-        }
-
-        if (isPlaying) {
-            console.log("→ Đang PAUSE animation");
-            stopAnimation();
-        } else {
-            console.log("→ Đang PLAY animation");
-            playAnimation();
-        }
-    }
-}, { once: false }); // Đảm bảo không duplicate
-
-
-function toggleKeyframePanel() {
-    const panel = document.getElementById('keyframe-panel');
-    if (panel.style.display === 'none' || panel.style.display === '') {
-        panel.style.display = 'block';
-        // Nếu trước đó đang pause, có thể resume tự động (tùy ý bạn)
-        // if (!isPlaying && pausedTime > 0) playAnimation();
-    } else {
-        panel.style.display = 'none';
-        // KHÔNG reset animation ở đây!
-        // KHÔNG đặt: isPlaying = false; animationId = null; pausedTime = 0;
-    }
-}
-
-function renderTimelineTicks() {
-    const container = document.getElementById('timeline-ticks');
-    if (!container) return;
-    container.innerHTML = '';
-    const totalSeconds = TOTAL_DURATION / 1000 || 240; // Nếu TOTAL_DURATION chưa định nghĩa, mặc định 4 phút
-    const interval = 30; // mỗi 30 giây
-    for (let s = 0; s <= totalSeconds; s += interval) {
-        const percent = (s / totalSeconds) * 100;
-        const time = formatTime(s * 1000);
-        // Thanh dọc
-        const line = document.createElement('div');
-        line.style.cssText = `position:absolute; left:${percent}%; height:100%; width:1px; background:#666;`;
-        container.appendChild(line);
-        // Nhãn
-        const label = document.createElement('div');
-        label.textContent = time;
-        label.style.cssText = `position:absolute; left:${percent}%; transform:translateX(-50%); top:4px; color:#aaa; font-size:11px;`;
-        container.appendChild(label);
-    }
-}
-function formatTime(ms) {
-    const sec = Math.floor(ms / 1000);
-    const m = Math.floor(sec / 60).toString().padStart(2, '0');
-    const s = (sec % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-}
 
 
 
