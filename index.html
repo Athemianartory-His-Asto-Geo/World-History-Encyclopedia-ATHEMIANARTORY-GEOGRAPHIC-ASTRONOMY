@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html>
+    
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- ==================== PWA - ATHEMIANARTORY ==================== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffcc00">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ATHEMAP">
+
+    <!-- Title & Favicon -->
+    <title>World History Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY</title>
+    <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg">
+
+    <!-- Các thư viện cũ giữ nguyên -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <title>World History Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY</title>
-    <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg">
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Các script khác của mày (html2canvas, leaflet-image...) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
-        
 
-/* Cinematic mode */
-body.cinematic-mode #keyframe-panel,
+
+    
+    <style>
+        /* CSS của mày bắt đầu từ đây */
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
 body.cinematic-mode .main-ui-element,
 body.cinematic-mode #workspace-switcher,
 body.cinematic-mode #toggle-keyframe,
@@ -53,9 +71,9 @@ body.cinematic-mode #map {
 #map {
     height: 100vh;
     width: 100%;
-    background: #000;
-    /* CHIÊU QUYẾT ĐỊNH: Làm map đen bóng, nổi bật khối núi */
-    filter: brightness(0.9) contrast(1.6) saturate(0.4);
+    background: #020202;
+    /* Bản đồ tối hơn một chút để dễ nhìn icon và vùng sáng */
+    filter: brightness(0.75) contrast(1.45) saturate(0.3);
 }
 
 @keyframes flicker {
@@ -68,12 +86,11 @@ body.cinematic-mode #map {
 
 
 path.leaflet-interactive {
-    filter: drop-shadow(0 0 2px #00FF00);
     transition: all 0.3s;
 }
 path.leaflet-interactive:hover {
     stroke-width: 4;
-    stroke: #fff; /* Di chuột vào sẽ sáng trắng lên */
+    stroke: #fff; /* Di chuột vào vẫn có hiệu ứng nhẹ */
 }
 
 /* Hiệu ứng đường ray chuyển động */
@@ -96,23 +113,15 @@ path.leaflet-interactive:hover {
 }
 
 .res-icon {
-    opacity: 0.8;
-    filter: grayscale(20%);
-}
-.res-icon:hover {
-    opacity: 1;
-    filter: grayscale(0%) drop-shadow(0 0 8px white);
-    z-index: 1000 !important;
-}
-
-.res-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
-    transition: all 0.3s ease;
+    opacity: 0.9;
+    filter: grayscale(0%);
+    transition: all 0.2s ease;
 }
 .res-icon:hover {
+    opacity: 1;
     z-index: 9999 !important;
 }
 
@@ -1027,15 +1036,20 @@ left-group {
         <button id="toggle-custom" onclick="toggleCustomPanel()" style="position: absolute; right: -35px; top: 50%; transform: translateY(-50%); background: #ffcc00; border: none; padding: 10px 5px; cursor: pointer; font-weight: bold; border-radius: 0 5px 5px 0;">🖌️<br>T<br>Ù<br>Y<br><br>C<br>H<br>Ỉ<br>N<br>H</button>
         
         <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 16px; text-align: center;">HỆ THỐNG TÀI NGUYÊN</h3>
+        <div style="text-align: center; margin-bottom: 8px; padding: 6px; background: #1a1a1a; border-radius: 4px;">
+            <small id="country-filter-status" style="color: #ffcc00; font-size: 11px;">📍 Tất cả quốc gia</small>
+            <button onclick="clearCountryFilter()" style="display: inline-block; background: transparent; border: 1px solid #ffcc00; color: #ffcc00; padding: 2px 6px; font-size: 10px; border-radius: 3px; cursor: pointer; margin-left: 5px;">✕ Reset</button>
+        </div>
         <div id="filter-container" style="background:#222; border:1px solid #ffcc00; padding:10px; border-radius:5px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
             <h4 style="color:#ffcc00; margin: 5px 0;">⛏️ Khoáng sản & Lâm sản</h4>
             <label class="check-item"><input type="checkbox" class="res-check" value="wood" onchange="updateFilters()"> 🌲 Gỗ rừng</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="oil" onchange="updateFilters()" checked> 🛢️ Dầu mỏ</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="gas" onchange="updateFilters()" checked> 💨 Khí tự nhiên</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="gold" onchange="updateFilters()" checked> 🟡 Vàng & Bạch kim</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="diamond" onchange="updateFilters()" checked> 💎 Kim cương</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()" checked> ⬛ Than đá</label><br>
-            <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()" checked> ⛓️ Sắt & Đồng</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="oil" onchange="updateFilters()"> 🛢️ Dầu mỏ</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gas" onchange="updateFilters()"> 💨 Khí tự nhiên</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="gold" onchange="updateFilters()"> 🟡 Vàng & Bạch kim</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="diamond" onchange="updateFilters()"> 💎 Kim cương</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="coal" onchange="updateFilters()"> ⬛ Than đá</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="iron" onchange="updateFilters()"> ⛓️ Sắt & Đồng</label><br>
+            <label class="check-item"><input type="checkbox" class="res-check" value="uranium" onchange="updateFilters()"> ☢️ Uranium & Phóng xạ</label><br>
             
             <h4 style="color:#ffcc00; margin: 15px 0 5px 0;">🐾 Sinh vật & Thủy sản</h4>
             <label class="check-item"><input type="checkbox" class="res-check" value="wolf" onchange="updateFilters()"> 🐺 Loài Sói</label><br>
@@ -2043,10 +2057,11 @@ function renderBorders(year) {
             // 1. Kiểm tra trạng thái
             const isHighlighted = (selected && countryCoords[selected] && name === countryCoords[selected].adminName) || 
                                   (activeAlliance && activeAlliance.includes(name));
-            const isWarZone = showPoliticalStatus && (warZones[name] !== undefined); // Chỉ hiện khi showPoliticalStatus = true
+            const isDoubleClickSelected = (selectedCountryFilter === name);
+            const isWarZone = showPoliticalStatus && (warZones[name] !== undefined);
             const isClimate = activeClimateGroup && activeClimateGroup.countries.includes(name);
 
-            // 2. Ưu tiên hiển thị: CHIẾN TRANH > KHÍ HẬU > HIGHLIGHT > MẶC ĐỊNH
+            // 2. Ưu tiên hiển thị: CHIẾN TRANH > KHÍ HẬU > DOUBLE-CLICK > HIGHLIGHT > MẶC ĐỊNH
             if (isWarZone) {
                 return {
                     color: "#ff0000",
@@ -2059,6 +2074,15 @@ function renderBorders(year) {
 
             if (isClimate) {
                 return { fillColor: activeClimateGroup.color, fillOpacity: 0.65, color: "#fff", weight: 1.8 };
+            }
+
+            if (isDoubleClickSelected) {
+                return {
+                    color: "#ffff00",
+                    weight: 4,
+                    fillColor: "#ffff00",
+                    fillOpacity: 0.3
+                };
             }
 
             return {
@@ -2094,6 +2118,40 @@ function renderBorders(year) {
             `;
 
             layer.bindPopup(popupHTML, { closeButton: true, offset: [0, -8] });
+
+            // Double-click để chọn quốc gia
+            layer.on('dblclick', () => {
+                selectedCountryFilter = countryName;
+                updateFilters();
+                renderBorders();
+                console.log("Chọn quốc gia:", countryName);
+            });
+
+            // Right-click counter để bỏ chọn
+            if (!window.rightClickCount) window.rightClickCount = 0;
+            if (!window.rightClickTimer) window.rightClickTimer = null;
+            
+            layer.on('contextmenu', (e) => {
+                L.DomEvent.stopPropagation(e);
+                window.rightClickCount++;
+                
+                if (window.rightClickTimer) clearTimeout(window.rightClickTimer);
+                
+                if (window.rightClickCount >= 2) {
+                    selectedCountryFilter = "";
+                    updateFilters();
+                    renderBorders();
+                    window.rightClickCount = 0;
+                    console.log("Bỏ chọn quốc gia");
+                } else {
+                    console.log("Ấn chuột phải lần " + window.rightClickCount + " (cần 2 lần để bỏ chọn)");
+                }
+                
+                // Reset counter sau 1 giây không có click
+                window.rightClickTimer = setTimeout(() => {
+                    window.rightClickCount = 0;
+                }, 1000);
+            });
         }
     }).addTo(map);
 
@@ -2228,9 +2286,18 @@ fetchBorders();
 
 // Xóa các sự kiện liên quan đến year-input và slider (vì bạn đã xóa phần năm)
 document.getElementById('country-select').onchange = () => {
-    // Nếu bạn vẫn cần update khi chọn quốc gia (không dùng năm nữa)
-    renderBorders();  // hoặc hàm updateBorders() của bạn
-    // Nếu có flyToCountry hoặc tương tự thì gọi ở đây
+    // Lưu quốc gia được chọn để lọc HỆ THỐNG TÀI NGUYÊN & KINH TẾ
+    const selected = document.getElementById('country-select')?.value || "";
+    selectedCountryFilter = selected ? 
+        countryCoords[selected]?.adminName || selected : ""; // Sử dụng tên quốc gia chính thức
+    
+    console.log("🌍 Bộ lọc quốc gia:", selectedCountryFilter || "Tất cả quốc gia");
+    
+    // Cập nhật bản đồ biên giới
+    renderBorders();
+    
+    // 🆕 Cập nhật dữ liệu TÀI NGUYÊN & KINH TẾ theo quốc gia
+    updateFilters();
 };
 
 document.getElementById('wiki-close').onclick = () => {
@@ -2685,14 +2752,74 @@ const RAW_MINERALS = {
         { lat: 26.5, lng: 110.5, name: "Mỏ antimony Xikuangshan (Hunan)", icon: "⚗️", cat: "iron" },
         { lat: 25.5, lng: 104.5, name: "Mỏ antimony Woxi (Guizhou)", icon: "⚗️", cat: "iron" },
         { lat: 30.5, lng: 104.5, name: "Mỏ titanium Panzhihua (Sichuan)", icon: "🔨", cat: "iron" },
-        { lat: 39.5, lng: 106.5, name: "Mỏ uranium Yining (Tân Cương)", icon: "☢️", cat: "iron" },
-        { lat: 38.5, lng: 109.5, name: "Mỏ uranium Yili (Tân Cương)", icon: "☢️", cat: "iron" },
+        { lat: 39.5, lng: 106.5, name: "Mỏ uranium Yining (Tân Cương)", icon: "☢️", cat: "uranium" },
+        { lat: 38.5, lng: 109.5, name: "Mỏ uranium Yili (Tân Cương)", icon: "☢️", cat: "uranium" },
         { lat: 15.1, lng: 111.0, name: "Mỏ dầu Biển Đông Trung tâm", icon: "🛢️", cat: "oil" },
         { lat: 38.5, lng: 118.0, name: "Mỏ dầu Vịnh Bohai", icon: "🛢️", cat: "oil" },
         { lat: 30.0, lng: 123.0, name: "Mỏ khí Biển Hoa Đông", icon: "💨", cat: "gas" },
         { lat: 16.0, lng: 113.0, name: "Mỏ khoáng sản biển đất hiếm Nam Trung Quốc", icon: "🔮", cat: "gold" },
         { lat: 18.5, lng: 111.5, name: "Mỏ polymetallic sulphides Biển Đông", icon: "⚙️", cat: "iron" },
-        { lat: 36.0, lng: 123.0, name: "Mỏ nodule mangan Hoàng Hải", icon: "⚪", cat: "iron" }
+        { lat: 36.0, lng: 123.0, name: "Mỏ nodule mangan Hoàng Hải", icon: "⚪", cat: "iron" },
+        { lat: 36.5, lng: 112.0, name: "Mỏ khí Qinshui (Shanxi) - Khí từ than", icon: "💨", cat: "gas" },
+        { lat: 36.8, lng: 110.5, name: "Mỏ khí Hedong (Shanxi) - Khí từ than", icon: "💨", cat: "gas" },
+        { lat: 37.2, lng: 109.0, name: "Mỏ khí Ansai (Shaanxi)", icon: "💨", cat: "gas" },
+        { lat: 36.8, lng: 110.0, name: "Mỏ khí Mizhi (Shaanxi - Đông Bắc)", icon: "💨", cat: "gas" },
+        { lat: 29.2, lng: 105.5, name: "Mỏ khí Luzhou (Sichuan)", icon: "💨", cat: "gas" },
+        { lat: 30.5, lng: 103.8, name: "Mỏ khí Ziyang (Sichuan) - Anxian", icon: "💨", cat: "gas" },
+        { lat: 29.3, lng: 103.5, name: "Mỏ khí Leshan (Sichuan)", icon: "💨", cat: "gas" },
+        { lat: 29.5, lng: 102.8, name: "Mỏ khí Xichang (Sichuan) - Khí từ than", icon: "💨", cat: "gas" },
+        { lat: 37.8, lng: 110.5, name: "Mỏ khí Yanchang (Shaanxi-Shanxi)", icon: "💨", cat: "gas" },
+        { lat: 38.5, lng: 118.5, name: "Mỏ khí Liaohe (Liaoning) - Phần khí", icon: "💨", cat: "gas" },
+        { lat: 38.0, lng: 119.0, name: "Mỏ khí Huanghekou (Liaoning)", icon: "💨", cat: "gas" },
+        { lat: 19.5, lng: 111.0, name: "Mỏ khí Yinggehai (Nam Trung Quốc)", icon: "💨", cat: "gas" },
+        { lat: 21.0, lng: 113.5, name: "Mỏ khí Pearl River Mouth (Guangdong)", icon: "💨", cat: "gas" },
+        { lat: 20.5, lng: 112.0, name: "Mỏ khí Bắc Vịnh Bắc Bộ (Tonkin Gulf) Phía Trung Quốc", icon: "💨", cat: "gas" },
+        { lat: 35.0, lng: 109.5, name: "Mỏ khí Zaoyuan (Shaanxi)", icon: "💨", cat: "gas" },
+        { lat: 30.8, lng: 104.2, name: "Mỏ khí Songjiaohe (Sichuan Trung tâm)", icon: "💨", cat: "gas" },
+        { lat: 36.5, lng: 112.5, name: "Mỏ than Yangquan (Shanxi Đông)", icon: "⬛", cat: "coal" },
+        { lat: 36.2, lng: 112.8, name: "Mỏ than Changzhi (Shanxi Đông)", icon: "⬛", cat: "coal" },
+        { lat: 37.8, lng: 111.5, name: "Mỏ than Jincheng (Shanxi Nam)", icon: "⬛", cat: "coal" },
+        { lat: 38.3, lng: 111.0, name: "Mỏ than Tunliu (Shanxi)", icon: "⬛", cat: "coal" },
+        { lat: 39.2, lng: 112.0, name: "Mỏ than Xiaoyi (Shanxi Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 36.0, lng: 110.5, name: "Mỏ than Jiaozuo (Henan Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 35.5, lng: 113.0, name: "Mỏ than Pingdingshan (Henan Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 33.8, lng: 114.0, name: "Mỏ than Zhoukou (Henan Đông)", icon: "⬛", cat: "coal" },
+        { lat: 34.0, lng: 112.5, name: "Mỏ than Luoyang (Henan Tây)", icon: "⬛", cat: "coal" },
+        { lat: 42.0, lng: 112.0, name: "Mỏ than Datong (Shanxi Bắc) - Trữ lượng lớn", icon: "⬛", cat: "coal" },
+        { lat: 40.5, lng: 112.5, name: "Mỏ than Xinzhou (Shanxi Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 40.0, lng: 110.8, name: "Mỏ than Shuozhou (Shanxi Bắc Tây)", icon: "⬛", cat: "coal" },
+        { lat: 39.7, lng: 110.2, name: "Mỏ than Yanquan-Xiaoyi khu vực Dongtan", icon: "⬛", cat: "coal" },
+        { lat: 42.5, lng: 113.0, name: "Mỏ than Yangquan Bắc Cực", icon: "⬛", cat: "coal" },
+        { lat: 47.0, lng: 123.5, name: "Mỏ than Jixi (Heilongjiang) - Tây Bắc", icon: "⬛", cat: "coal" },
+        { lat: 45.8, lng: 126.0, name: "Mỏ than Hegang (Heilongjiang Đông)", icon: "⬛", cat: "coal" },
+        { lat: 46.5, lng: 125.0, name: "Mỏ than Mudanjiang (Heilongjiang Tây Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 47.5, lng: 124.5, name: "Mỏ than Yichun (Heilongjiang Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 48.5, lng: 124.8, name: "Mỏ than Songyuan (Jilin Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 45.0, lng: 125.0, name: "Mỏ than Liaoyuan (Jilin Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 43.5, lng: 123.5, name: "Mỏ than Jilin (Jilin Tây)", icon: "⬛", cat: "coal" },
+        { lat: 46.5, lng: 122.5, name: "Mỏ than Fushun mở rộng (Liaoning Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 39.8, lng: 122.0, name: "Mỏ than Dandong (Liaoning Đông)", icon: "⬛", cat: "coal" },
+        { lat: 40.8, lng: 123.2, name: "Mỏ than Fanshi (Liaoning Tây Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 41.5, lng: 125.0, name: "Mỏ than Beihai (Liaoning Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 36.5, lng: 117.0, name: "Mỏ than Xuzhou (Jiangsu Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 35.8, lng: 116.5, name: "Mỏ than Bozhou (Anhui Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 32.5, lng: 115.0, name: "Mỏ than Hejin (Anhui Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 31.0, lng: 117.0, name: "Mỏ than Chizhou (Anhui Nam)", icon: "⬛", cat: "coal" },
+        { lat: 35.0, lng: 119.0, name: "Mỏ than Zaozhuang (Shandong Tây)", icon: "⬛", cat: "coal" },
+        { lat: 36.0, lng: 120.5, name: "Mỏ than Jining (Shandong Tây Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 36.8, lng: 118.0, name: "Mỏ than Tai'an (Shandong Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 37.5, lng: 119.0, name: "Mỏ than Binzhou (Shandong Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 37.2, lng: 121.5, name: "Mỏ than Yantai (Shandong Đông)", icon: "⬛", cat: "coal" },
+        { lat: 45.5, lng: 126.0, name: "Mỏ than Qitaihe (Heilongjiang Bắc Tây)", icon: "⬛", cat: "coal" },
+        { lat: 47.2, lng: 122.5, name: "Mỏ than Daqing (Heilongjiang Trung tâm)", icon: "⬛", cat: "coal" },
+        { lat: 27.0, lng: 108.0, name: "Mỏ than Tongren (Guizhou Đông)", icon: "⬛", cat: "coal" },
+        { lat: 28.0, lng: 106.5, name: "Mỏ than Zunyi (Guizhou Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 25.5, lng: 104.5, name: "Mỏ than Qujing (Yunnan Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 26.5, lng: 103.5, name: "Mỏ than Lincang (Yunnan Tây)", icon: "⬛", cat: "coal" },
+        { lat: 28.5, lng: 105.0, name: "Mỏ than Dehong (Yunnan Tây Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 43.0, lng: 88.0, name: "Mỏ than Lüliang (Tân Cương Tây Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 46.5, lng: 83.5, name: "Mỏ than Baicheng (Tân Cương Bắc)", icon: "⬛", cat: "coal" },
+        { lat: 44.0, lng: 87.0, name: "Mỏ than Karamay (Tân Cương Trung tâm)", icon: "⬛", cat: "coal" }
     ]
 };
 
@@ -2770,15 +2897,63 @@ const RAW_ANIMALS = {
     ]
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const RAW_FISH = {
     "Russia": [
-        { lat: 70.5, lng: 33.5, name: "Cua Hoàng Đế (Barents Sea)", icon: "🦀", cat: "animal" },
-        { lat: 55.0, lng: 155.0, name: "Ngư trường cá Hồi (Okhotsk Sea)", icon: "🐟", cat: "animal" },
-        { lat: 51.5, lng: 157.0, name: "Trứng cá tầm đen (Kamchatka)", icon: "⚫", cat: "animal" },
-        { lat: 43.0, lng: 132.0, name: "Cua Tuyết (Vladivostok)", icon: "🦀", cat: "animal" },
-        { lat: 65.0, lng: 175.0, name: "Cá Tuyết trắng (Bering Sea)", icon: "🐟", cat: "animal" },
-        { lat: 53.5, lng: 108.0, name: "Cá Omul (Đặc hữu hồ Baikal)", icon: "🐠", cat: "animal" }
-    ],
+    { lat: 68.97, lng: 33.05, name: "Cảng Murmansk - Trung tâm đánh bắt Bắc Đại Tây Dương", icon: "⚓", cat: "animal" },
+    { lat: 70.5, lng: 33.5, name: "Cua Hoàng Đế (Barents Sea) - King Crab xâm lấn nổi tiếng", icon: "🦀", cat: "animal" },
+    { lat: 69.0, lng: 36.0, name: "Ngư trường Cá Tuyết & Haddock (Barents Sea)", icon: "🐟", cat: "animal" },
+    { lat: 66.5, lng: 33.5, name: "Biển Trắng (White Sea) - Tôm & Cá tuyết nhỏ", icon: "🦐", cat: "animal" },
+    
+    { lat: 55.0, lng: 155.0, name: "Ngư trường Cá Hồi (Sea of Okhotsk) - Pink Salmon & Chum", icon: "🐟", cat: "animal" },
+    { lat: 51.5, lng: 157.0, name: "Trứng Cá Tầm Đen & Caviar (Kamchatka Peninsula)", icon: "⚫", cat: "animal" },
+    { lat: 43.0, lng: 132.0, name: "Cua Tuyết & King Crab (Vladivostok & Primorye)", icon: "🦀", cat: "animal" },
+    { lat: 65.0, lng: 175.0, name: "Cá Tuyết Trắng & Pollock (Bering Sea)", icon: "🐟", cat: "animal" },
+    { lat: 53.5, lng: 108.0, name: "Cá Omul Đặc Hữu (Hồ Baikal)", icon: "🐠", cat: "animal" },
+    
+    // Thêm siêu chi tiết Kamchatka - "thủ phủ cá hồi" Nga
+    { lat: 53.0, lng: 158.65, name: "Petropavlovsk-Kamchatsky - Cảng cá lớn nhất Kamchatka", icon: "⚓", cat: "animal" },
+    { lat: 57.0, lng: 162.0, name: "Tây Kamchatka - Ngư trường Cá Hồi Sockeye & Coho", icon: "🐟", cat: "animal" },
+    { lat: 55.5, lng: 155.5, name: "Đông Kamchatka - Pink Salmon & Chum Salmon lớn", icon: "🐟", cat: "animal" },
+    { lat: 50.5, lng: 156.0, name: "Kuril Islands - Cá Hồi & King Crab", icon: "🦀", cat: "animal" },
+    
+    // Viễn Đông khác
+    { lat: 46.5, lng: 143.0, name: "Sakhalin Island - Cá Hồi & Tôm Hùm", icon: "🦐", cat: "animal" },
+    { lat: 53.0, lng: 141.0, name: "Magadan - Ngư trường Cá Tuyết & Flounder", icon: "🐟", cat: "animal" },
+    { lat: 42.9, lng: 132.8, name: "Nakhodka & Peter the Great Bay - Hải sản đa dạng", icon: "🐙", cat: "animal" },
+    
+    // Nội địa & Caspian (thêm cho đầy đủ)
+    { lat: 46.0, lng: 48.0, name: "Caspian Sea - Caviar & Cá Tầm (Astrakhan region)", icon: "⚫", cat: "animal" },
+    { lat: 45.5, lng: 37.5, name: "Sea of Azov - Cá Chép & Cá Cơm", icon: "🐟", cat: "animal" },
+    { lat: 55.0, lng: 37.5, name: "Sông Volga - Cá tầm & Cá nước ngọt", icon: "🐠", cat: "animal" },
+    
+    // Arctic & Siberia thêm
+    { lat: 72.0, lng: 105.0, name: "Kara Sea & Laptev Sea - Cá Tuyết Bắc Cực", icon: "🐟", cat: "animal" },
+    { lat: 68.0, lng: 170.0, name: "Chukchi Sea - Snow Crab (Opilio) & Pollock", icon: "🦀", cat: "animal" },
+    { lat: 62.0, lng: 129.0, name: "Sông Lena & Yakutia - Cá nước ngọt Siberia", icon: "🐠", cat: "animal" }
+],
+
+
+
+
+
+
+
+
+
     "Japan": [
         { lat: 35.6, lng: 140.0, name: "Cá ngừ vây xanh (Chợ Toyosu)", icon: "🐟", cat: "animal" },
         { lat: 44.0, lng: 144.5, name: "Cua hoàng đế Hokkaido", icon: "🦀", cat: "animal" },
@@ -2790,6 +2965,14 @@ const RAW_FISH = {
         { lat: 35.4, lng: 136.0, name: "Cá Ayu (Sông ngòi miền Trung)", icon: "🐟", cat: "animal" },
         { lat: 34.0, lng: 134.8, name: "Tảo biển Nori (Vịnh Seto)", icon: "🌿", cat: "animal" }
     ],
+
+
+
+
+
+
+
+
     "China": [
         { lat: 30.6, lng: 114.3, name: "Cá Cơm Long (Sông Dương Tử, Hubei)", icon: "🐟", cat: "animal" },
         { lat: 29.6, lng: 113.1, name: "Cá Arowaan tứ phương (Quảng Đông)", icon: "🐠", cat: "animal" },
@@ -3056,10 +3239,44 @@ const RAW_ECONOMY_DATA = {
     },
     "USA": {
         "industry": [
-            { lat: 28.5, lng: -80.6, name: "Trung tâm vũ trụ Kennedy (NASA/SpaceX)", icon: "🚀", cat: "space" },
-            { lat: 29.5, lng: -95.1, name: "Trung tâm điều khiển Johnson (Houston)", icon: "📡", cat: "space" },
-            { lat: 34.7, lng: -120.5, name: "Căn cứ vũ trụ Vandenberg (California)", icon: "🛰️", cat: "space" },
-            { lat: 25.9, lng: -97.1, name: "Starbase SpaceX (Boca Chica)", icon: "🚀", cat: "space" }
+            { lat: 28.5247, lng: -80.6480, name: "Trung tâm Vũ trụ Kennedy (NASA/SpaceX LC-39A & SLC-40)", icon: "🚀", cat: "space" },
+            { lat: 29.5518, lng: -95.0982, name: "Trung tâm Điều khiển Johnson (Houston) - NASA Mission Control", icon: "📡", cat: "space" },
+            { lat: 34.7322, lng: -120.5679, name: "Căn cứ Vũ trụ Vandenberg (California) - SLC-4E SpaceX & ULA", icon: "🛰️", cat: "space" },
+            { lat: 25.9973, lng: -97.1573, name: "Starbase SpaceX (Boca Chica, Texas) - Starship Production & Launch", icon: "🚀", cat: "space" },
+
+            // Thêm siêu chi tiết SpaceX
+            { lat: 33.9207, lng: -118.3280, name: "Trụ sở & Nhà máy Chính SpaceX (Hawthorne, California)", icon: "🏭", cat: "space" },
+            { lat: 31.3983, lng: -97.2250, name: "McGregor Test Facility (Texas) - Bãi thử động cơ Merlin & Raptor", icon: "⚙️", cat: "space" },
+            { lat: 28.4861, lng: -80.5772, name: "Cape Canaveral Space Force Station - SpaceX SLC-40 & HangarX", icon: "🚀", cat: "space" },
+
+            // NASA Centers chính (các ông lớn)
+            { lat: 37.4152, lng: -122.0627, name: "Ames Research Center (Moffett Field, California)", icon: "📡", cat: "space" },
+            { lat: 34.9583, lng: -117.8900, name: "Armstrong Flight Research Center (Edwards AFB, California)", icon: "🛫", cat: "space" },
+            { lat: 41.4128, lng: -81.8628, name: "Glenn Research Center (Cleveland, Ohio) - Propulsion & Power", icon: "⚙️", cat: "space" },
+            { lat: 38.9977, lng: -76.8525, name: "Goddard Space Flight Center (Greenbelt, Maryland)", icon: "📡", cat: "space" },
+            { lat: 34.2011, lng: -118.1734, name: "Jet Propulsion Laboratory (Pasadena, California) - Mars & Deep Space", icon: "🛰️", cat: "space" },
+            { lat: 34.6298, lng: -86.6650, name: "Marshall Space Flight Center (Huntsville, Alabama) - SLS Rocket", icon: "🚀", cat: "space" },
+            { lat: 30.3667, lng: -89.6000, name: "Stennis Space Center (Mississippi) - Rocket Engine Test", icon: "⚙️", cat: "space" },
+            { lat: 37.0922, lng: -76.3667, name: "Langley Research Center (Hampton, Virginia)", icon: "📡", cat: "space" },
+
+            // Blue Origin (ông Jeff Bezos)
+            { lat: 47.3850, lng: -122.2500, name: "Blue Origin Headquarters & Manufacturing (Kent, Washington)", icon: "🏭", cat: "space" },
+            { lat: 31.4516, lng: -104.7628, name: "Blue Origin Launch Site One (Van Horn, West Texas) - New Shepard", icon: "🚀", cat: "space" },
+            { lat: 28.5000, lng: -80.5800, name: "Blue Origin Rocket Park & LC-36 (Cape Canaveral, Florida) - New Glenn", icon: "🚀", cat: "space" },
+            { lat: 34.7300, lng: -86.5900, name: "Blue Origin Engine Facility (Huntsville, Alabama) - BE-4 & BE-3", icon: "⚙️", cat: "space" },
+
+            // United Launch Alliance (ULA)
+            { lat: 34.5800, lng: -86.9800, name: "ULA Rocket Factory (Decatur, Alabama) - Vulcan & Atlas V", icon: "🏭", cat: "space" },
+            { lat: 39.5800, lng: -104.8700, name: "ULA Headquarters (Centennial/Denver, Colorado)", icon: "📡", cat: "space" },
+            { lat: 28.4861, lng: -80.5772, name: "ULA SLC-41 (Cape Canaveral, Florida)", icon: "🚀", cat: "space" },
+
+            // Rocket Lab & các ông khác
+            { lat: 33.7700, lng: -118.1900, name: "Rocket Lab Manufacturing & Engine Development (Long Beach, California)", icon: "🏭", cat: "space" },
+            { lat: 37.9400, lng: -75.4700, name: "Rocket Lab Launch Complex 2 (Wallops Island, Virginia)", icon: "🚀", cat: "space" },
+
+            // Bonus vài cái quan trọng khác
+            { lat: 38.8830, lng: -77.0160, name: "NASA Headquarters (Washington D.C.)", icon: "🏛️", cat: "space" },
+            { lat: 30.2400, lng: -89.6000, name: "Michoud Assembly Facility (New Orleans, Louisiana) - SLS Tank", icon: "🏭", cat: "space" },
         ]
     },
     "China": {
@@ -3332,6 +3549,7 @@ let economyLayerGroup = L.layerGroup().addTo(map); // Khay riêng cho kinh tế
 let resourceData = [];
 let economyData = []; // Mảng chứa dữ liệu kinh tế
 let railwayLayerGroup = L.layerGroup().addTo(map);
+let selectedCountryFilter = ""; // Lưu quốc gia được chọn để lọc dữ liệu
 
 // Định nghĩa hàm sinh than đá
 function generateMoreCoal() {
@@ -3609,57 +3827,72 @@ function updateFilters() {
     const activeRes = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
     const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
 
-    // Vẽ Tài nguyên
+    // Vẽ Tài nguyên - ĐỢC LỌC THEO QUỐC GIA
     resourceData.forEach(r => {
-        if (activeRes.includes(r.cat)) {
-            L.marker([r.lat, r.lng], {
-                icon: L.divIcon({ html: `<div style="font-size:22px; filter: drop-shadow(0 0 5px gold);">${r.icon}</div>`, className: 'res-icon' })
-            }).bindTooltip(r.name).addTo(resourceLayerGroup);
+        // Kiểm tra 1: Danh mục phải được chọn
+        if (!activeRes.includes(r.cat)) return;
+        
+        // Kiểm tra 2: Nếu có quốc gia được chọn (từ GeoJSON double-click)
+        if (selectedCountryFilter) {
+            // Tìm quốc gia từ tên (format: "Name (CountryName)")
+            const countryMatch = r.name.match(/\(([^)]+)\)$/);
+            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
         }
+        
+        L.marker([r.lat, r.lng], {
+            icon: L.divIcon({ html: `<div style="font-size:22px; filter: drop-shadow(0 0 5px gold);">${r.icon}</div>`, className: 'res-icon' })
+        }).bindTooltip(r.name).addTo(resourceLayerGroup);
     });
 
-    // Vẽ Kinh tế
-    // Vẽ Kinh tế - Bản sửa lỗi Click không hiện
+    // Vẽ Kinh tế - ĐỢC LỌC THEO QUỐC GIA
     economyData.forEach(e => {
-        if (activeEco.includes(e.cat)) {
-            let shadowColor = "#00fbff"; 
-            if (e.cat === "automotive") shadowColor = "#ff3300"; 
-            if (e.cat === "heavy_industry") shadowColor = "#808080"; 
-
-            const marker = L.marker([e.lat, e.lng], {
-                icon: L.divIcon({
-                    html: `<div class="eco-marker" style="font-size:25px; filter: drop-shadow(0 0 5px ${shadowColor}); cursor: pointer;">${e.icon}</div>`,
-                    className: 'eco-icon', 
-                    iconSize: [30, 30], 
-                    iconAnchor: [15, 15]
-                })
-            });
-
-            // Gắn nội dung Popup (Đảm bảo có thông tin để nói)
-            const popupContent = `
-                <div style="background: #111; color: white; padding: 10px; border: 2px solid ${shadowColor}; border-radius: 8px; min-width: 180px;">
-                    <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
-                    <hr style="border-color: #333; margin: 5px 0;">
-                    <div style="font-size: 12px; line-height: 1.4;">
-                        ${e.details ? e.details : "Hệ thống Athemianartory Geography đang cập nhật thông tin chi tiết về địa điểm này. Vui lòng quay lại sau để biết thêm chi tiết tại đây."}
-                    </div>
-                </div>
-            `;
-
-            marker.bindPopup(popupContent, {
-                closeButton: false,
-                offset: L.point(0, -10)
-            });
-
-            // Thêm hiệu ứng hover bằng CSS thay vì viết trực tiếp vào HTML để tránh lỗi click
-            marker.on('mouseover', function() { this.openTooltip(); }); 
-            
-            marker.addTo(economyLayerGroup);
+        // Kiểm tra 1: Danh mục phải được chọn
+        if (!activeEco.includes(e.cat)) return;
+        
+        // Kiểm tra 2: Nếu có quốc gia được chọn, chỉ hiển thị quốc gia đó
+        if (selectedCountryFilter) {
+            // Tìm quốc gia từ tên (format: "[SECTOR] name (Country)")
+            const countryMatch = e.name.match(/\(([^)]+)\)$/);
+            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
         }
+        
+        let shadowColor = "#00fbff"; 
+        if (e.cat === "automotive") shadowColor = "#ff3300"; 
+        if (e.cat === "heavy_industry") shadowColor = "#808080"; 
+
+        const marker = L.marker([e.lat, e.lng], {
+            icon: L.divIcon({
+                html: `<div class="eco-marker" style="font-size:25px; filter: drop-shadow(0 0 5px ${shadowColor}); cursor: pointer;">${e.icon}</div>`,
+                className: 'eco-icon', 
+                iconSize: [30, 30], 
+                iconAnchor: [15, 15]
+            })
+        });
+
+        // Gắn nội dung Popup (Đảm bảo có thông tin để nói)
+        const popupContent = `
+            <div style="background: #111; color: white; padding: 10px; border: 2px solid ${shadowColor}; border-radius: 8px; min-width: 180px;">
+                <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
+                <hr style="border-color: #333; margin: 5px 0;">
+                <div style="font-size: 12px; line-height: 1.4;">
+                    ${e.details ? e.details : "Hệ thống Athemianartory Geography đang cập nhật thông tin chi tiết về địa điểm này. Vui lòng quay lại sau để biết thêm chi tiết tại đây."}
+                </div>
+            </div>
+        `;
+
+        marker.bindPopup(popupContent, {
+            closeButton: false,
+            offset: L.point(0, -10)
+        });
+
+        // Thêm hiệu ứng hover bằng CSS thay vì viết trực tiếp vào HTML để tránh lỗi click
+        marker.on('mouseover', function() { this.openTooltip(); }); 
+        
+        marker.addTo(economyLayerGroup);
     });
 
     if (typeof updateRailways === "function") updateRailways();
-    drawRailways(); // Gọi đệ 1
+    drawRailways();
     drawMaritime();
 }
 
@@ -4004,52 +4237,128 @@ function generateHeavyIndustryData() {
 function generateEnergyData() {
     const energyHubs = [
 
-        // ===== 🇻🇳 VIỆT NAM =====
-        { lat: 20.84, lng: 105.15, name: "Thủy điện Hòa Bình", icon: "💧", cat: "power_plant", country: "vietnam", details: "Công suất 1.920 MW." },
-        { lat: 21.38, lng: 102.83, name: "Thủy điện Sơn La", icon: "💧", cat: "power_plant", country: "vietnam", details: "Lớn nhất Đông Nam Á." },
-        { lat: 21.07, lng: 107.35, name: "Nhiệt điện Mông Dương", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Nhiệt điện than hiện đại." },
-        { lat: 10.55, lng: 107.24, name: "Phú Mỹ Power Complex", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Trung tâm điện khí lớn." },
-        { lat: 11.93, lng: 108.44, name: "Điện gió Đắk Lắk", icon: "🌬️", cat: "renewable", country: "vietnam", details: "Năng lượng gió Tây Nguyên." },
-        { lat: 11.56, lng: 109.03, name: "Điện mặt trời Ninh Thuận", icon: "☀️", cat: "renewable", country: "vietnam", details: "Thủ phủ năng lượng tái tạo VN." },
+    // ====================== CHÂU Á ======================
 
-        // ===== 🇺🇸 HOA KỲ =====
-        { lat: 36.01, lng: -114.74, name: "Hoover Dam", icon: "💧", cat: "power_plant", country: "usa", details: "Thủy điện nổi tiếng trên sông Colorado." },
-        { lat: 32.39, lng: -111.0, name: "Nhà máy điện mặt trời Arizona", icon: "☀️", cat: "renewable", country: "usa", details: "Solar farm lớn." },
-        { lat: 41.48, lng: -81.67, name: "Perry Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "usa", details: "Nhà máy điện hạt nhân Ohio." },
-        { lat: 29.42, lng: -95.0, name: "Texas Wind Farm", icon: "🌬️", cat: "renewable", country: "usa", details: "Bang Texas dẫn đầu điện gió." },
+    // ===== 🇻🇳 VIỆT NAM =====
+    { lat: 20.84, lng: 105.15, name: "Thủy điện Hòa Bình", icon: "💧", cat: "power_plant", country: "vietnam", details: "Công suất 1.920 MW." },
+    { lat: 21.38, lng: 102.83, name: "Thủy điện Sơn La", icon: "💧", cat: "power_plant", country: "vietnam", details: "Lớn nhất Đông Nam Á." },
+    { lat: 21.07, lng: 107.35, name: "Nhiệt điện Mông Dương", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Nhiệt điện than hiện đại." },
+    { lat: 10.55, lng: 107.24, name: "Phú Mỹ Power Complex", icon: "🔥", cat: "power_plant", country: "vietnam", details: "Trung tâm điện khí lớn." },
+    { lat: 11.93, lng: 108.44, name: "Điện gió Đắk Lắk", icon: "🌬️", cat: "renewable", country: "vietnam", details: "Năng lượng gió Tây Nguyên." },
+    { lat: 11.56, lng: 109.03, name: "Điện mặt trời Ninh Thuận", icon: "☀️", cat: "renewable", country: "vietnam", details: "Thủ phủ năng lượng tái tạo VN." },
 
-        // ===== 🇷🇺 NGA =====
-        { lat: 56.84, lng: 101.0, name: "Bratsk Dam", icon: "💧", cat: "power_plant", country: "russia", details: "Một trong những đập lớn nhất thế giới." },
-        { lat: 51.3, lng: 39.2, name: "Novovoronezh Nuclear", icon: "⚛️", cat: "nuclear", country: "russia", details: "Nhà máy hạt nhân tiên phong." },
-        { lat: 55.75, lng: 37.61, name: "Moscow Thermal Plant", icon: "🔥", cat: "power_plant", country: "russia", details: "Cung cấp điện cho thủ đô." },
+    // ===== 🇨🇳 TRUNG QUỐC =====
+    { lat: 30.82, lng: 111.0, name: "Tam Hiệp (Three Gorges Dam)", icon: "💧", cat: "power_plant", country: "china", details: "Đập lớn nhất thế giới." },
+    { lat: 29.75, lng: 111.35, name: "Gezhouba Dam", icon: "💧", cat: "power_plant", country: "china", details: "Thủy điện quan trọng trên sông Dương Tử." },
+    { lat: 31.23, lng: 121.47, name: "Shanghai Solar Grid", icon: "☀️", cat: "renewable", country: "china", details: "Hệ thống năng lượng mặt trời đô thị." },
+    { lat: 22.6, lng: 114.3, name: "Daya Bay Nuclear", icon: "⚛️", cat: "nuclear", country: "china", details: "Nhà máy điện hạt nhân lớn." },
+    { lat: 40.0, lng: 116.4, name: "Beijing Thermal Power", icon: "🔥", cat: "power_plant", country: "china", details: "Cung cấp điện cho thủ đô." },
 
-        // ===== 🇨🇳 TRUNG QUỐC =====
-        { lat: 30.82, lng: 111.0, name: "Tam Hiệp", icon: "💧", cat: "power_plant", country: "china", details: "Đập lớn nhất thế giới." },
-        { lat: 31.23, lng: 121.47, name: "Shanghai Solar Grid", icon: "☀️", cat: "renewable", country: "china", details: "Hệ thống năng lượng mặt trời đô thị." },
-        { lat: 22.6, lng: 114.3, name: "Daya Bay Nuclear", icon: "⚛️", cat: "nuclear", country: "china", details: "Nhà máy điện hạt nhân lớn." },
+    // ===== 🇮🇳 ẤN ĐỘ =====
+    { lat: 30.73, lng: 76.78, name: "Bhakra Dam", icon: "💧", cat: "power_plant", country: "india", details: "Đập lớn ở Bắc Ấn." },
+    { lat: 27.6, lng: 78.0, name: "Bhadla Solar Park", icon: "☀️", cat: "renewable", country: "india", details: "Top thế giới về điện mặt trời." },
+    { lat: 23.25, lng: 77.41, name: "Bhopal Thermal", icon: "🔥", cat: "power_plant", country: "india", details: "Nhiệt điện than." },
 
-        // ===== 🇩🇪 ĐỨC =====
-        { lat: 51.0, lng: 10.0, name: "German Wind Corridor", icon: "🌬️", cat: "renewable", country: "germany", details: "Điện gió phát triển mạnh." },
-        { lat: 52.52, lng: 13.4, name: "Berlin Solar", icon: "☀️", cat: "renewable", country: "germany", details: "Năng lượng tái tạo đô thị." },
+    // ===== 🇯🇵 NHẬT BẢN =====
+    { lat: 35.68, lng: 139.77, name: "TEPCO Tokyo Grid", icon: "⚡", cat: "power_plant", country: "japan", details: "Cung cấp điện cho vùng thủ đô." },
+    { lat: 34.70, lng: 135.50, name: "Kansai Nuclear Plants", icon: "⚛️", cat: "nuclear", country: "japan", details: "Hệ thống điện hạt nhân lớn." },
 
-        // ===== 🇫🇷 PHÁP =====
-        { lat: 45.25, lng: 5.7, name: "Cruas Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "france", details: "Pháp phụ thuộc nhiều vào điện hạt nhân." },
-        { lat: 43.6, lng: 1.44, name: "Solar South France", icon: "☀️", cat: "renewable", country: "france", details: "Trang trại điện mặt trời." },
+    // ===== 🇰🇷 HÀN QUỐC =====
+    { lat: 35.20, lng: 129.08, name: "Shin-Kori Nuclear Complex", icon: "⚛️", cat: "nuclear", country: "south_korea", details: "Nhà máy điện hạt nhân hiện đại nhất." },
 
-        // ===== 🇮🇳 ẤN ĐỘ =====
-        { lat: 30.73, lng: 76.78, name: "Bhakra Dam", icon: "💧", cat: "power_plant", country: "india", details: "Đập lớn ở Bắc Ấn." },
-        { lat: 23.25, lng: 77.41, name: "Bhopal Thermal", icon: "🔥", cat: "power_plant", country: "india", details: "Nhiệt điện than." },
-        { lat: 27.6, lng: 78.0, name: "India Solar Farm", icon: "☀️", cat: "renewable", country: "india", details: "Top thế giới về solar." },
+    // ===== 🇹🇭 THÁI LAN =====
+    { lat: 13.76, lng: 100.53, name: "EGAT Bangkok Power Plants", icon: "🔥", cat: "power_plant", country: "thailand", details: "Trung tâm điện lực quốc gia." },
 
-        // ===== 🇧🇷 BRAZIL =====
-        { lat: -25.4, lng: -54.6, name: "Itaipu Dam", icon: "💧", cat: "power_plant", country: "brazil", details: "Top thủy điện lớn nhất thế giới." },
-        { lat: -15.8, lng: -47.9, name: "Brazil Wind Farm", icon: "🌬️", cat: "renewable", country: "brazil", details: "Điện gió phát triển." },
+    // ===== 🇮🇩 INDONESIA =====
+    { lat: -6.21, lng: 106.85, name: "Java-Bali Power Grid", icon: "⚡", cat: "power_plant", country: "indonesia", details: "Hệ thống điện lớn nhất Indonesia." },
+    { lat: -0.79, lng: 113.92, name: "Sumatra Geothermal", icon: "🌋", cat: "renewable", country: "indonesia", details: "Địa nhiệt lớn." },
 
-        // ===== 🇦🇺 ÚC =====
-        { lat: -36.0, lng: 148.0, name: "Snowy Hydro", icon: "💧", cat: "power_plant", country: "australia", details: "Dự án thủy điện lớn." },
-        { lat: -23.7, lng: 133.8, name: "Outback Solar", icon: "☀️", cat: "renewable", country: "australia", details: "Solar lớn ở sa mạc." }
+    // ===== 🇲🇾 MALAYSIA =====
+    { lat: 3.14, lng: 101.69, name: "Bakun Dam", icon: "💧", cat: "power_plant", country: "malaysia", details: "Thủy điện lớn nhất Malaysia." },
 
-    ];
+    // ===== 🇵🇭 PHILIPPINES =====
+    { lat: 14.60, lng: 121.00, name: "Pagbilao Power Plant", icon: "🔥", cat: "power_plant", country: "philippines", details: "Nhiệt điện than lớn." },
+    { lat: 15.15, lng: 120.57, name: "Philippines Geothermal", icon: "🌋", cat: "renewable", country: "philippines", details: "Địa nhiệt lớn." },
+
+    // ===== 🇵🇰 PAKISTAN =====
+    { lat: 33.68, lng: 73.06, name: "Tarbela Dam", icon: "💧", cat: "power_plant", country: "pakistan", details: "Thủy điện lớn nhất Pakistan." },
+    { lat: 24.86, lng: 67.00, name: "Karachi Nuclear", icon: "⚛️", cat: "nuclear", country: "pakistan", details: "Nhà máy điện hạt nhân." },
+
+    // ===== 🇧🇩 BANGLADESH =====
+    { lat: 23.81, lng: 90.41, name: "Rampal Power Plant", icon: "🔥", cat: "power_plant", country: "bangladesh", details: "Nhiệt điện than lớn." },
+
+    // ===== 🇱🇦 LÀO =====
+    { lat: 18.00, lng: 102.60, name: "Nam Theun 2 Dam", icon: "💧", cat: "power_plant", country: "laos", details: "Thủy điện xuất khẩu lớn." },
+
+    // ===== 🇰🇭 CAMPUCHIA =====
+    { lat: 11.55, lng: 104.92, name: "Lower Sesan 2 Dam", icon: "💧", cat: "power_plant", country: "cambodia", details: "Thủy điện lớn trên sông Sesan." },
+
+    // ===== 🇲🇳 MÔNG CỔ =====
+    { lat: 47.92, lng: 106.92, name: "Ulaanbaatar Thermal Power", icon: "🔥", cat: "power_plant", country: "mongolia", details: "Nhiệt điện than cung cấp thủ đô." },
+
+
+
+
+
+    // ====================== CHÂU ÂU ======================
+
+    // ===== 🇫🇷 PHÁP =====
+    { lat: 45.25, lng: 5.7, name: "Cruas Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "france", details: "Pháp phụ thuộc nhiều vào điện hạt nhân." },
+    { lat: 43.6, lng: 1.44, name: "Solar South France", icon: "☀️", cat: "renewable", country: "france", details: "Trang trại điện mặt trời lớn miền Nam." },
+    { lat: 48.86, lng: 2.35, name: "Paris Grid & Renewables", icon: "⚡", cat: "power_plant", country: "france", details: "Hệ thống lưới điện thủ đô Paris." },
+
+    // ===== 🇩🇪 ĐỨC =====
+    { lat: 51.0, lng: 10.0, name: "German North Sea Wind Corridor", icon: "🌬️", cat: "renewable", country: "germany", details: "Vùng điện gió ngoài khơi lớn nhất châu Âu." },
+    { lat: 52.52, lng: 13.4, name: "Berlin Solar & Renewable Grid", icon: "☀️", cat: "renewable", country: "germany", details: "Năng lượng tái tạo đô thị." },
+    { lat: 53.55, lng: 9.99, name: "Hamburg Offshore Wind", icon: "🌬️", cat: "renewable", country: "germany", details: "Cảng gió ngoài khơi lớn." },
+
+    // ===== 🇬🇧 ANH =====
+    { lat: 51.51, lng: -0.13, name: "London Power Grid", icon: "⚡", cat: "power_plant", country: "united_kingdom", details: "Hệ thống lưới điện thủ đô London." },
+    { lat: 53.48, lng: -2.24, name: "Hornsea Wind Farm", icon: "🌬️", cat: "renewable", country: "united_kingdom", details: "Trang trại gió ngoài khơi lớn nhất thế giới." },
+
+    // ===== 🇷🇺 NGA (phần châu Âu) =====
+    { lat: 55.75, lng: 37.61, name: "Moscow Thermal Power Plant", icon: "🔥", cat: "power_plant", country: "russia", details: "Cung cấp điện và sưởi cho thủ đô Moscow." },
+    { lat: 59.93, lng: 30.31, name: "Leningrad Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "russia", details: "Nhà máy điện hạt nhân gần Saint Petersburg." },
+
+    // ===== 🇮🇹 Ý =====
+    { lat: 41.90, lng: 12.50, name: "Rome Energy Grid", icon: "⚡", cat: "power_plant", country: "italy", details: "Hệ thống năng lượng thủ đô Rome." },
+    { lat: 45.46, lng: 9.19, name: "Milan Solar & Gas Plants", icon: "☀️", cat: "renewable", country: "italy", details: "Năng lượng tái tạo vùng Bắc Ý." },
+
+    // ===== 🇪🇸 TÂY BAN NHA =====
+    { lat: 40.42, lng: -3.70, name: "Madrid Solar Grid", icon: "☀️", cat: "renewable", country: "spain", details: "Hệ thống điện mặt trời quanh thủ đô." },
+    { lat: 37.39, lng: -5.99, name: "Andalusia Solar Farms", icon: "☀️", cat: "renewable", country: "spain", details: "Vùng điện mặt trời lớn nhất Tây Ban Nha." },
+
+    // ===== 🇸🇪 THỤY ĐIỂN =====
+    { lat: 59.33, lng: 18.06, name: "Stockholm Renewable Grid", icon: "⚡", cat: "power_plant", country: "sweden", details: "Hệ thống năng lượng sạch thủ đô." },
+    { lat: 63.83, lng: 20.25, name: "Swedish Hydro & Wind", icon: "💧", cat: "renewable", country: "sweden", details: "Thủy điện và gió lớn ở miền Bắc." },
+
+    // ===== 🇳🇴 NA UY =====
+    { lat: 59.91, lng: 10.75, name: "Oslo Hydro Power", icon: "💧", cat: "power_plant", country: "norway", details: "Thủy điện cung cấp cho thủ đô." },
+    { lat: 61.00, lng: 6.00, name: "Norwegian Hydro Plants", icon: "💧", cat: "power_plant", country: "norway", details: "Na Uy dẫn đầu thủy điện châu Âu." },
+
+    // ===== 🇵🇱 BA LAN =====
+    { lat: 52.23, lng: 21.01, name: "Warsaw Thermal Power", icon: "🔥", cat: "power_plant", country: "poland", details: "Nhiệt điện than cung cấp thủ đô." },
+
+    // ===== 🇺🇦 UKRAINE =====
+    { lat: 50.45, lng: 30.52, name: "Kyiv Energy Grid", icon: "⚡", cat: "power_plant", country: "ukraine", details: "Hệ thống lưới điện thủ đô Kyiv." },
+    { lat: 47.50, lng: 34.00, name: "Zaporizhzhia Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "ukraine", details: "Nhà máy điện hạt nhân lớn nhất châu Âu." },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+];
 
     energyHubs.forEach(item => economyData.push(item));
 }
