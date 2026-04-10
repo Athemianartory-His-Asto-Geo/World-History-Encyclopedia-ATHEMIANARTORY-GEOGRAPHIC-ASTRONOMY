@@ -30,7 +30,7 @@
     <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
 
 
-    
+
     <style>
         /* CSS của mày bắt đầu từ đây */
         body { margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
@@ -981,42 +981,6 @@ left-group {
 
     
 
-<div id="keyframe-panel">
-    <div class="keyframe-controls">
-        <div class="ctrl-left">
-            <span class="panel-title">🎬 ATHEMIANARTORY GEOGRAPHY TIMELINE</span>
-            <button class="btn-play" onclick="playAnimation()" id="play-btn">PLAY (SPACE)</button>
-            <button class="btn-reset" onclick="clearKeyframes()">RESET</button>
-            <button class="btn-keyframe" onclick="addManualKeyframe()" title="Thêm Keyframe thủ công">💎</button>
-        </div>
-        <div class="ctrl-right">
-            <div id="current-time-display">00:00:00.000</div>
-            <button class="btn-close-panel" onclick="toggleTimeline()" title="Đóng">✖</button>
-        </div>
-    </div>
-
-    <!-- Timeline chính - cấu trúc sạch, không lồng -->
-    <div id="timeline-container" style="flex-grow: 1; display: flex; flex-direction: column; background: #050505; overflow-y: auto;">
-        <!-- 1. Thanh chia thời gian (ticks) - trên cùng -->
-        <div id="timeline-ticks" style="position: relative; height: 28px; width: 100%; background: #1a1a1a; border-bottom: 1px solid #444;"></div>
-
-        <!-- 2. Thanh track chính (playhead nằm đây) -->
-        <div class="track-content" style="position: relative; height: 60px; background: #222; border-top: 1px solid #444; border-bottom: 1px solid #444;">
-            <div id="playhead">
-                <div class="playhead-marker" style="position: absolute; top: -12px; left: 0; width: 14px; height: 14px; background: #ff0000; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 12px #ff0000; border: 2px solid white;"></div>
-            </div>
-        </div>
-
-        <!-- 3. Wrapper chứa các track keyframe -->
-        <div id="tracks-wrapper" style="flex-grow: 1; padding: 10px 0; overflow-y: auto;">
-            <!-- Track mặc định -->
-            <div class="timeline-track" data-track-id="1">
-                <div class="track-label">TRACK 1</div>
-                <div class="track-content" style="position: relative; height: 50px;"></div> <!-- Nơi đặt dot keyframe -->
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
@@ -1066,6 +1030,9 @@ left-group {
     <label class="check-item"><input type="checkbox" class="eco-check" value="heavy_industry" onchange="updateFilters()"> 🛡️ Công nghiệp nặng</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="space" onchange="updateFilters()"> 🚀 Vũ trụ</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="aviation" onchange="updateFilters()"> ✈️ Hàng không</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="fishing" onchange="updateFilters()"> 🐟 Ngư trường</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="semiconductor" onchange="updateFilters()"> 📟 Chip bán dẫn</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="ai_factory" onchange="updateFilters()"> 🤖 Nhà máy AI</label><br>
     
     <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🏗️ Hạ tầng chiến lược</h4>
     <label class="check-item"><input type="checkbox" class="eco-check" value="power_plant" onchange="updateFilters()"> ⚡ Hệ thống Năng lượng</label><br>
@@ -2526,6 +2493,78 @@ function toggleCustomPanel() {
 
 
 
+// Giả sử đây là hàm chính xử lý hiển thị
+function updateFilters() {
+    // 1. Xóa các marker cũ nếu cần (tùy theo logic của bạn)
+    // example: fishingLayerGroup.clearLayers();
+
+    const activeFilters = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
+
+    if (activeFilters.includes('fishing')) {
+        const data = generateFishingData();
+        data.forEach(item => {
+            // Vẽ Marker lên bản đồ
+            L.marker([item.lat, item.lng], {
+                icon: L.divIcon({
+                    className: 'eco-icon',
+                    html: `<div title="${item.details}" style="font-size: 18px; filter: drop-shadow(0 0 3px #00ffff)">${item.icon}</div>`,
+                    iconSize: [25, 25]
+                })
+            })
+            .bindPopup(`<b>${item.name}</b><br>${item.details}`)
+            .addTo(fishingLayerGroup); // fishingLayerGroup là biến LayerGroup bạn đã khai báo
+        });
+        fishingLayerGroup.addTo(map);
+    } else {
+        map.removeLayer(fishingLayerGroup);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2582,13 +2621,23 @@ const RAW_FORESTS = {
         { lat: 53.0, lng: 158.5, name: "Rừng Kamchatka South" }, { lat: 56.0, lng: 160.0, name: "Rừng Kamchatka Central" }
     ],
     "Japan": [
-        { lat: 35.3, lng: 138.7, name: "Rừng tự sát Aokigahara (Dưới chân Phú Sĩ)" },
-        { lat: 43.5, lng: 142.5, name: "Rừng lá kim Daisetsuzan (Hokkaido)" },
-        { lat: 30.3, lng: 130.5, name: "Rừng tuyết tùng cổ đại Yakushima (7000 năm)" },
-        { lat: 35.0, lng: 135.7, name: "Rừng tre Sagano (Kyoto)" },
-        { lat: 40.4, lng: 140.1, name: "Rừng sồi Shirakami-Sanchi (Di sản TG)" },
-        { lat: 26.7, lng: 128.2, name: "Rừng cận nhiệt đới Yanbaru (Okinawa)" },
-        { lat: 37.0, lng: 139.5, name: "Khu bảo tồn Oze (Đầm lầy & Rừng)" }
+        // ==================== CÁC KHU RỪNG ĐẶC TRƯNG & DI SẢN ====================
+        { lat: 35.36, lng: 138.73, name: "Rừng Aokigahara (Jukai)", icon: "🌲", cat: "forest", details: "Rừng tự sát dưới chân núi Phú Sĩ, mọc trên nền đá vôi núi lửa." },
+        { lat: 35.01, lng: 135.67, name: "Rừng tre Sagano (Arashiyama)", icon: "🎋", cat: "forest", details: "Biểu tượng văn hóa của Kyoto với âm thanh rặng tre độc đáo." },
+        { lat: 30.34, lng: 130.52, name: "Rừng tuyết tùng Yakushima", icon: "🌳", cat: "forest", details: "Di sản thế giới, có những cây Jomon Sugi trên 7000 năm tuổi." },
+        { lat: 40.42, lng: 140.12, name: "Rừng sồi Shirakami-Sanchi", icon: "🌳", cat: "forest", details: "Khu rừng sồi nguyên sinh lớn nhất còn lại ở Đông Á (Di sản UNESCO)." },
+        
+        // ==================== KHU BẢO TỒN & QUỐC GIA ====================
+        { lat: 43.65, lng: 142.85, name: "Rừng lá kim Daisetsuzan", icon: "🌲", cat: "forest", details: "Công viên quốc gia lớn nhất Nhật Bản tại Hokkaido." },
+        { lat: 36.93, lng: 139.23, name: "Khu bảo tồn đầm lầy Oze", icon: "🌿", cat: "forest", details: "Hệ sinh thái rừng ngập nước và đầm lầy cao nguyên." },
+        { lat: 26.69, lng: 128.22, name: "Rừng cận nhiệt đới Yanbaru", icon: "🌴", cat: "forest", details: "Đa dạng sinh học cao tại Okinawa, nơi có nhiều loài chim quý hiếm." },
+        { lat: 44.11, lng: 145.10, name: "Rừng nguyên sinh Shiretoko", icon: "🌲", cat: "forest", details: "Rừng ôn đới hỗn hợp, nơi có mật độ gấu nâu cao nhất Nhật Bản." },
+
+        // ==================== BỔ SUNG CÁC LOẠI RỪNG KHÁC ====================
+        { lat: 24.38, lng: 123.85, name: "Rừng ngập mặn Iriomote", icon: "🛶", cat: "forest", details: "Rừng ngập mặn rộng lớn nhất Nhật Bản tại cực Nam." },
+        { lat: 34.22, lng: 135.88, name: "Rừng núi Koya (Koyasan)", icon: "🌲", cat: "forest", details: "Rừng thông cổ thụ bao quanh các ngôi đền linh thiêng." },
+        { lat: 36.73, lng: 137.58, name: "Rừng tuyết tùng Tateyama", icon: "🌳", cat: "forest", details: "Nổi tiếng với những cây tuyết tùng khổng lồ vùng núi phía Bắc." },
+        { lat: 32.88, lng: 131.10, name: "Rừng Aso-Kuju", icon: "🌳", cat: "forest", details: "Thảm thực vật rừng trên vùng đất núi lửa hoạt động." },
     ],
     "China": [
         { lat: 53.3, lng: 123.8, name: "Rừng Daxinganling (Hắc Long Giang - Lớn nhất Trung Quốc)" },
@@ -4026,6 +4075,33 @@ function generateAgriData() {
 
 
 
+// CHIP BÁN DẪN (SEMICONDUCTOR)
+
+function generateSemiconductorData() {
+    const semiData = [
+        // --- Đài Loan (Trung tâm chip thế giới) ---
+        { lat: 24.77, lng: 120.99, name: "TSMC Hsinchu (Đài Loan)", icon: "📟", cat: "semiconductor", details: "Nhà máy sản xuất chip tiên tiến nhất thế giới (3nm, 5nm)." },
+        { lat: 23.00, lng: 120.20, name: "TSMC Tainan", icon: "📟", cat: "semiconductor", details: "Cơ sở sản xuất quy mô cực lớn của TSMC." },
+
+        // --- Hàn Quốc ---
+        { lat: 37.01, lng: 127.06, name: "Samsung Pyeongtaek", icon: "📟", cat: "semiconductor", details: "Nhà máy chip nhớ (DRAM, NAND) lớn nhất thế giới." },
+        { lat: 37.24, lng: 127.21, name: "SK Hynix Yongin", icon: "📟", cat: "semiconductor", details: "Cụm công nghiệp bán dẫn khổng lồ của Hàn Quốc." },
+
+        // --- Việt Nam ---
+        { lat: 10.85, lng: 106.80, name: "Intel Products Vietnam", icon: "📟", cat: "semiconductor", details: "Cơ sở kiểm định và đóng gói chip lớn nhất mạng lưới Intel toàn cầu." },
+        { lat: 18.82, lng: 105.58, name: "Hana Micron (Nghệ An/Bắc Giang)", icon: "📟", cat: "semiconductor", details: "Dự án sản xuất chất bán dẫn trọng điểm tại Việt Nam." },
+        { lat: 21.15, lng: 105.95, name: "Amkor Technology (Bắc Ninh)", icon: "📟", cat: "semiconductor", details: "Nhà máy bán dẫn thông minh tiên tiến nhất của Amkor." },
+
+        // --- Mỹ & Khác ---
+        { lat: 33.30, lng: -111.89, name: "Intel Arizona (Mỹ)", icon: "📟", cat: "semiconductor", details: "Trung tâm sản xuất quan trọng trong chiến lược CHIPS Act của Mỹ." },
+        { lat: 45.54, lng: -122.92, name: "Intel Oregon", icon: "📟", cat: "semiconductor", details: "Nơi nghiên cứu và phát triển công nghệ chip mới." },
+        { lat: 1.35, lng: 103.93, name: "GlobalFoundries Singapore", icon: "📟", cat: "semiconductor", details: "Nhà máy sản xuất chip cho ô tô và thiết bị IoT." },
+        { lat: 48.13, lng: 11.58, name: "Infineon Munich (Đức)", icon: "📟", cat: "semiconductor", details: "Hãng sản xuất chip hàng đầu Châu Âu cho xe điện." }
+    ];
+
+    semiData.forEach(item => economyData.push(item));
+    console.log(`✅ Đã tải ${semiData.length} điểm sản xuất Chip bán dẫn.`);
+}
 
 
 
@@ -4050,6 +4126,84 @@ function generateAgriData() {
 
 
 
+
+
+
+
+// NHÀ MÁY AI & DATA CENTER (AI FACTORY)
+
+function generateAIData() {
+    const aiData = [
+        // --- Mỹ (Đầu não AI) ---
+        { lat: 37.38, lng: -121.96, name: "NVIDIA Headquarter (California)", icon: "🤖", cat: "ai_factory", details: "Nơi thiết kế các dòng chip AI H100, Blackwell thống trị thế giới." },
+        { lat: 30.27, lng: -97.74, name: "Tesla Giga Texas (AI Training)", icon: "🤖", cat: "ai_factory", details: "Cụm siêu máy tính Cortex để huấn luyện xe tự lái và Robot Optimus." },
+        { lat: 45.83, lng: -119.70, name: "AWS Cluster (Oregon)", icon: "🤖", cat: "ai_factory", details: "Hạ tầng đám mây khổng lồ phục vụ các mô hình ngôn ngữ lớn (LLM)." },
+
+        // --- Việt Nam ---
+        { lat: 21.02, lng: 105.83, name: "FPT AI Factory (Hòa Lạc)", icon: "🤖", cat: "ai_factory", details: "Nhà máy AI quy mô lớn hợp tác cùng NVIDIA tại Việt Nam." },
+        { lat: 10.84, lng: 106.81, name: "Vingroup AI Center", icon: "🤖", cat: "ai_factory", details: "Trung tâm nghiên cứu và huấn luyện mô hình ngôn ngữ tiếng Việt." },
+
+        // --- Thế giới ---
+        { lat: 1.28, lng: 103.85, name: "Equinix AI Hub (Singapore)", icon: "🤖", cat: "ai_factory", details: "Trung tâm dữ liệu AI quan trọng nhất khu vực Đông Nam Á." },
+        { lat: 25.20, lng: 55.27, name: "G42 AI Lab (Dubai)", icon: "🤖", cat: "ai_factory", details: "Trung tâm AI hàng đầu khu vực Trung Đông." },
+        { lat: 35.68, lng: 139.76, name: "SoftBank AI Computing (Tokyo)", icon: "🤖", cat: "ai_factory", details: "Hệ thống siêu máy tính mạnh mẽ nhất Nhật Bản phục vụ AI." }
+    ];
+
+    aiData.forEach(item => economyData.push(item));
+    console.log(`✅ Đã tải ${aiData.length} trung tâm AI Factory.`);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// NGƯ TRƯỜNG
+
+function generateFishingData() {
+    const fishingData = [
+        // ==================== VIỆT NAM (5 Ngư trường trọng điểm) ====================
+        { lat: 20.50, lng: 107.50, name: "Ngư trường Hải Phòng - Quảng Ninh", icon: "🐟", cat: "fishing", details: "Ngư trường lớn khu vực Vịnh Bắc Bộ, giàu hải sản tầng đáy." },
+        { lat: 16.50, lng: 112.00, name: "Ngư trường Quần đảo Hoàng Sa", coords: [16.5, 112.0], icon: "⚓", cat: "fishing", details: "Ngư trường xa bờ trọng điểm, nhiều loài cá ngừ và hải sản quý." },
+        { lat: 10.00, lng: 114.50, name: "Ngư trường Quần đảo Trường Sa", icon: "⚓", cat: "fishing", details: "Vùng đánh bắt xa bờ quan trọng nhất của Việt Nam." },
+        { lat: 10.50, lng: 109.00, name: "Ngư trường Ninh Thuận - Bình Thuận - BRVT", icon: "🐟", cat: "fishing", details: "Vùng nước trồi, năng suất sinh học cao, sản lượng khai thác lớn." },
+        { lat: 9.00, lng: 104.50, name: "Ngư trường Cà Mau - Kiên Giang", icon: "🐟", cat: "fishing", details: "Ngư trường lớn nhất Vịnh Thái Lan, giàu tôm và các loại cá tầng mặt." },
+
+        // ==================== THẾ GIỚI (Các ngư trường lớn nhất toàn cầu) ====================
+        // Bắc Đại Tây Dương
+        { lat: 45.00, lng: -50.00, name: "Ngư trường Grand Banks (Canada)", icon: "🌊", cat: "fishing", details: "Một trong những ngư trường giàu có nhất thế giới ở Đại Tây Dương." },
+        { lat: 65.00, lng: -20.00, name: "Ngư trường Iceland", icon: "🐟", cat: "fishing", details: "Khu vực khai thác cá tuyết lớn của Châu Âu." },
+        { lat: 55.00, lng: 3.00, name: "Ngư trường Biển Bắc (North Sea)", icon: "🌊", cat: "fishing", details: "Ngư trường quan trọng của các nước Anh, Na Uy, Hà Lan." },
+
+        // Thái Bình Dương
+        { lat: -12.00, lng: -77.50, name: "Ngư trường Peru (Humboldt)", icon: "🐟", cat: "fishing", details: "Dòng biển lạnh tạo nên sản lượng cá cơm (anchovy) lớn nhất thế giới." },
+        { lat: 40.00, lng: 145.00, name: "Ngư trường Tây Bắc Thái Bình Dương (Nhật Bản)", icon: "🌊", cat: "fishing", details: "Nơi giao thoa dòng nóng Kuroshio và dòng lạnh Oyashio." },
+        { lat: 60.00, lng: -170.00, name: "Ngư trường Biển Bering", icon: "🦀", cat: "fishing", details: "Nổi tiếng với khai thác cua hoàng đế và cá minh thái." },
+
+        // Khu vực khác
+        { lat: -35.00, lng: 20.00, name: "Ngư trường Mũi Kim (Nam Phi)", icon: "🐟", cat: "fishing", details: "Điểm hội tụ dòng biển tạo nên vùng đánh bắt trù phú." },
+        { lat: 25.00, lng: 122.00, name: "Ngư trường Biển Hoa Đông", icon: "🐟", cat: "fishing", details: "Khu vực đánh bắt quan trọng của khu vực Đông Á." }
+    ];
+
+    // Push tất cả vào economyData
+    fishingData.forEach(item => economyData.push(item));
+
+    console.log(`✅ Đã thêm ${fishingData.length} ngư trường trọng điểm Việt Nam và Thế giới vào economyData`);
+}
 
 
 
@@ -4578,6 +4732,9 @@ generateVietnamCoal();       // Chi tiết than VN
 generateTayNguyenBauxite();  // Bauxite Tây Nguyên
 generateHeavyIndustryData(); // Công nghiệp nặng
 generateTransportData();     // Cảng biển, sân bay, ga tàu
+generateFishingData();       // Ngư trường, cảng cá
+generateAIData();            // Dữ liệu AI 
+generateSemiconductorData(); // Dữ liệu bán dẫn 
 
 // 2. Nạp các cụm kinh tế đặc biệt
 generateAutomotiveData();    // Ô tô
@@ -6313,24 +6470,6 @@ const maritimeCurrents = [
   { name:"Dòng nóng Biển Đông", type:"hot", color:"#ff3300",
     coords:[[21,118],[19,116],[16,113]] /*...*/ }
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
