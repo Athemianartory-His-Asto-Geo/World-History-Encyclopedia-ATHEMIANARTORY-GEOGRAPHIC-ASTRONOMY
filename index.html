@@ -1036,8 +1036,10 @@ left-group {
     
     <h4 style="color:#00fbff; margin: 15px 0 5px 0;">🏗️ Hạ tầng chiến lược</h4>
     <label class="check-item"><input type="checkbox" class="eco-check" value="power_plant" onchange="updateFilters()"> ⚡ Hệ thống Năng lượng</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="airport" onchange="updateFilters()"> ✈️ Cửa ngõ Hàng không</label><br>
-    <label class="check-item"><input type="checkbox" class="eco-check" value="seaport" onchange="updateFilters()"> ⚓ Cảng biển nước sâu</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="airport" onchange="updateFilters()"> ✈️ Sân bay quốc tế</label><br>
+    <label class="check-item">
+    <input type="checkbox" class="eco-check" value="railway" onchange="updateFilters()"> 🚉 Ga tàu hỏa trọng điểm</label><br>
+    <label class="check-item"><input type="checkbox" class="eco-check" value="seaport" onchange="updateFilters()"> 🚢 Cảng biển nước sâu</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="railway" onchange="updateFilters()"> 🚂 Mạng lưới Đường sắt</label><br>
     <label class="check-item"><input type="checkbox" class="eco-check" value="maritime" onchange="updateFilters()"> 🚢 Đường giao thương (biển)</label><br>
 
@@ -3115,6 +3117,12 @@ const RAW_LOCATION_DATA = {
             { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" }
         ]
     },
+
+
+
+
+
+    
     "Japan": {
         "minerals": [
             { lat: 38.0, lng: 138.3, name: "Siêu mỏ vàng Sado (Đảo Sado)", icon: "🟡", cat: "gold" },
@@ -4075,6 +4083,49 @@ function generateAgriData() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // CHIP BÁN DẪN (SEMICONDUCTOR)
 
 function generateSemiconductorData() {
@@ -4121,15 +4172,6 @@ function generateSemiconductorData() {
 
 
 
-
-
-
-
-
-
-
-
-
 // NHÀ MÁY AI & DATA CENTER (AI FACTORY)
 
 function generateAIData() {
@@ -4152,13 +4194,6 @@ function generateAIData() {
     aiData.forEach(item => economyData.push(item));
     console.log(`✅ Đã tải ${aiData.length} trung tâm AI Factory.`);
 }
-
-
-
-
-
-
-
 
 
 
@@ -4215,15 +4250,6 @@ function generateFishingData() {
 
 
 
-
-
-
-
-
-
-
-
-
 //Ô TÔ
 
 function generateAutomotiveData() {
@@ -4264,19 +4290,103 @@ function generateAutomotiveData() {
         { lat: 37.55, lng: -122.31, name: "Tesla Fremont", icon: "⚡", cat: "automotive", details: "Nhà máy xe điện đầu tiên của Tesla." },
         { lat: 42.28, lng: -83.21, name: "Ford Dearborn Truck", icon: "🚚", cat: "automotive", details: "Sản xuất F-150." },
 
-        // ==================== CÁC NƯỚC KHÁC (Ấn Độ, Mexico, Brazil, Thái Lan, Indonesia, Nam Phi...) ====================
-        { lat: 28.61, lng: 77.23, name: "Maruti Suzuki Gurgaon Ấn Độ", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất Ấn Độ." },
-        { lat: 19.43, lng: -99.13, name: "Puebla Mexico (VW & Audi)", icon: "🚗", cat: "automotive", details: "Cụm sản xuất lớn tại Mexico." },
-        { lat: -23.55, lng: -46.63, name: "São Paulo Auto Cluster Brazil", icon: "🚗", cat: "automotive", details: "Trung tâm ô tô lớn nhất Nam Mỹ." },
-        { lat: 13.76, lng: 100.53, name: "Toyota & Honda Bangkok Thái Lan", icon: "🚗", cat: "automotive", details: "Cụm sản xuất Đông Nam Á." },
-        { lat: -6.21, lng: 106.85, name: "Toyota Indonesia", icon: "🚗", cat: "automotive", details: "Nhà máy lớn tại Indonesia." },
-        { lat: -25.75, lng: 28.19, name: "BMW Rosslyn Nam Phi", icon: "🚗", cat: "automotive", details: "Nhà máy BMW tại châu Phi." },
+        // ==================== ẤN ĐỘ (INDIA - Công xưởng mới của Nam Á) ====================
+        { lat: 28.45, lng: 77.02, name: "Maruti Suzuki Gurgaon", icon: "🚗", cat: "automotive", details: "Nhà máy sản xuất ô tô lớn nhất Ấn Độ, liên doanh với Nhật Bản." },
+        { lat: 18.52, lng: 73.85, name: "Tata Motors Pune", icon: "🚚", cat: "automotive", details: "Đại bản doanh của tập đoàn Tata, chuyên xe tải và xe điện giá rẻ." },
+        { lat: 12.97, lng: 80.24, name: "Chennai Auto Hub (Detroit of India)", icon: "⚙️", cat: "automotive", details: "Cụm công nghiệp ô tô lớn nhất miền Nam Ấn Độ với Ford, Hyundai, BMW." },
+        { lat: 23.02, lng: 72.57, name: "Ahmedabad (Tata Nano Plant)", icon: "🚗", cat: "automotive", details: "Trung tâm sản xuất ô tô mới nổi tại bang Gujarat." },
+
+        // ==================== PAKISTAN (Thị trường tiềm năng Nam Á) ====================
+        { lat: 24.86, lng: 67.00, name: "Bin Qasim Industrial Park (Karachi)", icon: "⚙️", cat: "automotive", details: "Cụm lắp ráp ô tô lớn nhất Pakistan (Toyota, Suzuki, Kia)." },
+        { lat: 31.52, lng: 74.35, name: "Lahore Automotive Cluster", icon: "🏍️", cat: "automotive", details: "Trung tâm sản xuất xe máy và linh kiện phụ tùng hàng đầu." },
+
+        // ==================== ĐÀI LOAN (TAIWAN - Trái tim công nghệ ô tô thông minh) ====================
+        { lat: 24.79, lng: 120.99, name: "Hsinchu Science Park", icon: "💻", cat: "automotive", details: "Nơi cung cấp chip bán dẫn cho hầu hết các hãng ô tô thông minh thế giới." },
+        { lat: 24.99, lng: 121.51, name: "Yulon Motor (Miaoli)", icon: "🚗", cat: "automotive", details: "Hãng ô tô nội địa lớn nhất Đài Loan, đang đẩy mạnh xe điện Luxgen." },
+        { lat: 25.03, lng: 121.56, name: "Foxconn (Hon Hai) EV Platform", icon: "⚡", cat: "automotive", details: "Đại bản doanh của Foxconn, đang phát triển nền tảng xe điện mã nguồn mở MIH." },
+        { lat: 22.62, lng: 120.30, name: "Kaohsiung EV Battery Plant", icon: "🔋", cat: "automotive", details: "Trung tâm sản xuất pin và vật liệu mới cho xe điện." },
+
+        // ==================== PHÁP (FRANCE) ====================
+        { lat: 48.85, lng: 2.35, name: "Renault-Nissan Paris Hub", icon: "🚗", cat: "automotive", details: "Trung tâm điều hành và thiết kế toàn cầu của liên minh Renault-Nissan." },
+        { lat: 47.75, lng: 7.33, name: "Stellantis Mulhouse Plant", icon: "⚙️", cat: "automotive", details: "Nhà máy sản xuất các dòng xe cao cấp Peugeot và DS." },
+        { lat: 48.58, lng: 7.75, name: "Bugatti Molsheim", icon: "🏎️", cat: "automotive", details: "Nơi chế tác thủ công những chiếc siêu xe đắt nhất thế giới." },
+
+        // ==================== TÂY BAN NHA (SPAIN) ====================
+        { lat: 41.38, lng: 2.17, name: "SEAT Martorell (Barcelona)", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất Tây Ban Nha, thuộc tập đoàn Volkswagen." },
+        { lat: 39.47, lng: -0.37, name: "Ford Valencia Plant", icon: "🚙", cat: "automotive", details: "Nhà máy quan trọng nhất của Ford tại Châu Âu." },
+        { lat: 41.65, lng: -0.88, name: "Opel Zaragoza", icon: "⚙️", cat: "automotive", details: "Trung tâm sản xuất xe cỡ nhỏ hàng đầu khu vực Địa Trung Hải." },
+
+        // ==================== THÁI LAN (THAILAND - Detroit của Đông Nam Á) ====================
+        { lat: 13.00, lng: 101.15, name: "Rayong Automotive Cluster", icon: "🚚", cat: "automotive", details: "Trung tâm sản xuất xe bán tải (Pickup) lớn nhất thế giới ngoài Mỹ." },
+        { lat: 13.50, lng: 100.90, name: "Chachoengsao (Toyota Gateway)", icon: "🚗", cat: "automotive", details: "Nhà máy sản xuất xe hybrid và xe điện chiến lược của Toyota tại ASEAN." },
+        { lat: 12.70, lng: 101.10, name: "WHA Industrial Estate (BYD Thailand)", icon: "⚡", cat: "automotive", details: "Nhà máy xe điện mới nhất của BYD tại Đông Nam Á." },
+
+        // ==================== CAMPUCHIA (CAMBODIA) ====================
+        { lat: 11.55, lng: 104.92, name: "Phnom Penh Special Economic Zone", icon: "⚙️", cat: "automotive", details: "Nơi lắp ráp các dòng xe Toyota và Hyundai phục vụ thị trường nội địa." },
+        { lat: 12.56, lng: 103.91, name: "Pursat (Ford Assembly Plant)", icon: "🚙", cat: "automotive", details: "Nhà máy lắp ráp xe Ford đầu tiên tại Campuchia, đánh dấu bước tiến công nghiệp hóa." },
+
+        // ==================== THÁI LAN (THAILAND - "Detroit của Á Châu") ====================
+        { lat: 13.00, lng: 101.15, name: "Rayong Auto Cluster", icon: "🚚", cat: "automotive", details: "Trung tâm sản xuất xe bán tải (Pickup) hàng đầu thế giới." },
+        { lat: 13.50, lng: 100.90, name: "Samut Prakan (Toyota Samrong)", icon: "🚗", cat: "automotive", details: "Nhà máy lâu đời nhất của Toyota tại Thái Lan." },
+        { lat: 13.10, lng: 101.00, name: "Laem Chabang Port", icon: "🚢", cat: "automotive", details: "Cảng xuất khẩu ô tô lớn nhất khu vực Đông Nam Á." },
+
+        // ==================== INDONESIA (Thị trường ô tô lớn nhất ASEAN) ====================
+        { lat: -6.35, lng: 107.15, name: "Cikarang Automotive Zone", icon: "🚗", cat: "automotive", details: "Cụm công nghiệp tập trung Mitsubishi, Suzuki, và Hyundai." },
+        { lat: -6.40, lng: 107.00, name: "Karawang Industrial Estate", icon: "⚡", cat: "automotive", details: "Trung tâm sản xuất xe điện và pin của Hyundai và LG." },
+        { lat: -6.25, lng: 106.90, name: "Astra Daihatsu Motor", icon: "🚗", cat: "automotive", details: "Nhà máy sản xuất xe nội đô phổ biến nhất Indonesia." },
+
+        // ==================== MALAYSIA (Niềm tự hào xe nội địa) ====================
+        { lat: 3.50, lng: 101.50, name: "Proton City (Tanjung Malim)", icon: "🚗", cat: "automotive", details: "Thành phố công nghiệp của hãng xe quốc gia Proton." },
+        { lat: 3.30, lng: 101.60, name: "Perodua Rawang Plant", icon: "🚗", cat: "automotive", details: "Hãng xe bán chạy nhất Malaysia, hợp tác với Nhật Bản." },
+        { lat: 2.95, lng: 101.75, name: "Sime Darby Motors (Inokom)", icon: "⚙️", cat: "automotive", details: "Lắp ráp các dòng xe BMW và Mazda tại Malaysia." },
+
+        // ==================== PHILIPPINES (Thế mạnh lắp ráp và phụ tùng) ====================
+        { lat: 14.20, lng: 121.10, name: "Laguna Auto Cluster", icon: "⚙️", cat: "automotive", details: "Tập trung các nhà máy Toyota, Mitsubishi và Honda tại Philippines." },
+        { lat: 14.30, lng: 121.05, name: "Santa Rosa Automotive Park", icon: "🚗", cat: "automotive", details: "Nơi đặt trụ sở sản xuất chính của nhiều hãng Nhật." },
+
+        // ==================== LÀO (LAOS) ====================
+        { lat: 18.00, lng: 102.60, name: "Savannakhet (Toyota Boshoku)", icon: "⚙️", cat: "automotive", details: "Sản xuất linh kiện nội thất ô tô xuất khẩu sang Thái Lan." },
+
+        // ==================== MYANMAR ====================
+        { lat: 17.00, lng: 96.20, name: "Thilawa SEZ (Suzuki Myanmar)", icon: "🚗", cat: "automotive", details: "Khu kinh tế đặc biệt lắp ráp xe Suzuki hàng đầu tại Myanmar." },
+
+        // ==================== SINGAPORE (Trung tâm R&D và Công nghệ cao) ====================
+        { lat: 1.35, lng: 103.70, name: "Hyundai Innovation Center (HMGICS)", icon: "🤖", cat: "automotive", details: "Trung tâm sản xuất xe điện bằng robot và trí tuệ nhân tạo." },
+        { lat: 1.30, lng: 103.80, name: "Continental R&D Singapore", icon: "💻", cat: "automotive", details: "Nghiên cứu phần mềm và lái xe tự động toàn cầu." },
+
+        // ==================== BRUNEI & TIMOR-LESTE (Logistics & Thương mại) ====================
+        { lat: 4.90, lng: 114.90, name: "Bandar Seri Begawan Hub", icon: "🚢", cat: "automotive", details: "Trung tâm phân phối xe nhập khẩu khu vực Borneo." },
+        { lat: -8.55, lng: 125.55, name: "Dili Distribution Center", icon: "🚢", cat: "automotive", details: "Cửa ngõ thương mại ô tô chính của Timor-Leste." },
 
         // ==================== THÊM NHIỀU HÃNG KHÁC (Stellantis, Geely, Chery, Renault-Nissan...) ====================
         { lat: 43.30, lng: 5.40, name: "Stellantis Pháp (Mulhouse)", icon: "🚗", cat: "automotive", details: "Nhà máy Stellantis châu Âu." },
         { lat: 48.86, lng: 2.35, name: "Renault Paris Area", icon: "🚗", cat: "automotive", details: "Cụm sản xuất Renault." },
         { lat: 31.23, lng: 121.47, name: "Geely Thượng Hải", icon: "🚗", cat: "automotive", details: "Tập đoàn mẹ của Volvo & Polestar." },
-        { lat: 23.13, lng: 113.26, name: "Chery Quảng Châu", icon: "🚗", cat: "automotive", details: "Nhà xuất khẩu xe Trung Quốc mạnh." }
+        { lat: 23.13, lng: 113.26, name: "Chery Quảng Châu", icon: "🚗", cat: "automotive", details: "Nhà xuất khẩu xe Trung Quốc mạnh." },
+
+        // ==================== ÚC (AUSTRALIA) ====================
+        { lat: -37.81, lng: 144.96, name: "Melbourne Automotive Hub", icon: "⚙️", cat: "automotive", details: "Trung tâm thiết kế và linh kiện của Ford & Toyota tại Úc." },
+        { lat: -34.92, lng: 138.60, name: "Adelaide (VinFast Port)", icon: "🚢", cat: "automotive", details: "Cửa ngõ logistics quan trọng cho xe nhập khẩu tại Nam Úc." },
+        { lat: -33.86, lng: 151.20, name: "Sydney EV Charging Network", icon: "⚡", cat: "automotive", details: "Trung tâm phát triển hạ tầng xe điện lớn nhất nước Úc." },
+        { lat: -27.47, lng: 153.02, name: "Brisbane Truck Manufacturing", icon: "🚚", cat: "automotive", details: "Nơi sản xuất các dòng xe tải chuyên dụng Volvo và Mack." },
+
+        // ==================== ANH (UNITED KINGDOM) ====================
+        { lat: 52.48, lng: -1.89, name: "Jaguar Land Rover Birmingham", icon: "🏎️", cat: "automotive", details: "Biểu tượng xe sang và địa hình của Anh Quốc." },
+        { lat: 51.75, lng: -1.25, name: "Mini Plant Oxford", icon: "🚗", cat: "automotive", details: "Nơi sản xuất dòng xe Mini huyền thoại." },
+        { lat: 54.90, lng: -1.38, name: "Nissan Sunderland", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất và hiệu quả nhất tại Anh." },
+
+        // ==================== Ý (ITALY - Thánh địa siêu xe) ====================
+        { lat: 45.07, lng: 7.68, name: "FIAT Turin (Torino)", icon: "🚗", cat: "automotive", details: "Thành phố công nghiệp ô tô lâu đời nhất nước Ý." },
+        { lat: 44.53, lng: 10.86, name: "Ferrari Maranello", icon: "🏎️", cat: "automotive", details: "Trụ sở và nhà máy của hãng siêu xe danh tiếng nhất thế giới." },
+        { lat: 44.66, lng: 11.00, name: "Lamborghini Sant'Agata Bolognese", icon: "🏎️", cat: "automotive", details: "Nơi sản xuất những chiếc siêu xe 'bò tót'." },
+
+        // ==================== NGA (RUSSIA) ====================
+        { lat: 53.51, lng: 49.41, name: "AvtoVAZ Tolyatti", icon: "🚗", cat: "automotive", details: "Nhà máy ô tô lớn nhất nước Nga (hãng Lada)." },
+        { lat: 59.93, lng: 30.33, name: "St. Petersburg Auto Cluster", icon: "⚙️", cat: "automotive", details: "Cụm lắp ráp ô tô lớn của các hãng quốc tế tại Nga." },
+
+        // ==================== CÁC NƯỚC ĐÔNG NAM Á BỔ SUNG ====================
+        { lat: 12.92, lng: 101.11, name: "Rayong Auto Cluster (Thái Lan)", icon: "🚚", cat: "automotive", details: "Được mệnh danh là 'Detroit của phương Đông'." },
+        { lat: 3.13, lng: 101.68, name: "Proton & Perodua (Malaysia)", icon: "🚗", cat: "automotive", details: "Niềm tự hào công nghiệp ô tô nội địa của Malaysia." },
     ];
 
     // Push tất cả vào economyData
@@ -4696,28 +4806,535 @@ const maritimeData = [
 //CỤM GIAO Thông
 
 
-function generateTransportData() {
-    const transportHubs = [
-        // SÂN BAY -> Dùng cat: "airport"
-        { lat: 21.21, lng: 105.80, name: "Sân bay Quốc tế Nội Bài (HAN)", icon: "✈️", cat: "airport", details: "Cửa ngõ hàng không lớn nhất miền Bắc." },
-        { lat: 10.81, lng: 106.66, name: "Sân bay Tân Sơn Nhất (SGN)", icon: "✈️", cat: "airport", details: "Sân bay có lưu lượng khách đông nhất Việt Nam." },
 
 
-        // CẢNG BIỂN -> Dùng cat: "seaport"
-        { lat: 20.83, lng: 106.76, name: "Cảng Lạch Huyện (Hải Phòng)", icon: "🚢", cat: "seaport", details: "Cảng cửa ngõ quốc tế có khả năng đón tàu siêu trọng." },
-        { lat: 1.26, lng: 103.81, name: "Cảng Singapore", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển container bận rộn hàng đầu thế giới." },
-        // Thêm vào trong mảng transportHubs của ông
-{ lat: 10.53, lng: 107.02, name: "Cảng Cái Mép", icon: "🚢", cat: "seaport", details: "Cảng nước sâu hiện đại nhất Việt Nam." },
-{ lat: 3.00, lng: 101.35, name: "Cảng Klang", icon: "🚢", cat: "seaport", details: "Cảng trung chuyển lớn nhất Malaysia." },
+// SÂN BAY (AIRPORTS)
+function generateAirportData() {
+   // SÂN BAY (AIRPORTS) - CHÂU Á MỞ RỘNG
+    const airportData = [
+        // ==================== VIỆT NAM ====================
+        { lat: 21.21, lng: 105.80, name: "Sân bay Nội Bài (HAN)", icon: "✈️", cat: "airport", details: "Hà Nội - Cửa ngõ miền Bắc." },
+        { lat: 10.81, lng: 106.66, name: "Sân bay Tân Sơn Nhất (SGN)", icon: "✈️", cat: "airport", details: "TP.HCM - Sân bay bận rộn nhất VN." },
+        { lat: 16.04, lng: 108.20, name: "Sân bay Đà Nẵng (DAD)", icon: "✈️", cat: "airport", details: "Cửa ngõ miền Trung." },
+        { lat: 12.21, lng: 109.21, name: "Sân bay Cam Ranh (CXR)", icon: "✈️", cat: "airport", details: "Khánh Hòa - Phục vụ du lịch trọng điểm." },
+        { lat: 10.22, lng: 103.96, name: "Sân bay Phú Quốc (PQC)", icon: "✈️", cat: "airport", details: "Kiên Giang - Sân bay đảo quốc tế." },
+
+        // ==================== ĐÔNG NAM Á ====================
+        { lat: 1.35, lng: 103.99, name: "Sân bay Changi (SIN)", icon: "✈️", cat: "airport", details: "Singapore - Sân bay tốt nhất thế giới." },
+        { lat: 13.69, lng: 100.75, name: "Sân bay Suvarnabhumi (BKK)", icon: "✈️", cat: "airport", details: "Bangkok, Thái Lan - Trung tâm du lịch ĐNA." },
+        { lat: 2.74, lng: 101.70, name: "Sân bay Kuala Lumpur (KUL)", icon: "✈️", cat: "airport", details: "Malaysia - Trung tâm hàng không giá rẻ." },
+        { lat: -6.12, lng: 106.65, name: "Sân bay Soekarno-Hatta (CGK)", icon: "✈️", cat: "airport", details: "Jakarta, Indonesia." },
+        { lat: 14.50, lng: 121.01, name: "Sân bay Ninoy Aquino (MNL)", icon: "✈️", cat: "airport", details: "Manila, Philippines." },
+
+        // ==================== ĐÔNG Á ====================
+        { lat: 40.07, lng: 116.59, name: "Sân bay Thủ đô Bắc Kinh (PEK)", icon: "✈️", cat: "airport", details: "Trung Quốc - Một trong những sân bay lớn nhất TG." },
+        { lat: 44.51, lng: 116.39, name: "Sân bay Đại興 Bắc Kinh (PKX)", icon: "✈️", cat: "airport", details: "Sân bay có nhà ga đơn lớn nhất thế giới." },
+        { lat: 31.14, lng: 121.80, name: "Sân bay Pudong Thượng Hải (PVG)", icon: "✈️", cat: "airport", details: "Trung tâm tài chính Trung Quốc." },
+        { lat: 22.30, lng: 113.91, name: "Sân bay Hồng Kông (HKG)", icon: "✈️", cat: "airport", details: "Cửa ngõ giao thương quốc tế." },
+        { lat: 35.54, lng: 139.77, name: "Sân bay Haneda (HND)", icon: "✈️", cat: "airport", details: "Tokyo, Nhật Bản - Sân bay nội địa/quốc tế lớn." },
+        { lat: 35.77, lng: 140.38, name: "Sân bay Narita (NRT)", icon: "✈️", cat: "airport", details: "Chiba, Nhật Bản - Cửa ngõ quốc tế chính của Tokyo." },
+        { lat: 34.43, lng: 135.23, name: "Sân bay Kansai (KIX)", icon: "✈️", cat: "airport", details: "Osaka, Nhật Bản - Sân bay xây trên đảo nhân tạo." },
+        { lat: 37.46, lng: 126.44, name: "Sân bay Incheon (ICN)", icon: "✈️", cat: "airport", details: "Seoul, Hàn Quốc." },
+
+        // ==================== NAM Á & TRUNG ĐÔNG ====================
+        { lat: 28.55, lng: 77.10, name: "Sân bay Indira Gandhi (DEL)", icon: "✈️", cat: "airport", details: "New Delhi, Ấn Độ." },
+        { lat: 19.08, lng: 72.87, name: "Sân bay Chhatrapati Shivaji (BOM)", icon: "✈️", cat: "airport", details: "Mumbai, Ấn Độ." },
+        { lat: 25.25, lng: 55.36, name: "Sân bay Dubai (DXB)", icon: "✈️", cat: "airport", details: "UAE - Trạm trung chuyển quốc tế bận rộn nhất TG." },
+        { lat: 25.27, lng: 51.56, name: "Sân bay Hamad (DOH)", icon: "✈️", cat: "airport", details: "Doha, Qatar." },
+        { lat: 24.44, lng: 54.65, name: "Sân bay Abu Dhabi (AUH)", icon: "✈️", cat: "airport", details: "UAE." },
+
+
+    // ==================== CHÂU ÂU (EUROPE) ====================
+        // --- Anh ---
+        { lat: 51.47, lng: -0.45, name: "Sân bay London Heathrow (LHR)", icon: "✈️", cat: "airport", details: "London, Anh - Sân bay bận rộn nhất Châu Âu." },
+        { lat: 51.15, lng: -0.18, name: "Sân bay London Gatwick (LGW)", icon: "✈️", cat: "airport", details: "Sân bay lớn thứ hai của Anh." },
+
+        // --- Pháp ---
+        { lat: 49.01, lng: 2.55, name: "Sân bay Paris Charles de Gaulle (CDG)", icon: "✈️", cat: "airport", details: "Paris, Pháp - Trung tâm hàng không quan trọng của EU." },
+        { lat: 48.72, lng: 2.36, name: "Sân bay Paris Orly (ORY)", icon: "✈️", cat: "airport", details: "Phục vụ các đường bay nội địa và châu Âu." },
+
+        // --- Đức ---
+        { lat: 50.03, lng: 8.57, name: "Sân bay Frankfurt (FRA)", icon: "✈️", cat: "airport", details: "Đức - Trung tâm vận tải hàng hóa lớn nhất Châu Âu." },
+        { lat: 48.35, lng: 11.78, name: "Sân bay Munich (MUC)", icon: "✈️", cat: "airport", details: "Sân bay đạt tiêu chuẩn 5 sao tại Đức." },
+        { lat: 52.36, lng: 13.50, name: "Sân bay Berlin Brandenburg (BER)", icon: "✈️", cat: "airport", details: "Sân bay chính của thủ đô nước Đức." },
+
+        // --- Hà Lan & Bỉ ---
+        { lat: 52.31, lng: 4.76, name: "Sân bay Amsterdam Schiphol (AMS)", icon: "✈️", cat: "airport", details: "Hà Lan - Sân bay có kết nối trực tiếp nhiều nhất thế giới." },
+        { lat: 50.90, lng: 4.48, name: "Sân bay Brussels (BRU)", icon: "✈️", cat: "airport", details: "Bỉ - Cửa ngõ của Liên minh Châu Âu." },
+
+        // --- Thổ Nhĩ Kỳ (Cầu nối Á-Âu) ---
+        { lat: 41.27, lng: 28.74, name: "Sân bay Istanbul (IST)", icon: "✈️", cat: "airport", details: "Thổ Nhĩ Kỳ - Sân bay mới siêu hiện đại, điểm trung chuyển Á-Âu." },
+
+        // --- Nga ---
+        { lat: 55.97, lng: 37.41, name: "Sân bay Sheremetyevo (SVO)", icon: "✈️", cat: "airport", details: "Moscow, Nga - Sân bay lớn nhất nước Nga." },
+        { lat: 55.41, lng: 37.90, name: "Sân bay Domodedovo (DME)", icon: "✈️", cat: "airport", details: "Moscow, Nga." },
+
+
+        // --- Các nước khác ---
+        { lat: 40.49, lng: -3.56, name: "Sân bay Madrid-Barajas (MAD)", icon: "✈️", cat: "airport", details: "Tây Ban Nha - Cửa ngõ sang Mỹ Latinh." },
+        { lat: 41.29, lng: 2.08, name: "Sân bay Barcelona-El Prat (BCN)", icon: "✈️", cat: "airport", details: "Tây Ban Nha." },
+        { lat: 41.79, lng: 12.24, name: "Sân bay Rome Fiumicino (FCO)", icon: "✈️", cat: "airport", details: "Ý - Sân bay Leonardo da Vinci." },
+        { lat: 47.45, lng: 8.55, name: "Sân bay Zurich (ZRH)", icon: "✈️", cat: "airport", details: "Thụy Sĩ - Sân bay hiện đại và chính xác." },
+        { lat: 60.19, lng: 24.96, name: "Sân bay Helsinki (HEL)", icon: "✈️", cat: "airport", details: "Phần Lan - Cửa ngõ ngắn nhất sang Châu Á." },
+        { lat: 59.65, lng: 17.92, name: "Sân bay Stockholm Arlanda (ARN)", icon: "✈️", cat: "airport", details: "Thụy Điển." },
+        { lat: 53.42, lng: -6.27, name: "Sân bay Dublin (DUB)", icon: "✈️", cat: "airport", details: "Ireland." },
+        { lat: 45.63, lng: 9.28, name: "Sân bay Milan Malpensa (MXP)", icon: "✈️", cat: "airport", details: "Ý - Sân bay lớn nhất vùng Lombardy." },
+        { lat: 48.11, lng: 11.29, name: "Sân bay Munich (MUC)", icon: "✈️", cat: "airport", details: "Đức - Sân bay đạt tiêu chuẩn 5 sao." },
+
+        // ==================== BẮC MỸ (NORTH AMERICA) ====================
+        // --- Hoa Kỳ (USA) ---
+        { lat: 33.64, lng: -84.42, name: "Sân bay Hartsfield-Jackson Atlanta (ATL)", icon: "✈️", cat: "airport", details: "Sân bay bận rộn nhất thế giới về lượt khách." },
+        { lat: 40.64, lng: -73.78, name: "Sân bay John F. Kennedy (JFK)", icon: "✈️", cat: "airport", details: "New York - Cửa ngõ hàng không chính của Mỹ." },
+        { lat: 33.94, lng: -118.40, name: "Sân bay Los Angeles (LAX)", icon: "✈️", cat: "airport", details: "Cửa ngõ chính đi sang khu vực Châu Á - Thái Bình Dương." },
+        { lat: 41.97, lng: -87.90, name: "Sân bay Chicago O'Hare (ORD)", icon: "✈️", cat: "airport", details: "Trung tâm vận tải quan trọng của vùng Trung Tây Mỹ." },
+        { lat: 32.89, lng: -97.04, name: "Sân bay Dallas/Fort Worth (DFW)", icon: "✈️", cat: "airport", details: "Sân bay lớn thứ 2 nước Mỹ về diện tích." },
+        { lat: 37.62, lng: -122.37, name: "Sân bay San Francisco (SFO)", icon: "✈️", cat: "airport", details: "Trung tâm công nghệ Silicon Valley." },
+        { lat: 25.79, lng: -80.28, name: "Sân bay Miami (MIA)", icon: "✈️", cat: "airport", details: "Cửa ngõ chính nối Mỹ với Mỹ Latinh." },
+        { lat: 47.45, lng: -122.30, name: "Sân bay Seattle-Tacoma (SEA)", icon: "✈️", cat: "airport", details: "Trụ sở chính của Alaska Airlines." },
+
+        // --- Canada ---
+        { lat: 43.67, lng: -79.63, name: "Sân bay Toronto Pearson (YYZ)", icon: "✈️", cat: "airport", details: "Sân bay lớn nhất và bận rộn nhất Canada." },
+        { lat: 49.19, lng: -123.18, name: "Sân bay Vancouver (YVR)", icon: "✈️", cat: "airport", details: "Cửa ngõ phía Tây của Canada." },
+
+        // --- Mexico ---
+        { lat: 19.43, lng: -99.07, name: "Sân bay Benito Juárez (MEX)", icon: "✈️", cat: "airport", details: "Mexico City - Sân bay bận rộn nhất Mỹ Latinh." },
+
+        // ==================== NAM MỸ & TRUNG MỸ ====================
+        // --- Brazil ---
+        { lat: -23.43, lng: -46.47, name: "Sân bay São Paulo–Guarulhos (GRU)", icon: "✈️", cat: "airport", details: "Sân bay quốc tế lớn nhất Brazil." },
+        { lat: -22.81, lng: -43.25, name: "Sân bay Rio de Janeiro (GIG)", icon: "✈️", cat: "airport", details: "Phục vụ thành phố du lịch nổi tiếng nhất Nam Mỹ." },
+
+        // --- Argentina ---
+        { lat: -34.82, lng: -58.53, name: "Sân bay Ezeiza (EZE)", icon: "✈️", cat: "airport", details: "Buenos Aires - Cửa ngõ chính của Argentina." },
+
+        // --- Chile & Colombia ---
+        { lat: -33.39, lng: -70.79, name: "Sân bay Arturo Merino Benítez (SCL)", icon: "✈️", cat: "airport", details: "Santiago, Chile." },
+        { lat: 4.70, lng: -74.14, name: "Sân bay El Dorado (BOG)", icon: "✈️", cat: "airport", details: "Bogotá, Colombia - Trung tâm hàng hóa lớn của Nam Mỹ." },
+
+        // --- Panama (Cầu nối 2 lục địa) ---
+        { lat: 9.07, lng: -79.38, name: "Sân bay Tocumen (PTY)", icon: "✈️", cat: "airport", details: "Panama - Được mệnh danh là 'Hub của Châu Mỹ'." },
+
+
+        // ==================== CHÂU PHI (AFRICA) ====================
+        // --- Bắc Phi ---
+        { lat: 30.12, lng: 31.40, name: "Sân bay Quốc tế Cairo (CAI)", icon: "✈️", cat: "airport", details: "Ai Cập - Sân bay bận rộn nhất Bắc Phi, cửa ngõ nối Á - Phi." },
+        { lat: 33.37, lng: -7.58, name: "Sân bay Mohammed V (CMN)", icon: "✈️", cat: "airport", details: "Casablanca, Morocco - Hub quan trọng nối Châu Phi với Châu Âu." },
+        { lat: 36.69, lng: 3.21, name: "Sân bay Houari Boumediene (ALG)", icon: "✈️", cat: "airport", details: "Algiers, Algeria." },
+
+        // --- Đông Phi (Hub công nghệ và hàng không mới) ---
+        { lat: 8.97, lng: 38.79, name: "Sân bay Addis Ababa Bole (ADD)", icon: "✈️", cat: "airport", details: "Ethiopia - Trạm trung chuyển hàng đầu của Châu Phi hiện nay." },
+        { lat: -1.33, lng: 36.92, name: "Sân bay Jomo Kenyatta (NBO)", icon: "✈️", cat: "airport", details: "Nairobi, Kenya - Trung tâm kinh tế Đông Phi." },
+
+        // --- Tây & Trung Phi ---
+        { lat: 6.57, lng: 3.32, name: "Sân bay Murtala Muhammed (LOS)", icon: "✈️", cat: "airport", details: "Lagos, Nigeria - Phục vụ nền kinh tế lớn nhất Châu Phi." },
+        { lat: 5.60, lng: -0.16, name: "Sân bay Kotoka (ACC)", icon: "✈️", cat: "airport", details: "Accra, Ghana." },
+        { lat: 14.73, lng: -17.49, name: "Sân bay Blaise Diagne (DSS)", icon: "✈️", cat: "airport", details: "Dakar, Senegal." },
+
+        // --- Nam Phi ---
+        { lat: -26.13, lng: 28.24, name: "Sân bay OR Tambo (JNB)", icon: "✈️", cat: "airport", details: "Johannesburg, Nam Phi - Sân bay quan trọng nhất khu vực phía Nam." },
+        { lat: -33.97, lng: 18.60, name: "Sân bay Cape Town (CPT)", icon: "✈️", cat: "airport", details: "Nam Phi - Điểm du lịch hàng đầu lục địa đen." },
+
+        // ==================== CHÂU ĐẠI DƯƠNG (OCEANIA) ====================
+        // --- Australia (Úc) ---
+        { lat: -33.94, lng: 151.17, name: "Sân bay Sydney Kingsford Smith (SYD)", icon: "✈️", cat: "airport", details: "Sân bay bận rộn nhất nước Úc, cửa ngõ chính của Châu Đại Dương." },
+        { lat: -37.67, lng: 144.84, name: "Sân bay Melbourne (MEL)", icon: "✈️", cat: "airport", details: "Trung tâm hàng không quan trọng thứ hai tại Úc." },
+        { lat: -27.38, lng: 153.11, name: "Sân bay Brisbane (BNE)", icon: "✈️", cat: "airport", details: "Cửa ngõ chính của bang Queensland." },
+        { lat: -31.94, lng: 115.96, name: "Sân bay Perth (PER)", icon: "✈️", cat: "airport", details: "Kết nối quan trọng giữa Úc với Châu Á và Châu Phi." },
+
+        // --- New Zealand ---
+        { lat: -37.00, lng: 174.78, name: "Sân bay Auckland (AKL)", icon: "✈️", cat: "airport", details: "Sân bay lớn nhất New Zealand, trạm trung chuyển đi các đảo Thái Bình Dương." },
+        { lat: -43.48, lng: 172.53, name: "Sân bay Christchurch (CHC)", icon: "✈️", cat: "airport", details: "Cửa ngõ chính của Đảo Nam New Zealand." },
+
+        // --- Các đảo quốc Thái Bình Dương ---
+        { lat: -17.75, lng: 177.44, name: "Sân bay quốc tế Nadi (NAN)", icon: "✈️", cat: "airport", details: "Fiji - Hub hàng không quan trọng nhất vùng trung tâm Thái Bình Dương." },
+        { lat: 21.32, lng: -157.92, name: "Sân bay Honolulu (HNL)", icon: "✈️", cat: "airport", details: "Hawaii, Mỹ - Điểm dừng chân chiến lược giữa Mỹ và Châu Á." },
+        { lat: -9.44, lng: 147.21, name: "Sân bay Jacksons (POM)", icon: "✈️", cat: "airport", details: "Port Moresby, Papua New Guinea." },
+        { lat: -17.55, lng: -149.61, name: "Sân bay Faa'a (PPT)", icon: "✈️", cat: "airport", details: "Tahiti, Polynesie thuộc Pháp." }
+    ]; // <--- Chốt hạ ngoặc vuông kết thúc mảng tại đây,
 
 
 
-        
-        // GA TÀU -> Nếu ông muốn dùng nút Rail-check thì để cat: "railway"
-        { lat: 21.02, lng: 105.84, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Điểm đầu của tuyến đường sắt Bắc - Nam lịch sử." }
-    ];
-    transportHubs.forEach(item => economyData.push(item));
+    airportData.forEach(item => economyData.push(item));
+    console.log(`✅ Đã tải ${airportData.length} sân bay quốc tế.`);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// CẢNG BIỂN (SEAPORTS)
+function generateSeaportData() {
+    const seaportData = [
+    // ==================== ĐÔNG NAM Á (ASEAN) ====================
+        // THÁI LAN
+        { lat: 13.08, lng: 100.92, name: "Cảng Laem Chabang", icon: "🚢", cat: "seaport", details: "Cảng chính của Thái Lan, trung tâm xuất khẩu ô tô Rayong." },
+        { lat: 13.70, lng: 100.58, name: "Cảng Bangkok (Khlong Toei)", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng nằm sâu trong nội địa." },
+
+        // INDONESIA
+        { lat: -6.10, lng: 106.88, name: "Cảng Tanjung Priok (Jakarta)", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất và tiên tiến nhất Indonesia." },
+        { lat: -7.20, lng: 112.72, name: "Cảng Tanjung Perak (Surabaya)", icon: "🚢", cat: "seaport", details: "Cửa ngõ quan trọng của khu vực Đông Indonesia." },
+
+        // MALAYSIA
+        { lat: 1.45, lng: 103.55, name: "Cảng Tanjung Pelepas", icon: "🚢", cat: "seaport", details: "Đối thủ cạnh tranh trung chuyển trực tiếp với Singapore." },
+        { lat: 5.41, lng: 100.33, name: "Cảng Penang", icon: "🚢", cat: "seaport", details: "Cảng kết nối phía Bắc bán đảo Malaysia với Vịnh Bengal." },
+
+        // PHILIPPINES
+        { lat: 14.61, lng: 120.95, name: "Cảng Quốc tế Manila", icon: "🚢", cat: "seaport", details: "Trung tâm thương mại hàng hải sầm uất nhất Philippines." },
+        { lat: 10.30, lng: 123.90, name: "Cảng Cebu", icon: "🚢", cat: "seaport", details: "Cảng nội địa và quốc tế quan trọng miền trung Philippines." },
+
+        // CAMPUCHIA
+        { lat: 10.63, lng: 103.52, name: "Cảng Sihanoukville", icon: "🚢", cat: "seaport", details: "Cảng nước sâu duy nhất của Campuchia trên Vịnh Thái Lan." },
+
+        //VIỆT NAM
+        { lat: 21.02, lng: 105.84, name: "Cảng Hải Phòng", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất miền Bắc Việt Nam." },
+        { lat: 16.04, lng: 108.20, name: "Cảng Đà Nẵng", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của miền Trung Việt Nam." },
+        { lat: 10.81, lng: 106.66, name: "Cảng Sài Gòn (Cát Lái)", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất miền Nam Việt Nam." },
+        { lat: 10.22, lng: 103.96, name: "Cảng Phú Quốc", icon: "🚢", cat: "seaport", details: "Cảng biển quốc tế trên đảo Phú Quốc." },
+
+        //PHILLIPINES
+        { lat: 14.61, lng: 120.95, name: "Cảng Quốc tế Manila", icon: "🚢", cat: "seaport", details: "Trung tâm thương mại hàng hải sầm uất nhất Philippines." },
+        { lat: 10.30, lng: 123.90, name: "Cảng Cebu", icon: "🚢", cat: "seaport", details: "Cảng nội địa và quốc tế quan trọng miền trung Philippines." },
+
+        // MALAYSIA
+        { lat: 1.45, lng: 103.55, name: "Cảng Tanjung Pelepas", icon: "🚢", cat: "seaport", details: "Đối thủ cạnh tranh trung chuyển trực tiếp với Singapore." },
+        { lat: 5.41, lng: 100.33, name: "Cảng Penang", icon: "🚢", cat: "seaport", details: "Cảng kết nối phía Bắc bán đảo Malaysia với Vịnh Bengal." },
+
+        // INDONESIA
+        { lat: -6.10, lng: 106.88, name: "Cảng Tanjung Priok (Jakarta)", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất và tiên tiến nhất Indonesia." },
+        { lat: -7.20, lng: 112.72, name: "Cảng Tanjung Perak (Surabaya)", icon: "🚢", cat: "seaport", details: "Cửa ngõ quan trọng của khu vực Đông Indonesia." },
+
+        //tIMOR LESTE
+        { lat: -8.55, lng: 125.57, name: "Cảng Dili", icon: "🚢", cat: "seaport", details: "Cảng chính của Timor Leste, quốc gia mới nổi ở Đông Timor." },
+
+        // ==================== ĐÔNG Á (EAST ASIA) ====================
+
+        // TRUNG QUỐC
+        { lat: 31.23, lng: 121.49, name: "Cảng Thượng Hải", icon: "🚢", cat: "seaport", details: "Cảng bận rộn nhất thế giới về khối lượng hàng hóa." },
+        { lat: 22.30, lng: 113.91, name: "Cảng Hồng Kông", icon: "🚢", cat: "seaport", details: "Một trong những cảng tự do thương mại lớn nhất thế giới." },
+        { lat: 35.54, lng: 139.77, name: "Cảng Tokyo", icon: "🚢", cat: "seaport", details: "Cảng chính của thủ đô Nhật Bản, phục vụ cả hàng hóa và hành khách." },
+        { lat: 39.90, lng: 116.42, name: "Cảng Bắc Kinh (Daxing)", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng phục vụ thủ đô Trung Quốc." },
+
+        //HÀN QUỐC
+        { lat: 37.46, lng: 126.44, name: "Cảng Incheon", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Hàn Quốc, phục vụ Seoul và vùng phụ cận." },
+        { lat: 35.10, lng: 129.04, name: "Cảng Busan", icon: "🚢", cat: "seaport", details: "Cảng bận rộn thứ hai Hàn Quốc, trung tâm vận tải biển quan trọng." },
+
+        // NHẬT BẢN
+        { lat: 35.54, lng: 139.77, name: "Cảng Tokyo", icon: "🚢", cat: "seaport", details: "Cảng chính của thủ đô Nhật Bản, phục vụ cả hàng hóa và hành khách." },
+        { lat: 34.43, lng: 135.23, name: "Cảng Osaka (Kansai)", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của vùng Kansai, phục vụ Osaka và Kyoto." },
+        { lat: 33.59, lng: 130.40, name: "Cảng Nagasaki", icon: "🚢", cat: "seaport", details: "Cảng lịch sử nổi tiếng với vai trò trong giao thương quốc tế." },
+
+        // ĐÀI LOAN
+        { lat: 25.12, lng: 121.50, name: "Cảng Keelung", icon: "🚢", cat: "seaport", details: "Cảng chính của Đài Bắc, phục vụ cả hàng hóa và hành khách." },
+        { lat: 22.62, lng: 120.31, name: "Cảng Kaohsiung", icon: "🚢", cat: "seaport", details: "Cảng bận rộn nhất Đài Loan về khối lượng hàng hóa." },
+
+        // ==================== BẮC Á (NORTH ASIA) ====================
+
+        // NGA
+        { lat: 59.95, lng: 30.33, name: "Cảng Saint Petersburg", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất của Nga trên biển Baltic." },
+        { lat: 43.11, lng: 131.88, name: "Cảng Vladivostok", icon: "🚢", cat: "seaport", details: "Cảng chính của Nga ở Viễn Đông, gần biên giới Trung Quốc." },
+        { lat: 55.75, lng: 37.62, name: "Cảng Moskva (Moscow River)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thủ đô Moscow." },
+
+        // MONGOLIA (Không có cảng biển, nhưng có cảng sông trên sông Orkhon)
+        { lat: 47.92, lng: 106.92, name: "Cảng sông Ulaanbaatar", icon: "🚢", cat: "seaport", details: "Cảng sông trên sông Orkhon, phục vụ thủ đô Ulaanbaatar." },
+
+        // ==================== NAM Á (SOUTH ASIA) ====================
+
+        // ẤN ĐỘ
+        { lat: 18.95, lng: 72.82, name: "Cảng Mumbai (Nhava Sheva)", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Ấn Độ về khối lượng hàng hóa." },
+        { lat: 22.57, lng: 88.36, name: "Cảng Kolkata (Haldia)", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng phục vụ khu vực Đông Ấn Độ." },
+        { lat: 9.97, lng: 76.28, name: "Cảng Kochi", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của miền Nam Ấn Độ." },
+
+        // PAKISTAN
+        { lat: 24.86, lng: 67.01, name: "Cảng Karachi", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Pakistan, phục vụ thành phố Karachi." },
+        { lat: 25.36, lng: 68.35, name: "Cảng Port Qasim", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng thứ hai của Pakistan." },
+
+        // BANGLADESH
+        { lat: 22.31, lng: 91.80, name: "Cảng Chittagong", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Bangladesh, phục vụ thành phố Chittagong." },
+        { lat: 23.81, lng: 90.41, name: "Cảng Mongla", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng thứ hai của Bangladesh." },
+
+        // SRI LANKA
+        { lat: 6.01, lng: 79.86, name: "Cảng Colombo", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Sri Lanka, trung tâm vận tải biển của Ấn Độ Dương." },
+        { lat: 5.95, lng: 80.55, name: "Cảng Hambantota", icon: "🚢", cat: "seaport", details: "Cảng mới nổi của Sri Lanka, được Trung Quốc đầu tư mạnh." },
+
+        // ==================== TRUNG ĐÔNG (MIDDLE EAST) ====================
+
+        // UAE
+        { lat: 24.44, lng: 54.65, name: "Cảng Abu Dhabi", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất UAE, phục vụ thủ đô Abu Dhabi." },
+        { lat: 24.89, lng: 55.15, name: "Cảng Jebel Ali (Dubai)", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Trung Đông, trung tâm vận tải của Dubai." },
+
+        // Ả RẬP SAUDI
+        { lat: 24.63, lng: 46.72, name: "Cảng Dammam", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Saudi Arabia trên Vịnh Ba Tư." },
+        { lat: 21.42, lng: 39.82, name: "Cảng Jeddah", icon: "🚢", cat: "seaport", details: "Cảng chính của Saudi Arabia trên Biển Đỏ." },
+
+        // QATAR
+        { lat: 25.29, lng: 51.53, name: "Cảng Hamad (Doha)", icon: "🚢", cat: "seaport", details: "Cảng biển hiện đại nhất Qatar, phục vụ thủ đô Doha." },
+
+        // OMAN
+        { lat: 23.62, lng: 58.54, name: "Cảng Sohar", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của Oman, được đầu tư mạnh để cạnh tranh với UAE." },
+        { lat: 24.45, lng: 56.65, name: "Cảng Salalah", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Oman trên Biển Ả Rập." },
+
+        // ==================== BẮC ÂU )NORTH EUROPE) =======================
+
+        // ĐỨC
+        { lat: 53.54, lng: 9.99, name: "Cảng Hamburg", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất Đức và một trong những cảng bận rộn nhất châu Âu." },
+        { lat: 48.35, lng: 11.78, name: "Cảng Munich (Laem Chabang)", icon: "🚢", cat: "seaport", details: "Cảng chính của miền Nam nước Đức." },
+        
+        // HÀ LAN
+        { lat: 51.95, lng: 4.14, name: "Cảng Rotterdam", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất châu Âu về khối lượng hàng hóa." },
+        { lat: 52.31, lng: 4.76, name: "Cảng Amsterdam", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Hà Lan, phục vụ thủ đô Amsterdam." },
+
+        // ANH
+        { lat: 51.50, lng: -0.12, name: "Cảng London (Tilbury)", icon: "🚢", cat: "seaport", details: "Cảng chính của London, phục vụ khu vực Đông Nam nước Anh." },
+        { lat: 53.40, lng: -2.99, name: "Cảng Liverpool", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của miền Tây nước Anh." },
+
+        // ==================== ĐÔNG ÂU (EAST EUROPE) =======================
+
+        // NGA
+        { lat: 59.95, lng: 30.33, name: "Cảng Saint Petersburg", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất của Nga trên biển Baltic." },
+        { lat: 43.11, lng: 131.88, name: "Cảng Vladivostok", icon: "🚢", cat: "seaport", details: "Cảng chính của Nga ở Viễn Đông, gần biên giới Trung Quốc." },
+        { lat: 55.75, lng: 37.62, name: "Cảng Moskva (Moscow River)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thủ đô Moscow." },
+
+        // BA LAN
+        { lat: 54.35, lng: 18.65, name: "Cảng Gdańsk", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Ba Lan trên biển Baltic." },
+        { lat: 53.43, lng: 14.55, name: "Cảng Szczecin", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Ba Lan gần biên giới Đức." },
+
+        // UKRAINE
+        { lat: 46.48, lng: 30.73, name: "Cảng Odessa", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Ukraine trên Biển Đen." },
+        { lat: 47.10, lng: 37.57, name: "Cảng Mariupol", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Ukraine trên Biển Azov." },
+
+        // ROMANIA
+        { lat: 44.18, lng: 28.65, name: "Cảng Constanța", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Romania trên Biển Đen." },
+        { lat: 45.80, lng: 28.60, name: "Cảng Galați", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng của Romania trên sông Danube." },
+
+        // BULGARIA
+        { lat: 42.90, lng: 27.50, name: "Cảng Varna", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Bulgaria trên Biển Đen." },
+        { lat: 43.20, lng: 27.90, name: "Cảng Burgas", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Bulgaria trên Biển Đen." },
+
+        // ==================== NAM ÂU (SOUTH EUROPE) =======================
+
+        // Ý
+        { lat: 40.90, lng: 14.25, name: "Cảng Naples", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của miền Nam nước Ý." },
+        { lat: 45.44, lng: 9.19, name: "Cảng Genoa", icon: "🚢", cat: "seaport", details: "Cảng lớn nhất miền Bắc nước Ý." },
+
+        // TÂY BAN NHA
+        { lat: 36.95, lng: -6.28, name: "Cảng Algeciras", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Tây Ban Nha trên Địa Trung Hải." },
+        { lat: 42.35, lng: -8.72, name: "Cảng Vigo", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Tây Ban Nha trên Đại Tây Dương." },
+
+        // HY LẠP
+        { lat: 37.95, lng: 23.63, name: "Cảng Piraeus (Athens)", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Hy Lạp, phục vụ thủ đô Athens." },
+        { lat: 40.64, lng: 22.94, name: "Cảng Thessaloniki", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của miền Bắc Hy Lạp." },
+
+        // BỒ ĐÀO NHA
+        { lat: 41.16, lng: -8.63, name: "Cảng Leixões (Porto)", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Bồ Đào Nha, phục vụ thành phố Porto." },
+        { lat: 38.70, lng: -9.17, name: "Cảng Lisbon", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Bồ Đào Nha, phục vụ thủ đô Lisbon." },
+
+        // ==================== TÂY ÂU (WEST EUROPE) =======================
+
+        // PHÁP
+        { lat: 43.30, lng: 5.37, name: "Cảng Marseille", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Pháp trên Địa Trung Hải." },
+        { lat: 48.85, lng: 2.35, name: "Cảng Le Havre", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Pháp trên Đại Tây Dương." },
+        { lat: 45.76, lng: 4.83, name: "Cảng Lyon (Rhône)", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng của Pháp trên sông Rhône." },
+
+        // BỒ ĐÀO NHA
+        { lat: 41.16, lng: -8.63, name: "Cảng Leixões (Porto)", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Bồ Đào Nha, phục vụ thành phố Porto." },
+        { lat: 38.70, lng: -9.17, name: "Cảng Lisbon", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Bồ Đào Nha, phục vụ thủ đô Lisbon." },
+
+        // ĐAN MẠCH
+        { lat: 55.68, lng: 12.57, name: "Cảng Copenhagen", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Đan Mạch, phục vụ thủ đô Copenhagen." },
+        { lat: 56.16, lng: 10.21, name: "Cảng Aarhus", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Đan Mạch trên bờ biển phía Tây." },
+
+        // THỤY SĨ
+        { lat: 46.20, lng: 6.15, name: "Cảng Geneva (Rhône)", icon: "🚢", cat: "seaport", details: "Cảng sông quan trọng của Thụy Sĩ trên sông Rhône." },
+        { lat: 47.37, lng: 8.54, name: "Cảng Zurich (Limmat)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thành phố Zurich." },
+
+
+        // ==================== BẮC MỸ (NORTH AMERICA) =======================
+
+        //HOA KỲ 
+        { lat: 40.67, lng: -74.04, name: "Cảng New York (NY/NJ)", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Hoa Kỳ, phục vụ khu vực New York và New Jersey." },
+        { lat: 29.75, lng: -95.36, name: "Cảng Houston", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của miền Nam Hoa Kỳ." },
+        { lat: 37.77, lng: -122.39, name: "Cảng San Francisco", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của miền Tây Hoa Kỳ." },
+
+        // CANADA
+        { lat: 49.28, lng: -123.12, name: "Cảng Vancouver", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Canada trên bờ Thái Bình Dương." },
+        { lat: 45.50, lng: -73.57, name: "Cảng Montreal", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Canada trên sông Saint Lawrence." },
+
+        // MEXICO
+        { lat: 25.78, lng: -80.22, name: "Cảng Miami", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của Mexico trên bờ Đại Tây Dương." },
+        { lat: 19.43, lng: -99.13, name: "Cảng Veracruz", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Mexico trên bờ Đại Tây Dương." },
+
+        //GREENLAND
+        { lat: 64.18, lng: -51.72, name: "Cảng Nuuk", icon: "🚢", cat: "seaport", details: "Cảng chính của Greenland, phục vụ thủ đô Nuuk." },
+        { lat: 70.48, lng: -21.96, name: "Cảng Ilulissat", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Greenland trên bờ biển phía Tây." },
+
+        // ==================== NAM MỸ (SOUTH AMERICA) =======================
+
+        // BRAZIL
+        { lat: -23.95, lng: -46.33, name: "Cảng Santos", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Brazil và Nam Mỹ." },
+        { lat: -22.90, lng: -43.20, name: "Cảng Rio de Janeiro", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Brazil trên bờ Đại Tây Dương." },
+        { lat: -15.80, lng: -47.90, name: "Cảng Brasília (sông Paranoá)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thủ đô Brasília." },
+
+        // ARGENTINA
+        { lat: -34.60, lng: -58.37, name: "Cảng Buenos Aires", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Argentina, phục vụ thủ đô Buenos Aires." },
+        { lat: -38.72, lng: -62.27, name: "Cảng Bahía Blanca", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Argentina trên bờ Đại Tây Dương." },
+
+        // CHILE
+        { lat: -33.45, lng: -70.66, name: "Cảng Valparaíso", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Chile trên bờ Thái Bình Dương." },
+        { lat: -36.82, lng: -73.05, name: "Cảng Concepción", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Chile trên bờ Thái Bình Dương." },
+
+        // PERU
+        { lat: -12.05, lng: -77.04, name: "Cảng Callao", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Peru, phục vụ thủ đô Lima." },
+        { lat: -16.40, lng: -71.53, name: "Cảng Arequipa (sông Chili)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thành phố Arequipa." },
+
+        // VENEZUELA
+        { lat: 10.60, lng: -66.98, name: "Cảng La Guaira", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Venezuela, phục vụ thủ đô Caracas." },
+        { lat: 9.93, lng: -63.17, name: "Cảng Puerto Cabello", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Venezuela trên bờ Đại Tây Dương." },
+
+        // URUGUAY
+        { lat: -34.90, lng: -56.19, name: "Cảng Montevideo", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Uruguay, phục vụ thủ đô Montevideo." },
+        { lat: -34.45, lng: -57.85, name: "Cảng Punta del Este", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Uruguay trên bờ Đại Tây Dương." },
+
+        // ==================== CHÂU PHI (AFRICA) =======================
+
+        // NAM PHI
+        { lat: -33.92, lng: 18.42, name: "Cảng Cape Town", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Nam Phi trên bờ Đại Tây Dương." },
+        { lat: -26.20, lng: 28.04, name: "Cảng Johannesburg (sông Jukskei)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thành phố Johannesburg." },
+
+        // NIGERIA
+        { lat: 6.45, lng: 3.39, name: "Cảng Lagos", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Nigeria, phục vụ thành phố Lagos." },
+        { lat: 5.01, lng: 6.85, name: "Cảng Port Harcourt", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Nigeria trên bờ Đại Tây Dương." },
+
+        // AI CẬP
+        { lat: 30.04, lng: 31.23, name: "Cảng Alexandria", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Ai Cập trên bờ Địa Trung Hải." },
+        { lat: 29.97, lng: 32.53, name: "Cảng Suez", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Ai Cập trên bờ Địa Trung Hải, gần kênh đào Suez." },
+
+        // KENYA
+        { lat: -4.04, lng: 39.67, name: "Cảng Mombasa", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Kenya trên bờ Ấn Độ Dương." },
+        { lat: -1.29, lng: 36.82, name: "Cảng Nairobi (sông Nairobi)", icon: "🚢", cat: "seaport", details: "Cảng sông phục vụ thủ đô Nairobi." },
+
+        // TANZANIA
+        { lat: -6.80, lng: 39.28, name: "Cảng Dar es Salaam", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Tanzania trên bờ Ấn Độ Dương." },
+        { lat: -3.37, lng: 36.68, name: "Cảng Zanzibar", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Tanzania trên bờ Ấn Độ Dương." },
+
+        // GHANA
+        { lat: 5.55, lng: -0.20, name: "Cảng Tema", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Ghana trên bờ Đại Tây Dương." },
+        { lat: 5.60, lng: -0.15, name: "Cảng Takoradi", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Ghana trên bờ Đại Tây Dương." },
+
+        // ALGERIA
+        { lat: 36.75, lng: 3.04, name: "Cảng Algiers", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Algeria trên bờ Địa Trung Hải." },
+        { lat: 35.70, lng: 0.63, name: "Cảng Oran", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Algeria trên bờ Địa Trung Hải." },
+
+        // MOROCCO
+        { lat: 35.77, lng: -5.80, name: "Cảng Casablanca", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Morocco trên bờ Đại Tây Dương." },
+        { lat: 34.02, lng: -6.84, name: "Cảng Tangier", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Morocco trên bờ Đại Tây Dương, gần eo biển Gibraltar." },
+
+        // TUNISIA
+        { lat: 36.80, lng: 10.18, name: "Cảng Tunis", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Tunisia trên bờ Địa Trung Hải." },
+        { lat: 36.85, lng: 10.30, name: "Cảng La Goulette", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Tunisia trên bờ Địa Trung Hải, gần thủ đô Tunis." },
+
+        // LIBYA
+        { lat: 32.88, lng: 13.18, name: "Cảng Tripoli", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Libya trên bờ Địa Trung Hải." },
+        { lat: 32.90, lng: 13.20, name: "Cảng Misrata", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Libya trên bờ Địa Trung Hải." },
+
+        // SUDAN
+        { lat: 15.60, lng: 32.53, name: "Cảng Port Sudan", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Sudan trên bờ Biển Đỏ." },
+        { lat: 12.00, lng: 30.00, name: "Cảng Suakin", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Sudan trên bờ Biển Đỏ." },
+
+        // ERITREA
+        { lat: 15.33, lng: 38.93, name: "Cảng Massawa", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Eritrea trên bờ Biển Đỏ." },
+        { lat: 15.00, lng: 39.00, name: "Cảng Assab", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Eritrea trên bờ Biển Đỏ." },
+
+        // SOMALIA
+        { lat: 2.05, lng: 45.33, name: "Cảng Mogadishu", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Somalia trên bờ Ấn Độ Dương." },
+        { lat: 1.50, lng: 44.00, name: "Cảng Kismayo", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Somalia trên bờ Ấn Độ Dương." },
+
+        // ==================== CHÂU ÚC (OCEANIA) =======================
+
+        // ÚC
+        { lat: -33.87, lng: 151.21, name: "Cảng Sydney", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Úc trên bờ Thái Bình Dương." },
+        { lat: -37.81, lng: 144.96, name: "Cảng Melbourne", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Úc trên bờ Thái Bình Dương." },
+        { lat: -27.47, lng: 153.03, name: "Cảng Brisbane", icon: "🚢", cat: "seaport", details: "Cảng biển quan trọng của Úc trên bờ Thái Bình Dương." },
+
+        // NEW ZEALAND
+        { lat: -36.85, lng: 174.76, name: "Cảng Auckland", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất New Zealand trên bờ Thái Bình Dương." },
+        { lat: -41.29, lng: 174.78, name: "Cảng Wellington", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của New Zealand trên bờ Thái Bình Dương." },
+
+        // FIJI
+        { lat: -18.13, lng: 178.42, name: "Cảng Suva", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Fiji trên bờ Thái Bình Dương." },
+        { lat: -17.80, lng: 177.50, name: "Cảng Lautoka", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Fiji trên bờ Thái Bình Dương." },
+
+        // PAPUA NEW GUINEA
+        { lat: -9.44, lng: 147.15, name: "Cảng Port Moresby", icon: "🚢", cat: "seaport", details: "Cảng biển lớn nhất Papua New Guinea trên bờ Thái Bình Dương." },
+        { lat: -5.55, lng: 150.15, name: "Cảng Lae", icon: "🚢", cat: "seaport", details: "Cảng quan trọng của Papua New Guinea trên bờ Thái Bình Dương." },
+
+
+
+
+
+
+
+    ];
+    seaportData.forEach(item => economyData.push(item));
+    console.log(`✅ Đã tải ${seaportData.length} cảng biển quốc tế.`);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// GA TÀU (RAILWAYS)
+function generateRailwayData() {
+    const railwayData = [
+        { lat: 21.02, lng: 105.84, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Điểm đầu của tuyến đường sắt Bắc - Nam lịch sử." },
+        { lat: 10.83, lng: 106.69, name: "Ga Sài Gòn", icon: "🚉", cat: "railway", details: "Ga đường sắt quan trọng nhất miền Nam." },
+        { lat: 35.68, lng: 139.76, name: "Ga Tokyo", icon: "🚉", cat: "railway", details: "Trung tâm của hệ thống tàu cao tốc Shinkansen." },
+        { lat: 39.90, lng: 116.42, name: "Ga Bắc Kinh", icon: "🚉", cat: "railway", details: "Đầu mối đường sắt khổng lồ của Trung Quốc." }
+    ];
+
+    railwayData.forEach(item => economyData.push(item));
+    console.log(`✅ Đã tải ${railwayData.length} ga tàu trọng điểm.`);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 // --- THỨ TỰ KÍCH HOẠT CHUẨN CHO ATHE STUDIO ---
@@ -4731,10 +5348,12 @@ generateUralRichness();      // Khoáng sản vùng Ural
 generateVietnamCoal();       // Chi tiết than VN
 generateTayNguyenBauxite();  // Bauxite Tây Nguyên
 generateHeavyIndustryData(); // Công nghiệp nặng
-generateTransportData();     // Cảng biển, sân bay, ga tàu
+generateRailwayData();       // Ga tàu
 generateFishingData();       // Ngư trường, cảng cá
 generateAIData();            // Dữ liệu AI 
 generateSemiconductorData(); // Dữ liệu bán dẫn 
+generateSeaportData();        // Cảng biển
+generateAirportData();        // Sân bay
 
 // 2. Nạp các cụm kinh tế đặc biệt
 generateAutomotiveData();    // Ô tô
