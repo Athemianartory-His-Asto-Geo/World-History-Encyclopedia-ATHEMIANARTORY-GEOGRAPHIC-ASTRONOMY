@@ -87,16 +87,45 @@ body.cinematic-mode #map {
 
 path.leaflet-interactive {
     transition: all 0.3s;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 path.leaflet-interactive:hover {
     stroke-width: 4;
-    stroke: #fff; /* Di chuột vào vẫn có hiệu ứng nhẹ */
+    stroke: #00BFFF; /* Di chuột vào vẫn có hiệu ứng xanh dương nhẹ */
 }
 
 /* Hiệu ứng đường ray chuyển động */
 @keyframes railFlow {
     from { stroke-dashoffset: 30; }
     to { stroke-dashoffset: 0; }
+}
+
+.country-border {
+    stroke: #00BFFF !important;
+    stroke-width: 1.8 !important;
+    stroke-opacity: 0.95;
+    vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.55)) drop-shadow(0 0 18px rgba(0, 191, 255, 0.3));
+    animation: borderGlow 2.6s ease-in-out infinite alternate;
+}
+
+.country-border-simple {
+    stroke: #00BFFF !important;
+    stroke-width: 1.5 !important;
+    stroke-opacity: 0.92;
+    vector-effect: non-scaling-stroke;
+    filter: none;
+    animation: none;
+}
+
+@keyframes borderGlow {
+    from {
+        filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.4)) drop-shadow(0 0 14px rgba(0, 191, 255, 0.2));
+    }
+    to {
+        filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.65)) drop-shadow(0 0 22px rgba(0, 191, 255, 0.35));
+    }
 }
 
 .railway-line {
@@ -736,6 +765,26 @@ left-group {
     background: #f4f4f4;
 }
 
+.square-action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: none;
+    background: #00bfff;
+    color: #000;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.square-action-btn:hover {
+    transform: translateY(-1px);
+    background: #33ccff;
+}
+
 /* Modal cài đặt */
 .settings-modal {
     display: none;
@@ -943,16 +992,18 @@ left-group {
             </label>
 
             <label class="setting-item">
+                <input type="checkbox" id="toggle-border-style" onchange="toggleBorderStyle(this.checked)">
+                Bật biên giới quốc gia sáng (đường viền phát sáng)
+            </label>
+
+            <label class="setting-item">
                 <input type="checkbox" id="toggle-political" checked onchange="togglePoliticalStatus(this.checked)">
                 Hiển thị tình hình chính trị (vùng chiến sự)
             </label>
 
-            <!-- NÚT MỚI: TẮT KINH - VĨ ĐỘ -->
             <label class="setting-item">
-                <button type="button" id="toggle-latlon-btn"
-                        style="width:100%; padding:10px; background:#00bfff; color:#000; border:none; border-radius:8px; font-weight:bold; font-size:14px;">
-                    🌐 Tắt tất cả Kinh - Vĩ độ
-                </button>
+                <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
+                Nút tắt thanh Kinh/Vĩ độ 
             </label>
 
             <label class="setting-item">
@@ -964,8 +1015,30 @@ left-group {
 
             <div style="margin-top:15px; padding-top:10px; border-top:1px solid #444; color:#888; font-size:13px;">
                 <strong>Phím tắt:</strong><br>
-                K: Mở bảng Keyframe<br>
-                H: Tắt thanh hỗ trợ
+                C: Chụp màn hình<br>
+                H: Tắt thanh hỗ trợ<br>
+                <br>
+                <br>
+                <br>
+                HƯỚNG DẪN SỬ DỤNG:<br>
+                - Dùng chuột để di chuyển bản đồ, cuộn để zoom<br>
+                    - Click vào các biểu tượng để xem thông tin chi tiết<br>
+                    - Thanh "Tùy Chỉnh": ấn vào đó để điều chỉnh các tùy chọn hiển thị<br>
+                    Ví dụ: Chọn vào nút "cảng biển nước sâu" để chỉ hiển thị các cảng biển nước sâu trên bản đồ<br>
+                    nếu ấn dúp chuột để chọn 1 quốc gia nào đó thì sẽ chỉ hiển thị tài nguyên của quốc gia đó<br>
+                    - "Tìm quốc gia": ấn vào đó để chọn quốc gia mình mong muốn<br>
+                    hoặc có thể gõ trực tiếp trên thanh xám<br>
+
+                    - Sử dụng nút cài đặt để điều chỉnh giao diện và các lớp thông tin<br>
+                    <br>
+
+                Credit:<br>
+                DEATH-ATHEMIANAR<br>
+                Tedemor Fatrich<br>
+                Abondonk<br>
+                Đinh Lê Minh Dũng<br>
+                1 số thành viên khác đã đóng góp ý tưởng và dữ liệu<br>
+
             </div>
 
         </div>
@@ -2061,19 +2134,21 @@ function renderBorders(year) {
 
             if (isDoubleClickSelected) {
                 return {
-                    color: "#ffff00",
+                    color: "#00E5FF",
                     weight: 4,
-                    fillColor: "#ffff00",
-                    fillOpacity: 0.3
+                    fillColor: "#00E5FF",
+                    fillOpacity: 0.3,
+                    className: borderStyleMode === 'glow' ? 'country-border' : 'country-border-simple'
                 };
             }
 
             return {
-                color: isHighlighted ? "#ff0000" : "#32CD32",
-                weight: isHighlighted ? 3 : 0.5,
+                color: isHighlighted ? "#ff0000" : "#00BFFF",
+                weight: isHighlighted ? 3 : 1,
                 fillColor: isHighlighted ? "#ff0000" : "transparent",
                 fillOpacity: isHighlighted ? 0.35 : 0.08,
-                dashArray: isHighlighted ? "" : "3,3"
+                dashArray: isHighlighted ? "" : "3,3",
+                className: borderStyleMode === 'glow' ? 'country-border' : 'country-border-simple'
             };
         },
 
@@ -6066,6 +6141,16 @@ window.addEventListener('load', () => {
         initTickerState();
     }
 
+    // 1a. Khôi phục trạng thái biên giới xanh dương / đơn giản
+    if (typeof initBorderStyleState === "function") {
+        initBorderStyleState();
+    }
+
+    // 1b. Gắn sự kiện cho nút trong modal khi DOM đã sẵn sàng
+    if (typeof initSettingsButtons === "function") {
+        initSettingsButtons();
+    }
+
     // 2. Khởi tạo ticker tin tức (chạy ngay lập tức và lặp mỗi 30 giây)
     fetchDailyNews();
 
@@ -6203,6 +6288,8 @@ function closeSettingsModal() {
 }
 
 // Tùy chọn tắt/mở ticker
+let borderStyleMode = 'glow';
+
 function toggleNewsTicker(checked) {
     const ticker = document.getElementById('news-ticker');
     if (ticker) ticker.style.display = checked ? 'block' : 'none';
@@ -6227,6 +6314,70 @@ function initTickerState() {
     }
 }
 
+function toggleBorderStyle() {
+    borderStyleMode = borderStyleMode === 'glow' ? 'simple' : 'glow';
+    updateBorderStyleButton();
+    renderBorders(0);
+    localStorage.setItem('borderStyleMode', borderStyleMode);
+}
+
+function updateBorderStyleButton() {
+    const button = document.getElementById('toggle-border-style-button');
+    const note = document.getElementById('border-style-note');
+    const label = document.getElementById('border-style-label');
+    if (!button || !note || !label) return;
+
+    if (borderStyleMode === 'glow') {
+        button.innerHTML = '🔵';
+        label.textContent = 'Chuyển sang biên giới';
+        note.textContent = 'Hiện đang dùng biên giới xanh dương cinematic.';
+    } else {
+        button.innerHTML = '✨';
+        label.textContent = 'Chuyển sang biên giới xanh dương';
+        note.textContent = 'Hiện đang dùng biên giới xanh đơn giản.';
+    }
+}
+
+function initBorderStyleState() {
+    const savedState = localStorage.getItem('borderStyleMode');
+    if (savedState === 'simple' || savedState === 'glow') {
+        borderStyleMode = savedState;
+    } else {
+        borderStyleMode = 'glow';
+    }
+    updateBorderStyleButton();
+}
+
+function initSettingsButtons() {
+    const latlonBtn = document.getElementById('toggle-latlon-btn');
+    if (latlonBtn) {
+        latlonBtn.addEventListener('click', function() {
+            const coordsBox = document.getElementById('coords-box');
+            if (coordsBox) {
+                const isHidden = coordsBox.style.display === 'none';
+                coordsBox.style.display = isHidden ? 'block' : 'none';
+                console.log(`🌐 Lat/Lng box ${isHidden ? 'hiện' : 'ẩn'}`);
+            }
+
+            if (window.climateLayerGroup) {
+                climateLayerGroup.clearLayers();
+                console.log('🌐 Đã tắt tất cả đường Kinh - Vĩ độ');
+            }
+
+            const btn = this;
+            const originalContent = btn.innerHTML;
+            const originalBg = btn.style.background;
+            btn.style.background = '#00cc66';
+            btn.innerHTML = '✅';
+
+            setTimeout(() => {
+                btn.style.background = originalBg || '#00bfff';
+                btn.innerHTML = originalContent;
+            }, 2500);
+        });
+    }
+}
+
 // Tắt/mở hiển thị tình hình chính trị
 function togglePoliticalStatus(checked) {
     showPoliticalStatus = checked;
@@ -6244,33 +6395,6 @@ document.addEventListener('click', function(e) {
         closeSettingsModal();
     }
 });
-
-
-
-
-
-
-
-
-
-
-        document.getElementById('toggle-latlon-btn').addEventListener('click', function() {
-            if (typeof climateLayerGroup !== 'undefined' && climateLayerGroup) {
-                climateLayerGroup.clearLayers();
-                console.log('🌐 Đã tắt tất cả đường Kinh - Vĩ độ');
-            }
-
-            // Hiệu ứng nút đẹp
-            const btn = this;
-            const originalText = btn.innerHTML;
-            btn.style.background = '#00cc66';
-            btn.innerHTML = '✅ Đã tắt Kinh - Vĩ độ!';
-
-            setTimeout(() => {
-                btn.style.background = '#00bfff';
-                btn.innerHTML = originalText;
-            }, 2500);
-        });
 
 
 
