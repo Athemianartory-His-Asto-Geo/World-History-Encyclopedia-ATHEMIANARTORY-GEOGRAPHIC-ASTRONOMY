@@ -2604,8 +2604,19 @@ function updateFilters() {
 
 // DỮ LIỆU VÔ CÙNG QUAN TRỌNG, KHÔNG ĐƯỢC XÓA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // ==========================================
+
+
+
+
+
+
+
 // 1. KHO DỮ LIỆU (DATABASE) - RESOURCE-TYPE-CENTRIC CONSTANTS
 // ==========================================
+
+
+// Dữ liệu về các khu rừng quan trọng trên thế giới, đặc biệt là ở Nga với tên gọi và vị trí cụ thể (KHU RỪNG ĐẶC TRƯNG)
+
 const RAW_FORESTS = {
     "Russia": [
         { lat: 64.5, lng: 40.5, name: "Lâm trường Arkhangelsk" }, { lat: 61.7, lng: 34.3, name: "Rừng Karelia 1" },
@@ -2669,9 +2680,166 @@ const RAW_FORESTS = {
         { lat: 22.5, lng: 101.0, name: "Rừng Mengla (Yunnan)" },
         { lat: 24.3, lng: 98.2, name: "Rừng tây nam Yunnan" },
         { lat: 28.5, lng: 100.5, name: "Rừng thảo alpine Deqen (Yunnan-Sichuan)" },
-        { lat: 31.5, lng: 104.0, name: "Rừng vô ơn (Sichuan-Chongqing)" }
+        { lat: 31.5, lng: 104.0, name: "Rừng vô ơn (Sichuan-Chongqing)" },
+        { lat: 30.0, lng: 102.0, name: "Rừng Wolong (Sichuan) - Nơi sinh sống của gấu trúc khổng lồ" },
+        { lat: 29.5, lng: 106.0, name: "Rừng Jiuzhaigou (Sichuan) - Di sản thiên nhiên thế giới với hồ nước màu sắc rực rỡ" },
+        { lat: 30.2, lng: 109.5, name: "Rừng Shennongjia (Hubei) - Nơi sinh sống của loài linh dương sừng xoắn quý hiếm" },
+        { lat: 28.0, lng: 112.0, name: "Rừng Zhangjiajie (Hunan) - Nổi tiếng với các cột đá vôi cao chót vót" },
+        { lat: 27.0, lng: 113.0, name: "Rừng Fenghuang (Hunan) - Cảnh quan núi non và sông nước tuyệt đẹp" },
+        { lat: 26.5, lng: 104.5, name: "Rừng Libo (Guizhou) - Rừng nhiệt đới với hệ sinh thái đa dạng" },
+        { lat: 25.0, lng: 102.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 24.0, lng: 101.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
+        { lat: 23.5, lng: 100.5, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 22.0, lng: 99.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 21.5, lng: 98.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
+        { lat: 20.0, lng: 97.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 19.5, lng: 96.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 19.0, lng: 95.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
+        { lat: 18.5, lng: 94.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 18.0, lng: 93.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 17.5, lng: 92.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
+        { lat: 17.0, lng: 91.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 16.5, lng: 90.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 16.0, lng: 89.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
+        { lat: 15.5, lng: 88.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+        { lat: 15.0, lng: 87.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
+    
+    ],
+
+    "Vietnam": [
+        { lat: 21.0, lng: 105.5, name: "Rừng Cúc Phương (Ninh Bình)" },
+        { lat: 22.5, lng: 104.0, name: "Rừng Hoàng Liên (Lào Cai)" },
+        { lat: 20.5, lng: 106.0, name: "Rừng Tam Đảo (Vĩnh Phúc)" },
+        { lat: 18.5, lng: 105.0, name: "Rừng Phong Nha-Kẻ Bàng (Quảng Bình)" },
+        { lat: 17.0, lng: 106.5, name: "Rừng Cát Bà (Hải Phòng)" },
+        { lat: 19.0, lng: 105.5, name: "Rừng Ba Vì (Hà Nội)" },
+        { lat: 16.0, lng: 108.0, name: "Rừng Kon Ka Kinh (Gia Lai)" },
+        { lat: 14.5, lng: 108.5, name: "Rừng Núi Chúa (Ninh Thuận)" },
+        { lat: 13.0, lng: 109.0, name: "Rừng Bù Gia Mập (Bình Phước)" },
+        { lat: 12.0, lng: 109.5, name: "Rừng Côn Đảo (Bà Rịa-Vũng Tàu)" },
+        { lat: 11.0, lng: 110.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: 10.5, lng: 106.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: 9.5, lng: 105.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: 9.0, lng: 104.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: 8.5, lng: 104.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: 8.0, lng: 103.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: 7.5, lng: 103.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: 7.0, lng: 102.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: 6.5, lng: 102.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: 6.0, lng: 101.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: 5.5, lng: 101.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: 5.0, lng: 100.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: 4.5, lng: 100.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: 4.0, lng: 99.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: 3.5, lng: 99.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: 3.0, lng: 98.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: 2.5, lng: 98.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: 2.0, lng: 97.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: 1.5, lng: 97.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: 1.0, lng: 96.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: 0.5, lng: 96.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: 0.0, lng: 95.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -0.5, lng: 95.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -1.0, lng: 94.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -1.5, lng: 94.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -2.0, lng: 93.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -2.5, lng: 93.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -3.0, lng: 92.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -3.5, lng: 92.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -4.0, lng: 91.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -4.5, lng: 91.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -5.0, lng: 90.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -5.5, lng: 90.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -6.0, lng: 89.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -6.5, lng: 89.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -7.0, lng: 88.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -7.5, lng: 88.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -8.0, lng: 87.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -8.5, lng: 87.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -9.0, lng: 86.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -9.5, lng: 86.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -10.0, lng: 85.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -10.5, lng: 85.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -11.0, lng: 84.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -11.5, lng: 84.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -12.0, lng: 83.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -12.5, lng: 83.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -13.0, lng: 82.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -13.5, lng: 82.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -14.0, lng: 81.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -14.5, lng: 81.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -15.0, lng: 80.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -15.5, lng: 80.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -16.0, lng: 79.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -16.5, lng: 79.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -17.0, lng: 78.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -17.5, lng: 78.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -18.0, lng: 77.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -18.5, lng: 77.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -19.0, lng: 76.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -19.5, lng: 76.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -20.0, lng: 75.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -20.5, lng: 75.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -21.0, lng: 74.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -21.5, lng: 74.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -22.0, lng: 73.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -22.5, lng: 73.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -23.0, lng: 72.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -23.5, lng: 72.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -24.0, lng: 71.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -24.5, lng: 71.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -25.0, lng: 70.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -25.5, lng: 70.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -26.0, lng: 69.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -26.5, lng: 69.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -27.0, lng: 68.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -27.5, lng: 68.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -28.0, lng: 67.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -28.5, lng: 67.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -29.0, lng: 66.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -29.5, lng: 66.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -30.0, lng: 65.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -30.5, lng: 65.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -31.0, lng: 64.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -31.5, lng: 64.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -32.0, lng: 63.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -32.5, lng: 63.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -33.0, lng: 62.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -33.5, lng: 62.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -34.0, lng: 61.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -34.5, lng: 61.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -35.0, lng: 60.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -35.5, lng: 60.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -36.0, lng: 59.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -36.5, lng: 59.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat: -37.0, lng: 58.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
+        { lat: -37.5, lng: 58.0, name: "Rừng Đa Mi (Bình Thuận)" },
+        { lat: -38.0, lng: 57.5, name: "Rừng Phú Lâm (Cà Mau)" },
+        { lat: -38.5, lng: 57.0, name: "Rừng Phú Quốc (Kiên Giang)" },
+        { lat: -39.0, lng: 56.5, name: "Rừng Cần Giờ (TP.HCM)" },
+        { lat: -39.5, lng: 56.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
+        { lat: -40.0, lng: 55.5, name: "Rừng U Minh Hạ (Cà Mau)" },
+        { lat: -40.5, lng: 55.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: -41.0, lng: 54.5, name: "Rừng Láng Sen (Long An)" },
+        { lat: -41.5, lng: 54.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: -42.0, lng: 53.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: -42.5, lng: 53.0, name: "Rừng Cát Tiên (Đồng Nai)" },
+        { lat: -43.0, lng: 52.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
+        { lat: -43.5, lng: 52.0, name: "Rừng Phước Long (Bình Phước)" },
     ]
 };
+
+
+
+
+
+
+
+
+
+
+
+// Dữ liệu khoáng sản thô (RAW MINERALS) - Vị trí, tên, biểu tượng và loại tài nguyên (TÀI NGUYÊN THIÊN NHIÊN)
 
 const RAW_MINERALS = {
     "Russia": [
@@ -2942,6 +3110,10 @@ const RAW_MINERALS = {
     ]
 };
 
+
+
+// Dữ liệu động vật hoang dã (động vật biểu tượng) ở Nga, Việt Nam và Nhật Bản (ĐỘNG VẬT HOANG DÃ ĐẶC TRƯNG CỦA CÁC QUỐC GIA)
+
 const RAW_ANIMALS = {
     "Russia": [
         { lat: 65.0, lng: 105.0, name: "Sói Chúa Siberia", icon: "🐺", cat: "wolf" },
@@ -3028,7 +3200,7 @@ const RAW_ANIMALS = {
 
 
 
-
+// Dữ liệu ngư trường và hải sản đặc trưng ở Nga, Việt Nam và Nhật Bản (NGƯ TRƯỜNG VÀ HẢI SẢN BIỂU TƯỢNG)
 
 const RAW_FISH = {
     "Russia": [
