@@ -923,7 +923,7 @@ left-group {
 </div>
 
 
-<!-- Modal cài đặt mờ mờ (ẩn mặc định) -->
+<!-- Modal cài đặt hệ thống -->
 <div id="settings-modal" class="settings-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -931,29 +931,43 @@ left-group {
             <button class="modal-close" onclick="closeSettingsModal()">×</button>
         </div>
         <div class="modal-body">
+
             <label class="setting-item">
                 <input type="checkbox" id="toggle-ticker" onchange="toggleNewsTicker(this.checked)">
                 Hiển thị thanh tin tức (ticker)
             </label>
-            
-            <!-- Thêm tùy chọn khác ở đây sau -->
+
             <label class="setting-item">
                 <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
                 Bật chế độ cinematic (ẩn UI)
             </label>
+
             <label class="setting-item">
                 <input type="checkbox" id="toggle-political" checked onchange="togglePoliticalStatus(this.checked)">
                 Hiển thị tình hình chính trị (vùng chiến sự)
             </label>
-            <span>Nút tắt</span>
-            <span>K: Mở bảng Keyframe</span>
-            <span>H: Tắt những thanh hỗ trợ</span>
-            
-<label class="setting-item">
-    <button type="button" onclick="toggleBaseMap()" style="width:100%; padding:8px; background:#00bfff; color:#000; border:none; border-radius:6px; font-weight:bold;">
-        🔄 Chuyển nền bản đồ
-    </button>
-</label>
+
+            <!-- NÚT MỚI: TẮT KINH - VĨ ĐỘ -->
+            <label class="setting-item">
+                <button type="button" id="toggle-latlon-btn"
+                        style="width:100%; padding:10px; background:#00bfff; color:#000; border:none; border-radius:8px; font-weight:bold; font-size:14px;">
+                    🌐 Tắt tất cả Kinh - Vĩ độ
+                </button>
+            </label>
+
+            <label class="setting-item">
+                <button type="button" onclick="toggleBaseMap()" 
+                        style="width:100%; padding:10px; background:#00bfff; color:#000; border:none; border-radius:8px; font-weight:bold; font-size:14px;">
+                    🔄 Chuyển nền bản đồ
+                </button>
+            </label>
+
+            <div style="margin-top:15px; padding-top:10px; border-top:1px solid #444; color:#888; font-size:13px;">
+                <strong>Phím tắt:</strong><br>
+                K: Mở bảng Keyframe<br>
+                H: Tắt thanh hỗ trợ
+            </div>
+
         </div>
     </div>
 </div>
@@ -2681,7 +2695,48 @@ const RAW_MINERALS = {
         { lat: 67.6, lng: 64.0, name: "Mỏ than Vorkuta", icon: "⬛", cat: "coal" },
         { lat: 51.3, lng: 36.2, name: "Dị thường sắt Kursk", icon: "⛓️", cat: "iron" },
         { lat: 55.3, lng: 86.0, name: "Kemerovo Mine", icon: "⬛", cat: "coal" },
-        { lat: 53.3, lng: 59.0, name: "Siêu mỏ Sắt Magnitogorsk", icon: "⛓️", cat: "iron" }
+        { lat: 53.3, lng: 59.0, name: "Siêu mỏ Sắt Magnitogorsk", icon: "⛓️", cat: "iron" },
+        { lat: 56.0, lng: 60.0, name: "Mỏ sắt Magnitogorsk", icon: "⛓️", cat: "iron" },
+        { lat: 57.0, lng: 60.5, name: "Mỏ sắt Magnitogorsk-2", icon: "⛓️", cat: "iron" },
+        { lat: 58.0, lng: 61.0, name: "Mỏ sắt Magnitogorsk-3", icon: "⛓️", cat: "iron" },
+        { lat: 59.0, lng: 61.5, name: "Mỏ sắt Magnitogorsk-4", icon: "⛓️", cat: "iron" },
+        { lat: 60.0, lng: 62.0, name: "Mỏ sắt Magnitogorsk-5", icon: "⛓️", cat: "iron" },
+        { lat: 61.0, lng: 62.5, name: "Mỏ sắt Magnitogorsk-6", icon: "⛓️", cat: "iron" },
+        { lat: 62.0, lng: 63.0, name: "Mỏ sắt Magnitogorsk-7", icon: "⛓️", cat: "iron" },
+        { lat: 63.0, lng: 63.5, name: "Mỏ sắt Magnitogorsk-8", icon: "⛓️", cat: "iron" },
+        { lat: 64.0, lng: 64.0, name: "Mỏ sắt Magnitogorsk-9", icon: "⛓️", cat: "iron" },
+        { lat: 65.0, lng: 64.5, name: "Mỏ sắt Magnitogorsk-10", icon: "⛓️", cat: "iron" },
+        { lat: 66.0, lng: 65.0, name: "Mỏ sắt Magnitogorsk-11", icon: "⛓️", cat: "iron" },
+        { lat: 67.0, lng: 65.5, name: "Mỏ sắt Magnitogorsk-12", icon: "⛓️", cat: "iron" },
+        { lat: 68.0, lng: 66.0, name: "Mỏ sắt Magnitogorsk-13", icon: "⛓️", cat: "iron" },
+        { lat: 69.0, lng: 66.5, name: "Mỏ sắt Magnitogorsk-14", icon: "⛓️", cat: "iron" },
+        { lat: 70.0, lng: 67.0, name: "Mỏ sắt Magnitogorsk-15", icon: "⛓️", cat: "iron" },
+        { lat: 71.0, lng: 67.5, name: "Mỏ sắt Magnitogorsk-16", icon: "⛓️", cat: "iron" },
+        { lat: 72.0, lng: 68.0, name: "Mỏ sắt Magnitogorsk-17", icon: "⛓️", cat: "iron" },
+        { lat: 73.0, lng: 68.5, name: "Mỏ sắt Magnitogorsk-18", icon: "⛓️", cat: "iron" },
+        { lat: 74.0, lng: 69.0, name: "Mỏ sắt Magnitogorsk-19", icon: "⛓️", cat: "iron" },
+        { lat: 75.0, lng: 69.5, name: "Mỏ sắt Magnitogorsk-20", icon: "⛓️", cat: "iron" },
+        { lat: 76.0, lng: 70.0, name: "Mỏ sắt Magnitogorsk-21", icon: "⛓️", cat: "iron" },
+        { lat: 77.0, lng: 70.5, name: "Mỏ sắt Magnitogorsk-22", icon: "⛓️", cat: "iron" },
+        { lat: 78.0, lng: 71.0, name: "Mỏ sắt Magnitogorsk-23", icon: "⛓️", cat: "iron" },
+        { lat: 79.0, lng: 71.5, name: "Mỏ sắt Magnitogorsk-24", icon: "⛓️", cat: "iron" },
+        { lat: 80.0, lng: 72.0, name: "Mỏ sắt Magnitogorsk-25", icon: "⛓️", cat: "iron" },
+        { lat: 81.0, lng: 72.5, name: "Mỏ sắt Magnitogorsk-26", icon: "⛓️", cat: "iron" },
+        { lat: 82.0, lng: 73.0, name: "Mỏ sắt Magnitogorsk-27", icon: "⛓️", cat: "iron" },
+        { lat: 83.0, lng: 73.5, name: "Mỏ sắt Magnitogorsk-28", icon: "⛓️", cat: "iron" },
+        { lat: 84.0, lng: 74.0, name: "Mỏ sắt Magnitogorsk-29", icon: "⛓️", cat: "iron" },
+        { lat: 85.0, lng: 74.5, name: "Mỏ sắt Magnitogorsk-30", icon: "⛓️", cat: "iron" },
+        { lat: 86.0, lng: 75.0, name: "Mỏ sắt Magnitogorsk-31", icon: "⛓️", cat: "iron" },
+        { lat: 87.0, lng: 75.5, name: "Mỏ sắt Magnitogorsk-32", icon: "⛓️", cat: "iron" },
+        { lat: 88.0, lng: 76.0, name: "Mỏ sắt Magnitogorsk-33", icon: "⛓️", cat: "iron" },
+        { lat: 89.0, lng: 76.5, name: "Mỏ sắt Magnitogorsk-34", icon: "⛓️", cat: "iron" },
+        { lat: 90.0, lng: 77.0, name: "Mỏ sắt Magnitogorsk-35", icon: "⛓️", cat: "iron" },
+        { lat: 91.0, lng: 77.5, name: "Mỏ sắt Magnitogorsk-36", icon: "⛓️", cat: "iron" },
+        { lat: 92.0, lng: 78.0, name: "Mỏ sắt Magnitogorsk-37", icon: "⛓️", cat: "iron" },
+        { lat: 93.0, lng: 78.5, name: "Mỏ sắt Magnitogorsk-38", icon: "⛓️", cat: "iron" },
+        { lat: 94.0, lng: 79.0, name: "Mỏ sắt Magnitogorsk-39", icon: "⛓️", cat: "iron" },
+        { lat: 95.0, lng: 79.5, name: "Mỏ sắt Magnitogorsk-40", icon: "⛓️", cat: "iron" },
+
     ],
     "Vietnam": [
         { lat: 20.95, lng: 107.05, name: "Mỏ than Cọc Sáu", icon: "⬛", cat: "coal" },
@@ -2695,8 +2750,21 @@ const RAW_MINERALS = {
         { lat: 11.6, lng: 111.4, name: "Mỏ dầu Biển Đông 1", icon: "🛢️", cat: "oil" },
         { lat: 12.0, lng: 111.9, name: "Mỏ dầu Biển Đông 2", icon: "🛢️", cat: "oil" },
         { lat: 12.5, lng: 113.0, name: "Mỏ khí Biển Đông", icon: "💨", cat: "gas" },
-        { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" }
-    ],
+        { lat: 21.9, lng: 104.9, name: "Đá quý Lục Yên", icon: "💎", cat: "gold" },
+        { lat: 20.5, lng: 106.0, name: "Mỏ vàng Phú Lộc", icon: "🟡", cat: "gold" },
+        { lat: 19.8, lng: 105.5, name: "Mỏ vàng Lào Cai", icon: "🟡", cat: "gold" },
+        { lat: 18.2, lng: 106.1, name: "Mỏ vàng Quỳ Châu (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 17.5, lng: 107.0, name: "Mỏ vàng Sông Mã (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 16.8, lng: 108.0, name: "Mỏ vàng Phước Sơn (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 15.5, lng: 108.5, name: "Mỏ vàng Núi Pháo (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 14.2, lng: 109.0, name: "Mỏ vàng Bồng Miêu (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 13.0, lng: 109.5, name: "Mỏ vàng Lâm Đồng (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 12.0, lng: 110.0, name: "Mỏ vàng Phú Quốc (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 11.0, lng: 110.5, name: "Mỏ vàng Côn Đảo (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 10.0, lng: 111.0, name: "Mỏ vàng Cà Mau (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 9.0, lng: 111.5, name: "Mỏ vàng Hòn Khoai (Hàm lượng cao)", icon: "🟡", cat: "gold" },
+        { lat: 8.0, lng: 112.0, name: "Mỏ vàng Phú Quý (Hàm lượng cao)", icon: "🟡", cat: "gold" }
+        ],
     "Japan": [
         { lat: 38.0, lng: 138.3, name: "Siêu mỏ vàng Sado (Đảo Sado)", icon: "🟡", cat: "gold" },
         { lat: 35.1, lng: 132.4, name: "Mỏ bạc Iwami Ginzan", icon: "💍", cat: "gold" },
@@ -4560,6 +4628,126 @@ function generateEnergyData() {
     // ===== 🇲🇳 MÔNG CỔ =====
     { lat: 47.92, lng: 106.92, name: "Ulaanbaatar Thermal Power", icon: "🔥", cat: "power_plant", country: "mongolia", details: "Nhiệt điện than cung cấp thủ đô." },
 
+    // ===== 🇳🇵 NEPAL =====
+    { lat: 27.70, lng: 85.32, name: "Upper Tamakoshi Hydropower", icon: "💧", cat: "power_plant", country: "nepal", details: "Thủy điện lớn nhất Nepal." },
+
+    // ===== 🇦🇫 AFGHANISTAN =====
+    { lat: 34.52, lng: 69.17, name: "Naghlu Dam", icon: "💧", cat: "power_plant", country: "afghanistan", details: "Thủy điện lớn nhất Afghanistan." },
+
+    // ===== 🇮🇷 IRAN =====
+    { lat: 32.65, lng: 51.68, name: "Karun-3 Dam", icon: "💧", cat: "power_plant", country: "iran", details: "Thủy điện lớn nhất Iran." },
+
+    // ===== 🇸🇦 Ả RẬP XÊ ÚT =====
+    { lat: 24.71, lng: 46.67, name: "Riyadh Power Plants", icon: "🔥", cat: "power_plant", country: "saudi_arabia", details: "Nhiệt điện cung cấp cho thủ đô." },
+
+    // ===== 🇦🇪 UAE =====
+    { lat: 24.47, lng: 54.37, name: "Barakah Nuclear Power Plant", icon: "⚛️", cat: "nuclear", country: "uae", details: "Nhà máy điện hạt nhân đầu tiên ở Trung Đông." },
+
+    // ===== 🇮🇶 IRAQ =====
+    { lat: 33.31, lng: 44.36, name: "Haditha Dam", icon: "💧", cat: "power_plant", country: "iraq", details: "Thủy điện lớn nhất Iraq." },
+
+    // ===== 🇸🇾 SYRIA =====
+    { lat: 35.51, lng: 36.29, name: "Tabqa Dam", icon: "💧", cat: "power_plant", country: "syria", details: "Thủy điện lớn nhất Syria." },
+
+    // ===== 🇾🇪 YEMEN =====
+    { lat: 15.35, lng: 44.20, name: "Marib Dam", icon: "💧", cat: "power_plant", country: "yemen", details: "Thủy điện lớn nhất Yemen." },
+
+    // ===== 🇪🇬 AI CẬP =====
+    { lat: 30.80, lng: 31.15, name: "Aswan High Dam", icon: "💧", cat: "power_plant", country: "egypt", details: "Đập lớn trên sông Nile." },
+
+    // ===== 🇹🇷 THỔ NHĨ KỲ =====
+    { lat: 37.87, lng: 32.48, name: "Atatürk Dam", icon: "💧", cat: "power_plant", country: "turkey", details: "Thủy điện lớn nhất Thổ Nhĩ Kỳ." },
+
+    // ===== 🇮🇱 ISRAEL =====
+    { lat: 32.08, lng: 34.78, name: "Dimona Nuclear Complex", icon: "⚛️", cat: "nuclear", country: "israel", details: "Nhà máy điện hạt nhân lớn nhất Israel." },
+
+    // ===== 🇯ORDAN =====
+    { lat: 31.95, lng: 35.93, name: "Al-Wehda Dam", icon: "💧", cat: "power_plant", country: "jordan", details: "Thủy điện lớn nhất Jordan." },
+
+    // ===== 🇶🇦 QATAR =====
+    { lat: 25.29, lng: 51.53, name: "Ras Laffan Power & Desalination", icon: "🔥", cat: "power_plant", country: "qatar", details: "Trung tâm điện và nước lớn nhất Qatar." },
+
+    // ===== 🇧🇭 BAHRAIN =====
+    { lat: 26.23, lng: 50.58, name: "Bahrain Power & Water", icon: "🔥", cat: "power_plant", country: "bahrain", details: "Nhà máy điện và nước lớn nhất Bahrain." },
+
+    //
+
+    // ===== 🇸🇬 SINGAPORE =====
+    { lat: 1.35, lng: 103.70, name: "Singapore Power Grid", icon: "⚡", cat: "power_plant", country: "singapore", details: "Hệ thống điện quốc gia Singapore." },
+
+    // ====================== CHÂU MỸ ======================
+
+    // ===== 🇺🇸 MỸ =====
+    { lat: 36.97, lng: -122.03, name: "Diablo Canyon Nuclear", icon: "⚛️", cat: "nuclear", country: "usa", details: "Nhà máy điện hạt nhân duy nhất trên bờ biển phía Tây." },
+    { lat: 40.44, lng: -79.99, name: "Pittsburgh Power Plants", icon: "🔥", cat: "power_plant", country: "usa", details: "Nhiệt điện than và khí đốt cung cấp cho vùng Pittsburgh." },
+    { lat: 29.76, lng: -95.36, name: "Houston Energy Hub", icon: "⚡", cat: "power_plant", country: "usa", details: "Trung tâm năng lượng lớn nhất thế giới." },
+
+    // ===== 🇨🇦 CANADA =====
+    { lat: 45.42, lng: -75.69, name: "Ottawa Hydro Power", icon: "💧", cat: "power_plant", country: "canada", details: "Thủy điện cung cấp cho thủ đô." },
+    { lat: 43.65, lng: -79.38, name: "Toronto Power Grid", icon: "⚡", cat: "power_plant", country: "canada", details: "Hệ thống điện lớn nhất Canada." },
+    { lat: 46.81, lng: -71.21, name: "Quebec Hydro Power", icon: "💧", cat: "power_plant", country: "canada", details: "Thủy điện lớn nhất thế giới." },
+
+    // ===== 🇧🇷 BRAZIL =====
+    { lat: -3.81, lng: -38.54, name: "Itaipu Dam", icon: "💧", cat: "power_plant", country: "brazil", details: "Đập lớn thứ hai thế giới." },
+    { lat: -23.55, lng: -46.63, name: "São Paulo Power Grid", icon: "⚡", cat: "power_plant", country: "brazil", details: "Hệ thống điện lớn nhất Brazil." },
+    { lat: -15.78, lng: -47.93, name: "Brasília Power Plants", icon: "🔥", cat: "power_plant", country: "brazil", details: "Nhiệt điện than và khí đốt cung cấp thủ đô." },
+
+    // ===== 🇦🇷 ARGENTINA =====
+    { lat: -34.60, lng: -58.38, name: "Buenos Aires Power Grid", icon: "⚡", cat: "power_plant", country: "argentina", details: "Hệ thống điện lớn nhất Argentina." },
+    { lat: -32.95, lng: -60.65, name: "Atucha Nuclear Complex", icon: "⚛️", cat: "nuclear", country: "argentina", details: "Nhà máy điện hạt nhân lớn nhất Argentina." },
+    { lat: -31.42, lng: -64.18, name: "Cordoba Thermal Power", icon: "🔥", cat: "power_plant", country: "argentina", details: "Nhiệt điện than cung cấp cho vùng Cordoba." },
+
+    // ===== 🇨🇱 CHILE =====
+    { lat: -33.45, lng: -70.66, name: "Santiago Power Grid", icon: "⚡", cat: "power_plant", country: "chile", details: "Hệ thống điện lớn nhất Chile." },
+    { lat: -36.82, lng: -73.05, name: "Chilean Hydro Power", icon: "💧", cat: "power_plant", country: "chile", details: "Thủy điện lớn ở miền Nam Chile." },
+    { lat: -20.57, lng: -70.15, name: "Atacama Solar Farms", icon: "☀️", cat: "renewable", country: "chile", details: "Vùng điện mặt trời lớn nhất thế giới." },
+
+    // ===== 🇵🇪 PERU =====
+    { lat: -12.04, lng: -77.03, name: "Lima Power Grid", icon: "⚡", cat: "power_plant", country: "peru", details: "Hệ thống điện lớn nhất Peru." },
+    { lat: -9.19, lng: -75.01, name: "Peruvian Hydro Power", icon: "💧", cat: "power_plant", country: "peru", details: "Thủy điện lớn ở miền Trung Peru." },
+    { lat: -15.84, lng: -70.02, name: "Andes Solar Farms", icon: "☀️", cat: "renewable", country: "peru", details: "Vùng điện mặt trời lớn ở dãy Andes." },
+
+    // ===== 🇻ENEZUELA =====
+    { lat: 10.48, lng: -66.90, name: "Guri Dam", icon: "💧", cat: "power_plant", country: "venezuela", details: "Đập lớn nhất Venezuela." },
+    { lat: 8.77, lng: -63.87, name: "Caroni River Hydro", icon: "💧", cat: "power_plant", country: "venezuela", details: "Thủy điện lớn trên sông Caroni." },
+    { lat: 10.50, lng: -66.90, name: "Venezuelan Power Grid", icon: "⚡", cat: "power_plant", country: "venezuela", details: "Hệ thống điện quốc gia." },
+
+    // ===== 🇨🇴 COLOMBIA =====
+    { lat: 4.71, lng: -74.07, name: "Bogotá Power Grid", icon: "⚡", cat: "power_plant", country: "colombia", details: "Hệ thống điện lớn nhất Colombia." },
+    { lat: 6.25, lng: -75.57, name: "Colombian Hydro Power", icon: "💧", cat: "power_plant", country: "colombia", details: "Thủy điện lớn ở miền Tây Colombia." },
+    { lat: 3.45, lng: -76.53, name: "Colombian Solar Farms", icon: "☀️", cat: "renewable", country: "colombia", details: "Vùng điện mặt trời lớn ở miền Nam Colombia." },
+
+    // ===== 🇪🇨 ECUADOR =====
+    { lat: -0.18, lng: -78.47, name: "Quito Power Grid", icon: "⚡", cat: "power_plant", country: "ecuador", details: "Hệ thống điện lớn nhất Ecuador." },
+    { lat: -1.29, lng: -78.48, name: "Ecuadorian Hydro Power", icon: "💧", cat: "power_plant", country: "ecuador", details: "Thủy điện lớn ở miền Trung Ecuador." },
+    { lat: -2.15, lng: -79.90, name: "Ecuador Solar Farms", icon: "☀️", cat: "renewable", country: "ecuador", details: "Vùng điện mặt trời lớn ở miền Nam Ecuador." },
+
+    // ===== 🇺🇾 URUGUAY =====
+    { lat: -34.90, lng: -56.16, name: "Montevideo Power Grid", icon: "⚡", cat: "power_plant", country: "uruguay", details: "Hệ thống điện lớn nhất Uruguay." },
+    { lat: -32.35, lng: -58.08, name: "Uruguayan Hydro Power", icon: "💧", cat: "power_plant", country: "uruguay", details: "Thủy điện lớn ở miền Đông Uruguay." },
+    { lat: -34.50, lng: -56.17, name: "Uruguay Solar Farms", icon: "☀️", cat: "renewable", country: "uruguay", details: "Vùng điện mặt trời lớn ở miền Nam Uruguay." },
+
+    // ===== 🇵🇾 PARAGUAY =====
+    { lat: -25.28, lng: -57.64, name: "Asunción Power Grid", icon: "⚡", cat: "power_plant", country: "paraguay", details: "Hệ thống điện lớn nhất Paraguay." },
+    { lat: -24.35, lng: -56.70, name: "Paraguayan Hydro Power", icon: "💧", cat: "power_plant", country: "paraguay", details: "Thủy điện lớn ở miền Đông Paraguay." },
+    { lat: -25.50, lng: -57.65, name: "Paraguay Solar Farms", icon: "☀️", cat: "renewable", country: "paraguay", details: "Vùng điện mặt trời lớn ở miền Nam Paraguay." },
+
+    // ===== 🇧🇴 BOLIVIA =====
+    { lat: -16.50, lng: -68.15, name: "La Paz Power Grid", icon: "⚡", cat: "power_plant", country: "bolivia", details: "Hệ thống điện lớn nhất Bolivia." },
+    { lat: -17.40, lng: -66.16, name: "Bolivian Hydro Power", icon: "💧", cat: "power_plant", country: "bolivia", details: "Thủy điện lớn ở miền Đông Bolivia." },
+    { lat: -16.50, lng: -68.15, name: "Bolivia Solar Farms", icon: "☀️", cat: "renewable", country: "bolivia", details: "Vùng điện mặt trời lớn ở miền Nam Bolivia." },
+
+    // ===== 🇬UYANA =====
+    { lat: 6.80, lng: -58.15, name: "Georgetown Power Grid", icon: "⚡", cat: "power_plant", country: "guyana", details: "Hệ thống điện lớn nhất Guyana." },
+    { lat: 5.85, lng: -59.15, name: "Guyana Hydro Power", icon: "💧", cat: "power_plant", country: "guyana", details: "Thủy điện lớn ở miền Tây Guyana." },
+    { lat: 6.80, lng: -58.15, name: "Guyana Solar Farms", icon: "☀️", cat: "renewable", country: "guyana", details: "Vùng điện mặt trời lớn ở miền Nam Guyana." },
+
+    // ===== 🇸🇷 SURINAME =====
+    { lat: 5.85, lng: -55.17, name: "Paramaribo Power Grid", icon: "⚡", cat: "power_plant", country: "suriname", details: "Hệ thống điện lớn nhất Suriname." },
+    { lat: 5.85, lng: -55.17, name: "Suriname Hydro Power", icon: "💧", cat: "power_plant", country: "suriname", details: "Thủy điện lớn ở miền Tây Suriname." },
+    { lat: 5.85, lng: -55.17, name: "Suriname Solar Farms", icon: "☀️", cat: "renewable", country: "suriname", details: "Vùng điện mặt trời lớn ở miền Nam Suriname." },
+
+
 
 
 
@@ -4606,6 +4794,151 @@ function generateEnergyData() {
     // ===== 🇺🇦 UKRAINE =====
     { lat: 50.45, lng: 30.52, name: "Kyiv Energy Grid", icon: "⚡", cat: "power_plant", country: "ukraine", details: "Hệ thống lưới điện thủ đô Kyiv." },
     { lat: 47.50, lng: 34.00, name: "Zaporizhzhia Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "ukraine", details: "Nhà máy điện hạt nhân lớn nhất châu Âu." },
+
+    // ===== 🇭🇺 HUNGARY =====
+    { lat: 47.50, lng: 19.04, name: "Budapest Power Grid", icon: "⚡", cat: "power_plant", country: "hungary", details: "Hệ thống điện thủ đô Budapest." },
+    { lat: 46.90, lng: 17.90, name: "Paks Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "hungary", details: "Nhà máy điện hạt nhân duy nhất của Hungary." },
+
+    // ===== 🇨🇿 CZECH REPUBLIC =====
+    { lat: 50.08, lng: 14.43, name: "Prague Power Grid", icon: "⚡", cat: "power_plant", country: "czech_republic", details: "Hệ thống điện thủ đô Prague." },
+    { lat: 49.80, lng: 14.30, name: "Dukovany Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "czech_republic", details: "Nhà máy điện hạt nhân lớn nhất Czech." },
+
+    // ===== 🇷🇴 ROMANIA =====
+    { lat: 44.43, lng: 26.10, name: "Bucharest Power Grid", icon: "⚡", cat: "power_plant", country: "romania", details: "Hệ thống điện thủ đô Bucharest." },
+    { lat: 44.35, lng: 28.63, name: "Cernavodă Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "romania", details: "Nhà máy điện hạt nhân duy nhất của Romania." },
+
+    // ===== 🇧🇬 BULGARIA =====
+    { lat: 42.70, lng: 23.33, name: "Sofia Power Grid", icon: "⚡", cat: "power_plant", country: "bulgaria", details: "Hệ thống điện thủ đô Sofia." },
+    { lat: 42.41, lng: 27.23, name: "Kozloduy Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "bulgaria", details: "Nhà máy điện hạt nhân duy nhất của Bulgaria." },
+
+    // ===== 🇸🇰 SLOVAKIA =====
+    { lat: 48.15, lng: 17.11, name: "Bratislava Power Grid", icon: "⚡", cat: "power_plant", country: "slovakia", details: "Hệ thống điện thủ đô Bratislava." },
+    { lat: 48.30, lng: 17.60, name: "Mochovce Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "slovakia", details: "Nhà máy điện hạt nhân lớn nhất Slovakia." },
+
+    // ===== 🇸🇮 SLOVENIA =====
+    { lat: 46.05, lng: 14.51, name: "Ljubljana Power Grid", icon: "⚡", cat: "power_plant", country: "slovenia", details: "Hệ thống điện thủ đô Ljubljana." },
+    { lat: 45.80, lng: 13.50, name: "Krško Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "slovenia", details: "Nhà máy điện hạt nhân duy nhất của Slovenia." },
+
+    // ===== 🇭🇷 CROATIA =====
+    { lat: 45.81, lng: 15.98, name: "Zagreb Power Grid", icon: "⚡", cat: "power_plant", country: "croatia", details: "Hệ thống điện thủ đô Zagreb." },
+    { lat: 45.20, lng: 14.50, name: "Krsko Nuclear Plant", icon: "⚛️", cat: "nuclear", country: "croatia", details: "Nhà máy điện hạt nhân duy nhất của Croatia." },
+
+    // ===== 🇬🇷 HY LẠP =====
+    { lat: 37.98, lng: 23.73, name: "Athens Power Grid", icon: "⚡", cat: "power_plant", country: "greece", details: "Hệ thống điện thủ đô Athens." },
+    { lat: 40.63, lng: 22.94, name: "Greek Renewable Energy", icon: "☀️", cat: "renewable", country: "greece", details: "Năng lượng tái tạo ở miền Bắc Hy Lạp." },
+
+    // ===== 🇩🇰 ĐAN MẠCH =====
+    { lat: 55.68, lng: 12.57, name: "Copenhagen Power Grid", icon: "⚡", cat: "power_plant", country: "denmark", details: "Hệ thống điện thủ đô Copenhagen." },
+    { lat: 56.16, lng: 10.21, name: "Danish Offshore Wind", icon: "🌬️", cat: "renewable", country: "denmark", details: "Vùng gió ngoài khơi lớn nhất Đan Mạch." },
+
+    // ===== 🇫🇮 PHẦN LAN =====
+    { lat: 60.17, lng: 24.94, name: "Helsinki Power Grid", icon: "⚡", cat: "power_plant", country: "finland", details: "Hệ thống điện thủ đô Helsinki." },
+    { lat: 65.01, lng: 25.47, name: "Finnish Hydro & Wind", icon: "💧", cat: "renewable", country: "finland", details: "Thủy điện và gió lớn ở miền Bắc Phần Lan." },
+
+    // ===== 🇮🇪 AIL LAN =====
+    { lat: 53.35, lng: -6.26, name: "Dublin Power Grid", icon: "⚡", cat: "power_plant", country: "ireland", details: "Hệ thống điện thủ đô Dublin." },
+    { lat: 54.60, lng: -5.93, name: "Irish Offshore Wind", icon: "🌬️", cat: "renewable", country: "ireland", details: "Vùng gió ngoài khơi lớn nhất Ireland." },
+    
+    // ===== 🇱🇹 LITVA =====
+    { lat: 54.68, lng: 25.28, name: "Vilnius Power Grid", icon: "⚡", cat: "power_plant", country: "lithuania", details: "Hệ thống điện thủ đô Vilnius." },
+    { lat: 55.35, lng: 21.20, name: "Lithuanian Renewable Energy", icon: "☀️", cat: "renewable", country: "lithuania", details: "Năng lượng tái tạo ở miền Tây Litva." },
+
+    // ===== 🇱🇻 LETTONIA =====
+    { lat: 56.95, lng: 24.11, name: "Riga Power Grid", icon: "⚡", cat: "power_plant", country: "latvia", details: "Hệ thống điện thủ đô Riga." },
+    { lat: 57.15, lng: 21.50, name: "Latvian Renewable Energy", icon: "☀️", cat: "renewable", country: "latvia", details: "Năng lượng tái tạo ở miền Tây Latvia." },
+
+    // ===== 🇪🇪 ESTONIA =====
+    { lat: 59.44, lng: 24.75, name: "Tallinn Power Grid", icon: "⚡", cat: "power_plant", country: "estonia", details: "Hệ thống điện thủ đô Tallinn." },
+    { lat: 58.50, lng: 22.50, name: "Estonian Renewable Energy", icon: "☀️", cat: "renewable", country: "estonia", details: "Năng lượng tái tạo ở miền Tây Estonia." },
+
+    // ===== 🇨🇾 SÍP =====
+    { lat: 35.17, lng: 33.36, name: "Nicosia Power Grid", icon: "⚡", cat: "power_plant", country: "cyprus", details: "Hệ thống điện thủ đô Nicosia." },
+    { lat: 34.90, lng: 32.50, name: "Cyprus Solar Farms", icon: "☀️", cat: "renewable", country: "cyprus", details: "Vùng điện mặt trời lớn ở miền Nam Cyprus." },
+
+    // ===== 🇲🇹 MALTA =====
+    { lat: 35.90, lng: 14.51, name: "Valletta Power Grid", icon: "⚡", cat: "power_plant", country: "malta", details: "Hệ thống điện thủ đô Valletta." },
+    { lat: 36.00, lng: 14.50, name: "Malta Solar Farms", icon: "☀️", cat: "renewable", country: "malta", details: "Vùng điện mặt trời lớn ở miền Nam Malta." },
+
+
+    // ====================== CHÂU PHI ======================
+
+    // ===== 🇿🇦 NAM PHI =====
+    { lat: -26.20, lng: 28.04, name: "ArcelorMittal Vanderbijlpark", icon: "🛡️", cat: "heavy_industry", country: "south_africa", details: "Nhà máy thép lớn nhất Nam Phi." },
+    { lat: -29.86, lng: 31.02, name: "Durban Power Plants", icon: "🔥", cat: "power_plant", country: "south_africa", details: "Nhiệt điện than cung cấp cho Durban." },
+    { lat: -33.87, lng: 151.21, name: "BlueScope Steel Port Kembla", icon: "⛓️", cat: "heavy_industry", country: "australia", details: "Nhà máy thép lớn nhất Úc." },
+
+    // ===== 🇪GYPT AI CẬP =====
+    { lat: 30.04, lng: 31.24, name: "Cairo Power Grid", icon: "⚡", cat: "power_plant", country: "egypt", details: "Hệ thống điện thủ đô Cairo." },
+    { lat: 29.97, lng: 31.13, name: "Egyptian Solar Farms", icon: "☀️", cat: "renewable", country: "egypt", details: "Vùng điện mặt trời lớn ở miền Nam Ai Cập." },
+    { lat: 30.80, lng: 31.00, name: "Egyptian Hydro Power", icon: "💧", cat: "power_plant", country: "egypt", details: "Thủy điện lớn trên sông Nile." },
+
+    // ===== 🇳🇬 NIGERIA =====
+    { lat: 9.08, lng: 7.49, name: "Abuja Power Grid", icon: "⚡", cat: "power_plant", country: "nigeria", details: "Hệ thống điện thủ đô Abuja." },
+    { lat: 6.45, lng: 3.39, name: "Lagos Power Plants", icon: "🔥", cat: "power_plant", country: "nigeria", details: "Nhiệt điện than cung cấp cho Lagos." },
+    { lat: 10.50, lng: 7.50, name: "Nigerian Solar Farms", icon: "☀️", cat: "renewable", country: "nigeria", details: "Vùng điện mặt trời lớn ở miền Bắc Nigeria." },
+
+    // ===== 🇰🇪 KENYA =====
+    { lat: -1.29, lng: 36.82, name: "Nairobi Power Grid", icon: "⚡", cat: "power_plant", country: "kenya", details: "Hệ thống điện thủ đô Nairobi." },
+    { lat: -0.42, lng: 36.95, name: "Kenyan Geothermal Plants", icon: "🌋", cat: "renewable", country: "kenya", details: "Nhà máy địa nhiệt lớn ở Rift Valley." },
+    { lat: -1.00, lng: 37.00, name: "Kenyan Solar Farms", icon: "☀️", cat: "renewable", country: "kenya", details: "Vùng điện mặt trời lớn ở miền Đông Kenya." },
+
+    // ===== 🇿🇼 ZIMBABWE =====
+    { lat: -17.82, lng: 31.05, name: "Harare Power Grid", icon: "⚡", cat: "power_plant", country: "zimbabwe", details: "Hệ thống điện thủ đô Harare." },
+    { lat: -18.00, lng: 31.00, name: "Zimbabwean Hydro Power", icon: "💧", cat: "power_plant", country: "zimbabwe", details: "Thủy điện lớn trên sông Zambezi." },
+    { lat: -17.50, lng: 30.50, name: "Zimbabwe Solar Farms", icon: "☀️", cat: "renewable", country: "zimbabwe", details: "Vùng điện mặt trời lớn ở miền Nam Zimbabwe." },
+
+    // ===== 🇩🇿 ALGERIA =====
+    { lat: 36.75, lng: 3.04, name: "Algiers Power Grid", icon: "⚡", cat: "power_plant", country: "algeria", details: "Hệ thống điện thủ đô Algiers." },
+    { lat: 28.03, lng: 1.66, name: "Saharan Solar Farms", icon: "☀️", cat: "renewable", country: "algeria", details: "Vùng điện mặt trời lớn ở sa mạc Sahara." },
+    { lat: 35.00, lng: 0.00, name: "Algerian Hydro Power", icon: "💧", cat: "power_plant", country: "algeria", details: "Thủy điện lớn trên sông Chelif." },
+    
+    // ===== 🇲🇦 MAROC =====
+    { lat: 33.57, lng: -7.59, name: "Rabat Power Grid", icon: "⚡", cat: "power_plant", country: "morocco", details: "Hệ thống điện thủ đô Rabat." },
+    { lat: 31.63, lng: -8.00, name: "Moroccan Solar Farms", icon: "☀️", cat: "renewable", country: "morocco", details: "Vùng điện mặt trời lớn ở sa mạc Sahara." },
+    { lat: 34.00, lng: -5.00, name: "Moroccan Hydro Power", icon: "💧", cat: "power_plant", country: "morocco", details: "Thủy điện lớn trên sông Oum Er-Rbia." },
+
+    // ===== 🇹🇳 TUNISIA =====
+    { lat: 36.80, lng: 10.18, name: "Tunis Power Grid", icon: "⚡", cat: "power_plant", country: "tunisia", details: "Hệ thống điện thủ đô Tunis." },
+    { lat: 33.88, lng: 9.56, name: "Tunisian Solar Farms", icon: "☀️", cat: "renewable", country: "tunisia", details: "Vùng điện mặt trời lớn ở miền Nam Tunisia." },
+    { lat: 36.00, lng: 10.00, name: "Tunisian Hydro Power", icon: "💧", cat: "power_plant", country: "tunisia", details: "Thủy điện lớn trên sông Medjerda." },
+
+    // ===== 🇬🇭 GHANA =====
+    { lat: 5.55, lng: -0.20, name: "Accra Power Grid", icon: "⚡", cat: "power_plant", country: "ghana", details: "Hệ thống điện thủ đô Accra." },
+    { lat: 6.70, lng: -1.60, name: "Ghanaian Hydro Power", icon: "💧", cat: "power_plant", country: "ghana", details: "Thủy điện lớn trên sông Volta." },
+    { lat: 5.00, lng: -0.50, name: "Ghana Solar Farms", icon: "☀️", cat: "renewable", country: "ghana", details: "Vùng điện mặt trời lớn ở miền Bắc Ghana." },
+
+    // ===== 🇨🇮 COTE D'IVOIRE =====
+    { lat: 5.35, lng: -4.00, name: "Abidjan Power Grid", icon: "⚡", cat: "power_plant", country: "cote_d_ivoire", details: "Hệ thống điện thủ đô Abidjan." },
+    { lat: 6.50, lng: -5.00, name: "Ivorian Hydro Power", icon: "💧", cat: "power_plant", country: "cote_d_ivoire", details: "Thủy điện lớn trên sông Bandama." },
+    { lat: 5.00, lng: -4.50, name: "Ivorian Solar Farms", icon: "☀️", cat: "renewable", country: "cote_d_ivoire", details: "Vùng điện mặt trời lớn ở miền Bắc Côte d'Ivoire." },
+
+    // ===== 🇸🇳 SENEGAL =====
+    { lat: 14.69, lng: -17.44, name: "Dakar Power Grid", icon: "⚡", cat: "power_plant", country: "senegal", details: "Hệ thống điện thủ đô Dakar." },
+    { lat: 14.00, lng: -16.00, name: "Senegalese Solar Farms", icon: "☀️", cat: "renewable", country: "senegal", details: "Vùng điện mặt trời lớn ở miền Đông Senegal." },
+    { lat: 15.00, lng: -16.50, name: "Senegalese Hydro Power", icon: "💧", cat: "power_plant", country: "senegal", details: "Thủy điện lớn trên sông Senegal." },
+
+    // ===== 🇨🇩 CONGO =====
+    { lat: -4.04, lng: 21.75, name: "Kinshasa Power Grid", icon: "⚡", cat: "power_plant", country: "congo", details: "Hệ thống điện thủ đô Kinshasa." },
+    { lat: -5.00, lng: 15.00, name: "Congolese Hydro Power", icon: "💧", cat: "power_plant", country: "congo", details: "Thủy điện lớn trên sông Congo." },
+    { lat: -4.50, lng: 22.00, name: "Congolese Solar Farms", icon: "☀️", cat: "renewable", country: "congo", details: "Vùng điện mặt trời lớn ở miền Đông Congo." },
+
+    // ===== 🇩🇿 ALGERIA =====
+    { lat: 36.75, lng: 3.04, name: "Algiers Power Grid", icon: "⚡", cat: "power_plant", country: "algeria", details: "Hệ thống điện thủ đô Algiers." },
+    { lat: 28.03, lng: 1.66, name: "Saharan Solar Farms", icon: "☀️", cat: "renewable", country: "algeria", details: "Vùng điện mặt trời lớn ở sa mạc Sahara." },
+    { lat: 35.00, lng: 0.00, name: "Algerian Hydro Power", icon: "💧", cat: "power_plant", country: "algeria", details: "Thủy điện lớn trên sông Chelif." },
+
+    // ===== 🇹🇳 TUNISIA =====
+    { lat: 36.80, lng: 10.18, name: "Tunis Power Grid", icon: "⚡", cat: "power_plant", country: "tunisia", details: "Hệ thống điện thủ đô Tunis." },
+    { lat: 33.88, lng: 9.56, name: "Tunisian Solar Farms", icon: "☀️", cat: "renewable", country: "tunisia", details: "Vùng điện mặt trời lớn ở miền Nam Tunisia." },
+    { lat: 36.00, lng: 10.00, name: "Tunisian Hydro Power", icon: "💧", cat: "power_plant", country: "tunisia", details: "Thủy điện lớn trên sông Medjerda." },
+
+
+    // ====================== CHÂU ÚC ======================
+
+    // ===== 🇦🇺 ÚC =====
+    { lat: -33.87, lng: 151.21, name: "BlueScope Steel Port Kembla", icon: "⛓️", cat: "heavy_industry", country: "australia", details: "Nhà máy thép lớn nhất Úc." },
+    { lat: -31.95, lng: 115.86, name: "Perth Solar & Wind", icon: "☀️", cat: "renewable", country: "australia", details: "Năng lượng tái tạo vùng Tây Úc." },
+    { lat: -27.47, lng: 153.02, name: "Brisbane Power Grid", icon: "⚡", cat: "power_plant", country: "australia", details: "Hệ thống điện lớn nhất Queensland." },
 
 
 
@@ -5747,6 +6080,25 @@ document.addEventListener('click', function(e) {
 
 
 
+
+
+        document.getElementById('toggle-latlon-btn').addEventListener('click', function() {
+            if (typeof climateLayerGroup !== 'undefined' && climateLayerGroup) {
+                climateLayerGroup.clearLayers();
+                console.log('🌐 Đã tắt tất cả đường Kinh - Vĩ độ');
+            }
+
+            // Hiệu ứng nút đẹp
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.style.background = '#00cc66';
+            btn.innerHTML = '✅ Đã tắt Kinh - Vĩ độ!';
+
+            setTimeout(() => {
+                btn.style.background = '#00bfff';
+                btn.innerHTML = originalText;
+            }, 2500);
+        });
 
 
 
