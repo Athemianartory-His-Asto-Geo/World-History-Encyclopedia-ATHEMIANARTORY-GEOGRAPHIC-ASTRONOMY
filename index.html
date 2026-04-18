@@ -1228,11 +1228,21 @@ left-group {
 <option value="tonga">193. Vương quốc Tonga</option>
 <option value="sydney">194. Quần đảo Cook</option>
 <option value="niue">195. Niue</option>
+<option value="french_polynesia">196. Polynesia thuộc Pháp</option>
+<option value="new_caledonia">197. New Caledonia</option>
+<option value="greenland">198. Greenland</option>
+<option value="faroe_islands">199. Quần đảo Faroe</option>
+<option value="caribbean">200. Các quốc đảo Caribbean</option>
+<option value="pacific_islands">201. Các quốc đảo Thái Bình Dương</option>
+<option value="antarctica">202. Châu Nam Cực</option>
+<option value="other">203. Khác (vùng lãnh thổ, đảo nhỏ...)</option>
+
 
 </datalist>
 
                 <select id="alliance-select" onchange="flyToRegion(this.value)">
                     <option value="" selected">🌐 CHỌN CÁC KHU VỰC-LIÊN MINH</option>
+                    <option value="gulf">Gulf Cooperation Council (GCC)</option>
                     <option value="asean">ASEAN</option>
                     <option value="eu">EUROPEAN UNION (EU)</option>
                     <option value="nato">NATO-OTAN</option>
@@ -1285,7 +1295,6 @@ left-group {
         <option value="central_asia">Trung Á</option>
         <option value="north_asia">Bắc Á (Nga, Mông Cổ)</option>
         <option value="middle_east">Trung Đông</option>
-        <option value="southeast_asia">Đông Nam Á</option>
     </optgroup>
 
     <optgroup label="🌍 CÁC TIỂU VÙNG CHÂU ÂU">
@@ -1312,6 +1321,7 @@ left-group {
     <option value="central_southern_africa">Trung Nam Phi</option>
     <option value='south_west_africa'>Tây Nam Phi</option>
     <option value='south_west_africa'>Đông Nam Phi</option>
+    <option value='horn_of_africa'>Sừng châu Phi</option>
 
 </optgroup>
 
@@ -1482,6 +1492,9 @@ let activeClimateGroup = null;
   "ukraine": { center: [48.3794, 31.1656], zoom: 6, adminName: "Ukraine" },
   "united_kingdom": { center: [55.3781, -3.436], zoom: 5, adminName: "United Kingdom" },
   "vatican_city": { center: [41.9029, 12.4534], zoom: 12, adminName: "Vatican City" },
+  "wales": { center: [52.1307, -3.7837], zoom: 6, adminName: "Wales" },
+  "yugoslavia": { center: [44.0165, 21.0059], zoom: 5, adminName: "Former Yugoslavia" },
+  "czechoslovakia": { center: [49.8175, 15.473], zoom: 5, adminName: "Former Czechoslovakia" },
 
   
 // ===== AMERICAS =====
@@ -1520,6 +1533,12 @@ let activeClimateGroup = null;
 "usa": { center: [37.0902, -95.7129], zoom: 4, adminName: "United States of America" },
 "uruguay": { center: [-32.5228, -55.7658], zoom: 6, adminName: "Uruguay" },
 "venezuela": { center: [6.4238, -66.5897], zoom: 5, adminName: "Venezuela" },
+"virgin_islands": { center: [18.3358, -64.8963], zoom: 7, adminName: "Virgin Islands" },
+"west_indies": { center: [12.5211, -69.9683], zoom: 5, adminName: "West Indies" },
+"cayman_islands": { center: [19.3133, -81.2546], zoom: 7, adminName: "Cayman Islands" },
+"bermuda": { center: [32.3078, -64.7505], zoom: 7, adminName: "Bermuda" },
+"french_guiana": { center: [3.9339, -53.1258], zoom: 6, adminName: "French Guiana" },
+"french_polynesia": { center: [-17.6797, -149.4068], zoom: 5, adminName: "French Polynesia" },
 
 // ===== AFRICA =====
 "algeria": { center: [28.0339, 1.6596], zoom: 5, adminName: "Algeria" },
@@ -1575,6 +1594,14 @@ let activeClimateGroup = null;
 "uganda": { center: [1.3733, 32.2903], zoom: 6, adminName: "Uganda" },
 "zambia": { center: [-13.1339, 27.8493], zoom: 6, adminName: "Zambia" },
 "zimbabwe": { center: [-19.0154, 29.1549], zoom: 6, adminName: "Zimbabwe" },
+"south_sudan": { center: [6.877, 31.307], zoom: 6, adminName: "South Sudan" },
+"sudan": { center: [12.8628, 30.2176], zoom: 6, adminName: "Sudan" },
+"tanzania": { center: [-6.369, 34.8888], zoom: 6, adminName: "Tanzania" },
+"togo": { center: [8.6195, 0.8248], zoom: 6, adminName: "Togo" },
+"tunisia": { center: [33.8869, 9.5375], zoom: 6, adminName: "Tunisia" },
+"uganda": { center: [1.3733, 32.2903], zoom: 6, adminName: "Uganda" },
+"zambia": { center: [-13.1339, 27.8493], zoom: 6, adminName: "Zambia" },
+"zimbabwe": { center: [-19.0154, 29.1549], zoom: 6, adminName: "Zimbabwe" },    
 
 // ===== OCEANIA =====
 "australia": { center: [-25.2744, 133.7751], zoom: 4, adminName: "Australia" },
@@ -1590,7 +1617,8 @@ let activeClimateGroup = null;
 "solomon_islands": { center: [-9.6457, 160.1562], zoom: 6, adminName: "Solomon Islands" },
 "tonga": { center: [-21.1789, -175.1982], zoom: 7, adminName: "Tonga" },
 "tuvalu": { center: [-7.1095, 177.6493], zoom: 8, adminName: "Tuvalu" },
-"vanuatu": { center: [-15.3767, 166.9592], zoom: 6, adminName: "Vanuatu" }
+"vanuatu": { center: [-15.3767, 166.9592], zoom: 6, adminName: "Vanuatu" },
+"samoa": { center: [-13.759, -172.1046], zoom: 7, adminName: "Samoa" },
 
     
 };
@@ -2053,6 +2081,7 @@ function renderBorders(year) {
         // --- DANH SÁCH TỌA ĐỘ KHU VỰC (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) ---
         const regionCoords = {
         // --- CÁC LIÊN MINH QUỐC TẾ ---
+            'nordic': { center: [60.0, 10.0], zoom: 4, countries: ["Denmark", "Finland", "Iceland", "Norway", "Sweden"] },
             'asean': { center: [10.8, 110.0], zoom: 4, countries: ["East Timor", "Vietnam", "Viet Nam", "Thailand", "Cambodia", "Laos", "Myanmar", "Philippines", "Malaysia", "Indonesia", "Brunei", "Timor-Leste", "Singapore"] },
             'eu': { center: [50.0, 10.0], zoom: 4, countries: ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain" ,	"Sweden"] },
             'nato': { center: [45.0, -20.0], zoom: 3, countries: ["Belgium","Canada","Denmark","France","Iceland","Italy","Luxembourg","Netherlands","Norway","Portugal","United Kingdom","United States of America","Greece","Turkey","Germany","Spain","Czech Republic","Hungary","Poland","Bulgaria","Estonia","Latvia","Lithuania","Romania","Slovakia","Slovenia","Albania","Croatia","Montenegro","North Macedonia","Finland","Sweden"] },
