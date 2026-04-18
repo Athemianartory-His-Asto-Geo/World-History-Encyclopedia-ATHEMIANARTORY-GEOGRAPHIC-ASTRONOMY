@@ -240,6 +240,7 @@ path.leaflet-interactive:hover {
             color: #ffcc00; padding: 12px 20px; border-radius: 12px; z-index: 1000;
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-family: 'Courier New', monospace; font-size: 14px; pointer-events: none;
+            display: none; /* Ẩn mặc định */
         }
         
 #ui-panel {
@@ -482,188 +483,6 @@ left-group {
 
 
 
-/* Nút kim cương keyframe */
-
-
-
-.btn-keyframe {
-    background: #00ffff;                /* Màu cyan sáng giống keyframe */
-    color: #000;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-left: 8px;                   /* Cách nút Reset một chút */
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
-}
-
-.btn-keyframe:hover {
-    background: #00ccff;
-    transform: scale(1.1);
-    box-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
-}
-
-.btn-keyframe:active {
-    transform: scale(0.95);
-}
-
-
-
-.playhead-marker {
-    position: absolute;
-    top: -10px;
-    left: -5px;
-    width: 12px;
-    height: 12px;
-    background: #ff0000;
-    border: 2px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.9);
-    transform: translateX(-50%);
-}
-
-/* Wrapper chứa các track */
-#tracks-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px 0;
-    height: 100%;
-    overflow-y: auto;
-}
-
-/* Một track */
-.timeline-track {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 60px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid #444;
-    border-radius: 8px;
-    position: relative;
-}
-
-.track-label {
-    width: 120px;
-    height: 100%;
-    background: #0f0f1f;
-    color: #00ffff;
-    font-size: 12px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid #555;
-    flex-shrink: 0;
-    user-select: none;
-}
-
-.track-content {
-    flex-grow: 1;
-    height: 100%;
-    position: relative;
-    background: transparent;
-}
-
-
-
-.btn-add-track:hover {
-    background: #00cc66;
-    transform: scale(1.2);
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9);
-}
-
-/* Track bình thường */
-.timeline-track {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 60px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid #444;
-    border-radius: 8px;
-    position: relative;
-    transition: all 0.2s ease;
-    cursor: pointer; /* Con trỏ tay khi hover */
-}
-
-/* Khi hover nhẹ */
-.timeline-track:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: #666;
-}
-
-/* Khi được click/chọn (active) */
-.timeline-track.active {
-    border: 2px solid #00ffff;           /* Viền sáng cyan nổi bật */
-    background: rgba(0, 255, 255, 0.08); /* Nền hơi sáng lên */
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Ánh sáng glow */
-    transform: scale(1.02);              /* Phóng to nhẹ cho nổi bật */
-}
-
-/* Label khi track active */
-.timeline-track.active .track-label {
-    background: #001f1f;
-    color: #00ffff;
-    font-weight: bold;
-    text-shadow: 0 0 5px #00ffff;
-}
-
-/* Wrapper chứa tất cả track - hỗ trợ lăn chuột mượt */
-#tracks-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px 0;
-    height: 100%;
-    overflow-y: auto;          /* Vẫn cho phép cuộn */
-    overflow-x: hidden;
-    scrollbar-width: none;     /* Ẩn scrollbar trên Firefox */
-    -ms-overflow-style: none;  /* Ẩn scrollbar trên IE/Edge */
-}
-
-/* Ẩn scrollbar trên Chrome/Safari/Edge mới */
-#tracks-wrapper::-webkit-scrollbar {
-    display: none;             /* Hoàn toàn ẩn thanh cuộn */
-}
-
-/* Track vẫn giữ nguyên */
-.timeline-track {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 60px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid #444;
-    border-radius: 8px;
-    position: relative;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.timeline-track:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: #666;
-}
-
-.timeline-track.active {
-    border: 2px solid #00ffff;
-    background: rgba(0, 255, 255, 0.08);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-    transform: scale(1.02);
-}
-
-
-.btn-add-track:hover {
-    background: #00cc66;
-    transform: scale(1.2);
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.9);
-}
-
 
 
 
@@ -674,62 +493,60 @@ left-group {
 
 
 #news-ticker {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 28px;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    color: #ffffff;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 35px;
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 10001;
     overflow: hidden;
-    z-index: 99999;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    pointer-events: none;
-    text-shadow: 0 0 4px rgba(0,0,0,0.8);
-    opacity: 0; /* Bắt đầu ẩn */
-    animation: fadeIn 1s forwards 0.5s; /* Fade in sau 0.5s */
+    display: flex; /* Đảm bảo cha là flex */
+    align-items: center;
 }
-
-/* Animation fade-in */
-@keyframes fadeIn {
-    to { opacity: 1; }
-}
-
-/* Nội dung chạy */
-.ticker-content {
-    display: inline-flex;
-    white-space: nowrap;
-    animation: ticker 45s linear infinite; /* Giảm xuống 45s để chạy nhanh hơn */
-}
-
-/* Nhân bản nội dung để không bị giật */
-.ticker-content span {
-    padding-right: 100vw;
-}
-
-/* Animation chạy từ phải sang trái */
-@keyframes ticker {
-    0% { transform: translateX(0); }          /* Bắt đầu từ vị trí 0 (hiện ngay) */
-    100% { transform: translateX(-100%); }
-}
-
-
-
 
 .ticker-content {
-    display: inline-flex;
-    white-space: nowrap;
-    animation: ticker 240s linear infinite; /* Chậm hơn: 240 giây/vòng để đọc chi tiết dài */
+    display: flex;
+    flex-direction: row; /* Ép nằm ngang */
+    white-space: nowrap; /* Cấm xuống dòng tuyệt đối */
+    will-change: transform;
 }
 
-/* Tăng khoảng cách để nội dung dài không bị lặp nhanh */
-.ticker-content span {
-    padding-right: 300vw; /* Rất lớn để thanh "dài vô tận" */
+.news-item {
+    display: inline-flex; /* Quan trọng: Giữ các phần tử bên trong cùng hàng */
+    align-items: center;
+    flex-shrink: 0; /* Cấm co lại, giữ nguyên độ dài thật của tin */
+    color: #ffffff; 
+    font-size: 14px;
+    font-weight: 500;
+    padding-right: 100px; /* Khoảng cách giữa các tin */
+    font-family: 'Segoe UI', sans-serif;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
+
+/* Hiệu ứng chạy mượt nối đuôi */
+@keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -987,13 +804,8 @@ left-group {
             </label>
 
             <label class="setting-item">
-                <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
-                Bật chế độ cinematic (ẩn UI)
-            </label>
-
-            <label class="setting-item">
                 <input type="checkbox" id="toggle-border-style" onchange="toggleBorderStyle(this.checked)">
-                Tắt biên giới quốc gia sáng (đường viền phát sáng)
+                Bật biên giới quốc gia sáng (đường viền phát sáng)
             </label>
 
             <label class="setting-item">
@@ -1002,8 +814,8 @@ left-group {
             </label>
 
             <label class="setting-item">
-                <input type="checkbox" id="toggle-cinematic" onchange="document.body.classList.toggle('cinematic-mode', this.checked)">
-                Nút tắt thanh Kinh/Vĩ độ 
+                <input type="checkbox" id="toggle-latlon" onchange="toggleLatLonOverlay(this.checked)">
+                Hiển thị thanh Kinh/Vĩ độ
             </label>
 
             <label class="setting-item">
@@ -1037,6 +849,7 @@ left-group {
                 Tedemor Fatrich<br>
                 Abondonk<br>
                 Đinh Lê Minh Dũng<br>
+                <br>
                 1 số thành viên khác đã đóng góp ý tưởng và dữ liệu<br>
 
             </div>
@@ -1045,13 +858,11 @@ left-group {
     </div>
 </div>
 
-<!-- Thanh tin thời sự chạy ngang trên cùng -->
 <div id="news-ticker">
-    <div class="ticker-content">
-        <!-- Nội dung tin sẽ được JS thêm vào đây -->
-        <span>Breaking:  ...</span>
-        <!-- Nhân bản để chạy mượt không giật -->
-        <span>Breaking:  ...</span>
+    <div class="ticker-wrapper">
+        <div id="ticker-content" class="ticker-content">
+            <span class="news-item">Đang tải tin tức thế giới...</span>
+        </div>
     </div>
 </div>
 
@@ -6151,6 +5962,11 @@ window.addEventListener('load', () => {
         initSettingsButtons();
     }
 
+    // 1c. Khởi tạo trạng thái hiển thị Lat/Lon nếu có lưu trữ
+    if (typeof initLatLonState === "function") {
+        initLatLonState();
+    }
+
     // 2. Khởi tạo ticker tin tức (chạy ngay lập tức và lặp mỗi 30 giây)
     fetchDailyNews();
 
@@ -6171,71 +5987,6 @@ window.addEventListener('load', () => {
         }, { passive: false });
     }
 });
-
-
-// Hàm lấy tin CHI TIẾT, DÀI từ NewsAPI với key của bạn
-async function fetchDailyNews() {
-    const apiKey = '460f10f958f74c6ea94e3310746d7540'; // Key của bạn
-    
-    try {
-        // Lấy 20 tin mới nhất (category=general để có tin chính trị/quốc tế)
-        const url = `https://newsapi.org/v2/top-headlines?category=general&language=en&pageSize=20&apiKey=${apiKey}`;
-        // Nếu muốn tin tiếng Việt (hạn chế nguồn): thay language=en thành language=vi
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const data = await response.json();
-
-        let newsText = "Breaking News Live Update: ";
-
-        if (data.status === "ok" && data.articles && data.articles.length > 0) {
-            // Ghép 20 tin, mỗi tin CHI TIẾT (title + description dài + nguồn + ngày)
-            data.articles.forEach(article => {
-                const title = article.title || "Tin nóng";
-                let desc = article.description || article.content || "Chi tiết đang cập nhật...";
-                
-                // Giữ mô tả dài (200 ký tự để chi tiết hơn)
-                desc = desc.replace(/<[^>]+>/g, '').trim().substring(0, 200) + (desc.length > 200 ? '...' : '');
-                
-                const source = article.source.name || "Nguồn tin";
-                const date = article.publishedAt ? new Date(article.publishedAt).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : "";
-                
-                newsText += `${title} – ${desc} (${source}, ${date}) • `;
-            });
-        } else {
-            newsText += "Tin thế giới đang được cập nhật • Các sự kiện chính trị nóng hổi từ khắp nơi • ";
-        }
-
-        // Cập nhật ticker (cả 2 span để chạy liên tục không giật)
-        const tickerSpans = document.querySelectorAll('.ticker-content span');
-        tickerSpans.forEach(span => {
-            span.textContent = newsText;
-        });
-
-        console.log(`Đã cập nhật ${data.articles?.length || 0} tin chi tiết từ NewsAPI`);
-    } catch (err) {
-        console.error("Lỗi NewsAPI:", err);
-        // Fallback SIÊU DÀI nếu lỗi (để không bị ngắn)
-        const fallback = "...";
-        document.querySelectorAll('.ticker-content span').forEach(span => {
-            span.textContent = fallback;
-        });
-    }
-
-    // Chạy lần đầu ngay khi load
-    await updateTicker();
-
-    // Sau đó lặp lại mỗi 30 giây (không bao giờ dừng)
-    setInterval(updateTicker, 30000);
-}
-
-
-
-
-
-
-
 
 
 
@@ -6349,33 +6100,40 @@ function initBorderStyleState() {
 }
 
 function initSettingsButtons() {
-    const latlonBtn = document.getElementById('toggle-latlon-btn');
-    if (latlonBtn) {
-        latlonBtn.addEventListener('click', function() {
-            const coordsBox = document.getElementById('coords-box');
-            if (coordsBox) {
-                const isHidden = coordsBox.style.display === 'none';
-                coordsBox.style.display = isHidden ? 'block' : 'none';
-                console.log(`🌐 Lat/Lng box ${isHidden ? 'hiện' : 'ẩn'}`);
-            }
-
-            if (window.climateLayerGroup) {
-                climateLayerGroup.clearLayers();
-                console.log('🌐 Đã tắt tất cả đường Kinh - Vĩ độ');
-            }
-
-            const btn = this;
-            const originalContent = btn.innerHTML;
-            const originalBg = btn.style.background;
-            btn.style.background = '#00cc66';
-            btn.innerHTML = '✅';
-
-            setTimeout(() => {
-                btn.style.background = originalBg || '#00bfff';
-                btn.innerHTML = originalContent;
-            }, 2500);
+    const latlonCheckbox = document.getElementById('toggle-latlon');
+    if (latlonCheckbox) {
+        latlonCheckbox.addEventListener('change', function() {
+            toggleLatLonOverlay(this.checked);
         });
     }
+}
+
+function toggleLatLonOverlay(checked) {
+    const coordsBox = document.getElementById('coords-box');
+    if (coordsBox) {
+        coordsBox.style.display = checked ? 'block' : 'none';
+    }
+
+    if (typeof climateLayerGroup !== 'undefined' && climateLayerGroup) {
+        if (checked) {
+            const selectedMode = document.getElementById('climate-select')?.value || 'lines';
+            toggleClimateLayer(selectedMode);
+        } else {
+            climateLayerGroup.clearLayers();
+        }
+    }
+
+    localStorage.setItem('latlonEnabled', checked);
+}
+
+function initLatLonState() {
+    const checkbox = document.getElementById('toggle-latlon');
+    const savedState = localStorage.getItem('latlonEnabled');
+    const isEnabled = savedState !== null ? savedState === 'true' : false;
+    if (checkbox) {
+        checkbox.checked = isEnabled;
+    }
+    toggleLatLonOverlay(isEnabled);
 }
 
 // Tắt/mở hiển thị tình hình chính trị
@@ -8174,36 +7932,61 @@ const maritimeCurrents = [
 
 
 
+// ==================== TÍCH HỢP TIN VỆ TINH (GOOGLE NEWS RSS) ====================
+async function fetchHotNews() {
+    const query = encodeURIComponent('địa lý kinh tế thế giới thời sự mới nhất'); 
+    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=vi&gl=VN&ceid=VN:vi`;
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.items.length > 0) {
+            const tickerContent = document.getElementById('ticker-content');
+            
+            // TẠO DÒNG CHẢY DỮ LIỆU DUY NHẤT
+            let longNewsStream = " 🔴 BẢN TIN ĐỊA LÝ KINH TẾ HÔM NAY: ";
 
+            data.items.forEach((item, index) => {
+                let rawDetail = item.description || item.content || "";
+                let cleanDetail = rawDetail
+                    .replace(/<[^>]+>/g, '') 
+                    .replace(/&nbsp;/g, ' ') 
+                    .replace(/\s+/g, ' ')
+                    .trim();
 
+                if (cleanDetail.length > 20) {
+                    // Nối các tin lại với nhau bằng ký hiệu đẹp
+                    longNewsStream += `${cleanDetail} ✦ `;
+                }
+            });
 
+            // Thêm một đoạn kết để vòng lặp mượt hơn
+            longNewsStream += " KẾT THÚC BẢN TIN CẬP NHẬT. ";
 
+            // Đưa vào 2 span để chạy nối đuôi nhau không có khoảng trống
+            const finalHTML = `<span class="news-item">${longNewsStream}</span>`;
+            tickerContent.innerHTML = finalHTML + finalHTML;
 
+            // TÍNH TOÁN TỐC ĐỘ DỰA TRÊN ĐỘ DÀI KHỦNG CỦA DÒNG CHỮ
+            const totalWidth = tickerContent.scrollWidth / 2; 
+            
+            // Vì nội dung rất dài, Sói nên để speed thấp (60-70) để học sinh đọc kịp
+            const speed = 400; 
+            const duration = totalWidth / speed;
 
+            tickerContent.style.animation = `ticker-scroll ${duration}s linear infinite`;
+        }
+    } catch (error) {
+        console.error('Lỗi kết nối:', error);
+    }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Khởi chạy
+window.addEventListener('load', fetchHotNews);
+// Cập nhật sau mỗi 1 phút
+setInterval(fetchHotNews, 60000);
 
 
 
