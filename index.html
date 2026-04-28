@@ -2690,6 +2690,517 @@ function drawMaritime() {
 
 
 
+// ====================== KHỞI TẠO TOÀN BỘ KHI TRANG LOAD ======================
+window.addEventListener('load', () => {
+    console.log("🚀 Trang đã load hoàn tất - Khởi tạo Athe Studio");
+
+    // 1. Khôi phục trạng thái ticker từ cài đặt (nếu có) - PHẢI TRƯỚC fetchDailyNews
+    if (typeof initTickerState === "function") {
+        initTickerState();
+    }
+
+    // 1a. Khôi phục trạng thái biên giới xanh dương / đơn giản
+    if (typeof initBorderStyleState === "function") {
+        initBorderStyleState();
+    }
+
+    // 1b. Gắn sự kiện cho nút trong modal khi DOM đã sẵn sàng
+    if (typeof initSettingsButtons === "function") {
+        initSettingsButtons();
+    }
+
+    // 1c. Khởi tạo trạng thái hiển thị Lat/Lon nếu có lưu trữ
+    if (typeof initLatLonState === "function") {
+        initLatLonState();
+    }
+
+    // 2. Khởi tạo ticker tin tức (chạy ngay lập tức và lặp mỗi 30 giây)
+    fetchDailyNews();
+
+    // 3. Nếu timeline đang mở sẵn thì gắn sự kiện track
+    if (document.getElementById('keyframe-panel').classList.contains('active')) {
+        attachTrackClickListeners();
+    }
+
+    // 4. Tăng độ mượt khi lăn chuột trên timeline
+    const wrapper = document.getElementById('tracks-wrapper');
+    if (wrapper) {
+        wrapper.addEventListener('wheel', function(e) {
+            if (document.getElementById('keyframe-panel').classList.contains('active')) {
+                e.preventDefault();   // Ngăn scroll trang chính
+            }
+            const scrollSpeed = 3;    // Tăng tốc độ cuộn
+            wrapper.scrollTop += e.deltaY * scrollSpeed;
+        }, { passive: false });
+    }
+});
+
+
+
+
+
+// Ẩn nút zoom mặc định của Leaflet
+if (map.zoomControl) {
+    map.zoomControl.remove();
+}
+
+// Tạo nút cài đặt tùy chỉnh, dịch xuống dưới để tránh ticker
+const settingsButton = L.control({position: 'topleft'});
+
+settingsButton.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar settings-control');
+    
+    // Dịch nút xuống dưới 40px (cách ticker)
+    div.style.marginTop = '40px';  // ← Đây là phần chỉnh vị trí xuống
+    
+    div.innerHTML = `
+        <a href="#" title="Cài đặt" role="button" class="settings-btn">
+            ⚙️
+        </a>
+    `;
+    
+    L.DomEvent.disableClickPropagation(div);
+    
+    div.querySelector('.settings-btn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSettingsMenu();
+    };
+    
+    return div;
+};
+
+settingsButton.addTo(map);
+
+// Mở/đóng modal cài đặt
+function toggleSettingsMenu() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Tùy chọn tắt/mở ticker
+let borderStyleMode = 'glow';
+
+function toggleNewsTicker(checked) {
+    const ticker = document.getElementById('news-ticker');
+    if (ticker) ticker.style.display = checked ? 'block' : 'none';
+    // Lưu cài đặt vào localStorage
+    localStorage.setItem('tickerEnabled', checked);
+}
+
+// Khởi tạo trạng thái ticker từ localStorage khi trang tải
+function initTickerState() {
+    const tickerCheckbox = document.getElementById('toggle-ticker');
+    const savedState = localStorage.getItem('tickerEnabled');
+    
+    if (savedState !== null) {
+        // Nếu có lưu trữ, sử dụng giá trị đó
+        const isEnabled = savedState === 'true';
+        tickerCheckbox.checked = isEnabled;
+        toggleNewsTicker(isEnabled);
+    } else {
+        // Nếu chưa có cài đặt, mặc định BẬT ticker
+        tickerCheckbox.checked = true;
+        toggleNewsTicker(true);
+    }
+}
+
+function toggleBorderStyle() {
+    borderStyleMode = borderStyleMode === 'glow' ? 'simple' : 'glow';
+    updateBorderStyleButton();
+    renderBorders(0);
+    localStorage.setItem('borderStyleMode', borderStyleMode);
+}
+
+function updateBorderStyleButton() {
+    const button = document.getElementById('toggle-border-style-button');
+    const note = document.getElementById('border-style-note');
+    const label = document.getElementById('border-style-label');
+    if (!button || !note || !label) return;
+
+    if (borderStyleMode === 'glow') {
+        button.innerHTML = '🔵';
+        label.textContent = 'Chuyển sang biên giới';
+        note.textContent = 'Hiện đang dùng biên giới xanh dương cinematic.';
+    } else {
+        button.innerHTML = '✨';
+        label.textContent = 'Chuyển sang biên giới xanh dương';
+        note.textContent = 'Hiện đang dùng biên giới xanh đơn giản.';
+    }
+}
+
+function initBorderStyleState() {
+    const savedState = localStorage.getItem('borderStyleMode');
+    if (savedState === 'simple' || savedState === 'glow') {
+        borderStyleMode = savedState;
+    } else {
+        borderStyleMode = 'glow';
+    }
+    updateBorderStyleButton();
+}
+
+function initSettingsButtons() {
+    const latlonCheckbox = document.getElementById('toggle-latlon');
+    if (latlonCheckbox) {
+        latlonCheckbox.addEventListener('change', function() {
+            toggleLatLonOverlay(this.checked);
+        });
+    }
+}
+
+function toggleLatLonOverlay(checked) {
+    const coordsBox = document.getElementById('coords-box');
+    if (coordsBox) {
+        coordsBox.style.display = checked ? 'block' : 'none';
+    }
+
+    if (typeof climateLayerGroup !== 'undefined' && climateLayerGroup) {
+        if (checked) {
+            const selectedMode = document.getElementById('climate-select')?.value || 'lines';
+            toggleClimateLayer(selectedMode);
+        } else {
+            climateLayerGroup.clearLayers();
+        }
+    }
+
+    localStorage.setItem('latlonEnabled', checked);
+}
+
+function initLatLonState() {
+    const checkbox = document.getElementById('toggle-latlon');
+    const savedState = localStorage.getItem('latlonEnabled');
+    const isEnabled = savedState !== null ? savedState === 'true' : false;
+    if (checkbox) {
+        checkbox.checked = isEnabled;
+    }
+    toggleLatLonOverlay(isEnabled);
+}
+
+// Tắt/mở hiển thị tình hình chính trị
+function togglePoliticalStatus(checked) {
+    showPoliticalStatus = checked;
+    renderBorders(0); // Vẽ lại biên giới để cập nhật hiệu ứng nháy
+    console.log("Tình hình chính trị:", showPoliticalStatus ? "HIỆN" : "ẨN");
+}
+
+// Đóng modal khi click bên ngoài
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+    
+    const modalContent = document.querySelector('.modal-content');
+    if (modal.style.display === 'flex' && !modalContent.contains(e.target) && !e.target.closest('.settings-btn')) {
+        closeSettingsModal();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 2. Hàm lấy thông tin Thủ đô & Bang (Tích hợp Offline + Online)
+async function showCountryDetails(countryName) {
+    const panel = document.getElementById('wiki-panel');
+    const title = document.getElementById('wiki-title');
+    const body = document.getElementById('wiki-body');
+
+    if (!panel || !title || !body) return;
+
+    // Reset giao diện
+    title.textContent = `${countryName} - Chi tiết`;
+    panel.classList.add('active');
+    panel.scrollTop = 0;
+
+    // 1. Kiểm tra trong DB Offline trước (Để dùng được khi không có mạng)
+    const offlineData = WORLD_OFFLINE_DB[countryName] || WORLD_OFFLINE_DB[Object.keys(WORLD_OFFLINE_DB).find(k => k.toLowerCase() === countryName.toLowerCase())];
+
+    if (offlineData) {
+        renderCountryUI(countryName, offlineData, true);
+        return;
+    }
+
+    // 2. Nếu không có Offline, thử gọi API Online
+    body.innerHTML = `
+        <div style="text-align:center; padding:50px 20px;">
+            <div class="loading-spinner" style="border: 4px solid rgba(0,255,204,0.1); border-left-color: #00ffcc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color:#00ffcc; font-weight:bold;">ĐANG TRA CỨU DỮ LIỆU TRỰC TUYẾN...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`);
+        const data = await response.json();
+        const country = data[0];
+
+        const onlineData = {
+            capital: country.capital ? country.capital[0] : "N/A",
+            pop: country.population.toLocaleString(),
+            area: country.area.toLocaleString(),
+            flag: country.flags.svg,
+            latlng: country.latlng,
+            provinces: ["Dữ liệu tỉnh thành đang được cập nhật trực tuyến..."]
+        };
+
+        renderCountryUI(countryName, onlineData, false);
+    } catch (err) {
+        body.innerHTML = `<div style="padding:20px; text-align:center;"><p>⚠️ Lỗi kết nối. Không có dữ liệu offline cho quốc gia này.</p></div>`;
+    }
+}
+
+// Hàm vẽ giao diện chi tiết quốc gia
+function renderCountryUI(countryName, data, isOffline) {
+    const body = document.getElementById('wiki-body');
+    const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
+    const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
+
+    let html = `
+        <div style="animation: slideUp 0.4s ease;">
+            ${warBadge}
+            ${data.flag ? `<img src="${data.flag}" style="width:100px; display:block; margin:0 auto 15px; border-radius:5px; box-shadow:0 3px 10px rgba(0,0,0,0.3);">` : ''}
+            <h2 style="color:#ffcc00; text-align:center; margin-bottom:20px;">${countryName} ${isOffline ? '<span style="font-size:10px; color:#555;">(Offline)</span>' : ''}</h2>
+            
+            <div style="background:rgba(255,204,0,0.1); padding:15px; border-radius:10px; border-left:5px solid #ffcc00; margin-bottom:15px;">
+                <span style="color:#888; font-size:12px;">THỦ ĐÔ CHÍNH THỨC</span><br>
+                <b style="font-size:24px; color:#ffcc00;">${data.capital}</b>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <div style="background:#222; padding:10px; border-radius:8px;">
+                    <span style="color:#888; font-size:11px;">DÂN SỐ</span><br>
+                    <b style="color:#00ffcc;">${data.pop}</b>
+                </div>
+                <div style="background:#222; padding:10px; border-radius:8px;">
+                    <span style="color:#888; font-size:11px;">DIỆN TÍCH</span><br>
+                    <b style="color:#00ffcc;">${data.area} km²</b>
+                </div>
+            </div>
+
+            <h3 style="color:#fff; border-bottom:1px solid #333; padding-bottom:5px;">VÙNG HÀNH CHÍNH</h3>
+            ${isWarZone ? `
+                <div style="margin-bottom:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444;">
+                    <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
+                    <div style="color:#eee; font-size:13px;">
+                        <b>Trạng thái:</b> ${warZones[countryName].status}<br>
+                        <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
+                    </div>
+                </div>
+            ` : ''}
+            <div style="max-height:400px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px; border:1px solid rgba(255,255,255,0.05);">
+    `;
+
+    data.provinces.forEach(p => {
+        const isCap = p.includes(data.capital);
+        html += `
+            <div style="padding:8px 12px; margin-bottom:4px; background:${isCap ? '#ffcc00' : '#222'}; color:${isCap ? '#000' : '#ccc'}; border-radius:4px; font-size:13px;">
+                ${p} ${isCap ? '★' : ''}
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+    body.innerHTML = html;
+
+    // Fly tới nước đó nếu có tọa độ
+    if (data.latlng) {
+        map.flyTo([data.latlng[0], data.latlng[1]], 5);
+    }
+}
+
+// Thêm CSS hiệu ứng vào thẻ <style>
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes blinker { 50% { opacity: 0; } }
+    .loading-spinner { border-top-color: transparent !important; }
+    .war-zone-blink {
+        animation: warBlink 1s ease-in-out infinite !important;
+    }
+    @keyframes warBlink {
+        0% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
+        50% { opacity: 0.3; fill-opacity: 0.1; stroke-width: 2; }
+        100% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
+    }
+`;
+document.head.appendChild(styleSheet);
+
+
+
+
+
+
+
+// ==================== TÍCH HỢP TIN VỆ TINH (GOOGLE NEWS RSS) ====================
+async function fetchHotNews() {
+    const query = encodeURIComponent('địa lý kinh tế thế giới thời sự mới nhất'); 
+    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=vi&gl=VN&ceid=VN:vi`;
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.items.length > 0) {
+            const tickerContent = document.getElementById('ticker-content');
+            
+            // TẠO DÒNG CHẢY DỮ LIỆU DUY NHẤT
+            let longNewsStream = " 🔴 BẢN TIN ĐỊA LÝ KINH TẾ HÔM NAY: ";
+
+            data.items.forEach((item, index) => {
+                let rawDetail = item.description || item.content || "";
+                let cleanDetail = rawDetail
+                    .replace(/<[^>]+>/g, '') 
+                    .replace(/&nbsp;/g, ' ') 
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                if (cleanDetail.length > 20) {
+                    // Nối các tin lại với nhau bằng ký hiệu đẹp
+                    longNewsStream += `${cleanDetail} ✦ `;
+                }
+            });
+
+            // Thêm một đoạn kết để vòng lặp mượt hơn
+            longNewsStream += " KẾT THÚC BẢN TIN CẬP NHẬT. ";
+
+            // Đưa vào 2 span để chạy nối đuôi nhau không có khoảng trống
+            const finalHTML = `<span class="news-item">${longNewsStream}</span>`;
+            tickerContent.innerHTML = finalHTML + finalHTML;
+
+            // TÍNH TOÁN TỐC ĐỘ DỰA TRÊN ĐỘ DÀI KHỦNG CỦA DÒNG CHỮ
+            const totalWidth = tickerContent.scrollWidth / 2; 
+            
+            // Vì nội dung rất dài, Sói nên để speed thấp (60-70) để học sinh đọc kịp
+            const speed = 400; 
+            const duration = totalWidth / speed;
+
+            tickerContent.style.animation = `ticker-scroll ${duration}s linear infinite`;
+        }
+    } catch (error) {
+        console.error('Lỗi kết nối:', error);
+    }
+}
+
+// Khởi chạy
+window.addEventListener('load', fetchHotNews);
+// Cập nhật sau mỗi 1 phút
+setInterval(fetchHotNews, 60000);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ====================== FIX HOÀN CHỈNH - THỦ ĐÔ & BANG + WIKIPEDIA ======================
+
+// ====================== WIKI & THỦ ĐÔ & BANG - PHIÊN BẢN KẾT NỐI API TOÀN CẦU ======================
+
+// 1. Hàm lấy thông tin Wikipedia từ API thật
+async function fetchWiki(countryName) {
+    const panel = document.getElementById('wiki-panel');
+    const title = document.getElementById('wiki-title');
+    const body = document.getElementById('wiki-body');
+
+    if (!panel || !title || !body) return;
+
+    // Hiển thị trạng thái đang tải
+    body.innerHTML = `
+        <div style="text-align:center; padding:50px 20px;">
+            <div class="loading-spinner" style="border: 4px solid rgba(255,204,0,0.1); border-left-color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <p style="color:#ffcc00; font-weight:bold;">ĐANG TRUY XUẤT KHO DỮ LIỆU WIKIPEDIA...</p>
+            <p style="color:#888; font-size:12px;">Đang kết nối tới thư viện tri thức toàn cầu cho ${countryName}</p>
+        </div>
+    `;
+    title.textContent = countryName;
+    panel.classList.add('active');
+    panel.scrollTop = 0;
+
+    try {
+        const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
+        const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
+
+        // Gọi API Wikipedia (phiên bản tóm tắt tiếng Việt hoặc Anh)
+        const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
+        const data = await response.json();
+
+        if (data.type === 'standard' || data.type === 'disambiguation') {
+            let html = `
+                <div style="animation: fadeIn 0.5s ease;">
+                    ${warBadge}
+                    ${data.thumbnail ? `<img src="${data.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">` : ''}
+                    <h2 style="color:#ffcc00; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:15px;">${data.title}</h2>
+                    <p style="line-height:1.8; color:#eee; font-size:14px; text-align:justify;">${data.extract}</p>
+                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+                    <a href="${data.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">
+                        XEM CHI TIẾT TRÊN WIKIPEDIA ↗
+                    </a>
+                    ${isWarZone ? `
+                        <div style="margin-top:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444; animation: fadeIn 0.8s ease;">
+                            <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
+                            <div style="color:#eee; font-size:13px;">
+                                <b>Trạng thái:</b> ${warZones[countryName].status}<br>
+                                <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            body.innerHTML = html;
+        } else {
+            throw new Error("Không tìm thấy bài viết");
+        }
+    } catch (err) {
+        // Thử lại với tiếng Anh nếu tiếng Việt không có
+        try {
+            const responseEn = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
+            const dataEn = await responseEn.json();
+            
+            let html = `
+                <div style="animation: fadeIn 0.5s ease;">
+                    ${dataEn.thumbnail ? `<img src="${dataEn.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px;">` : ''}
+                    <h2 style="color:#ffcc00;">${dataEn.title} (English)</h2>
+                    <p style="line-height:1.8; color:#eee;">${dataEn.extract}</p>
+                    <a href="${dataEn.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold;">READ MORE ↗</a>
+                </div>
+            `;
+            body.innerHTML = html;
+        } catch (e) {
+            body.innerHTML = `<h2>${countryName}</h2><p>Xin lỗi, dữ liệu về quốc gia này đang được Athemianartory cập nhật thủ công. Vui lòng thử lại sau.</p>`;
+        }
+    }
+}
+
+
+
+
+
+
+
 
 
 
@@ -2996,43 +3507,7 @@ const RAW_MINERALS = {
         { lat: 56.0, lng: 60.0, name: "Mỏ sắt Magnitogorsk", icon: "⛓️", cat: "iron" },
         { lat: 57.0, lng: 60.5, name: "Mỏ sắt Magnitogorsk-2", icon: "⛓️", cat: "iron" },
         { lat: 58.0, lng: 61.0, name: "Mỏ sắt Magnitogorsk-3", icon: "⛓️", cat: "iron" },
-        { lat: 59.0, lng: 61.5, name: "Mỏ sắt Magnitogorsk-4", icon: "⛓️", cat: "iron" },
-        { lat: 60.0, lng: 62.0, name: "Mỏ sắt Magnitogorsk-5", icon: "⛓️", cat: "iron" },
-        { lat: 61.0, lng: 62.5, name: "Mỏ sắt Magnitogorsk-6", icon: "⛓️", cat: "iron" },
-        { lat: 62.0, lng: 63.0, name: "Mỏ sắt Magnitogorsk-7", icon: "⛓️", cat: "iron" },
-        { lat: 63.0, lng: 63.5, name: "Mỏ sắt Magnitogorsk-8", icon: "⛓️", cat: "iron" },
-        { lat: 64.0, lng: 64.0, name: "Mỏ sắt Magnitogorsk-9", icon: "⛓️", cat: "iron" },
-        { lat: 65.0, lng: 64.5, name: "Mỏ sắt Magnitogorsk-10", icon: "⛓️", cat: "iron" },
-        { lat: 66.0, lng: 65.0, name: "Mỏ sắt Magnitogorsk-11", icon: "⛓️", cat: "iron" },
-        { lat: 67.0, lng: 65.5, name: "Mỏ sắt Magnitogorsk-12", icon: "⛓️", cat: "iron" },
-        { lat: 68.0, lng: 66.0, name: "Mỏ sắt Magnitogorsk-13", icon: "⛓️", cat: "iron" },
-        { lat: 69.0, lng: 66.5, name: "Mỏ sắt Magnitogorsk-14", icon: "⛓️", cat: "iron" },
-        { lat: 70.0, lng: 67.0, name: "Mỏ sắt Magnitogorsk-15", icon: "⛓️", cat: "iron" },
-        { lat: 71.0, lng: 67.5, name: "Mỏ sắt Magnitogorsk-16", icon: "⛓️", cat: "iron" },
-        { lat: 72.0, lng: 68.0, name: "Mỏ sắt Magnitogorsk-17", icon: "⛓️", cat: "iron" },
-        { lat: 73.0, lng: 68.5, name: "Mỏ sắt Magnitogorsk-18", icon: "⛓️", cat: "iron" },
-        { lat: 74.0, lng: 69.0, name: "Mỏ sắt Magnitogorsk-19", icon: "⛓️", cat: "iron" },
-        { lat: 75.0, lng: 69.5, name: "Mỏ sắt Magnitogorsk-20", icon: "⛓️", cat: "iron" },
-        { lat: 76.0, lng: 70.0, name: "Mỏ sắt Magnitogorsk-21", icon: "⛓️", cat: "iron" },
-        { lat: 77.0, lng: 70.5, name: "Mỏ sắt Magnitogorsk-22", icon: "⛓️", cat: "iron" },
-        { lat: 78.0, lng: 71.0, name: "Mỏ sắt Magnitogorsk-23", icon: "⛓️", cat: "iron" },
-        { lat: 79.0, lng: 71.5, name: "Mỏ sắt Magnitogorsk-24", icon: "⛓️", cat: "iron" },
-        { lat: 80.0, lng: 72.0, name: "Mỏ sắt Magnitogorsk-25", icon: "⛓️", cat: "iron" },
-        { lat: 81.0, lng: 72.5, name: "Mỏ sắt Magnitogorsk-26", icon: "⛓️", cat: "iron" },
-        { lat: 82.0, lng: 73.0, name: "Mỏ sắt Magnitogorsk-27", icon: "⛓️", cat: "iron" },
-        { lat: 83.0, lng: 73.5, name: "Mỏ sắt Magnitogorsk-28", icon: "⛓️", cat: "iron" },
-        { lat: 84.0, lng: 74.0, name: "Mỏ sắt Magnitogorsk-29", icon: "⛓️", cat: "iron" },
-        { lat: 85.0, lng: 74.5, name: "Mỏ sắt Magnitogorsk-30", icon: "⛓️", cat: "iron" },
-        { lat: 86.0, lng: 75.0, name: "Mỏ sắt Magnitogorsk-31", icon: "⛓️", cat: "iron" },
-        { lat: 87.0, lng: 75.5, name: "Mỏ sắt Magnitogorsk-32", icon: "⛓️", cat: "iron" },
-        { lat: 88.0, lng: 76.0, name: "Mỏ sắt Magnitogorsk-33", icon: "⛓️", cat: "iron" },
-        { lat: 89.0, lng: 76.5, name: "Mỏ sắt Magnitogorsk-34", icon: "⛓️", cat: "iron" },
-        { lat: 90.0, lng: 77.0, name: "Mỏ sắt Magnitogorsk-35", icon: "⛓️", cat: "iron" },
-        { lat: 91.0, lng: 77.5, name: "Mỏ sắt Magnitogorsk-36", icon: "⛓️", cat: "iron" },
-        { lat: 92.0, lng: 78.0, name: "Mỏ sắt Magnitogorsk-37", icon: "⛓️", cat: "iron" },
-        { lat: 93.0, lng: 78.5, name: "Mỏ sắt Magnitogorsk-38", icon: "⛓️", cat: "iron" },
-        { lat: 94.0, lng: 79.0, name: "Mỏ sắt Magnitogorsk-39", icon: "⛓️", cat: "iron" },
-        { lat: 95.0, lng: 79.5, name: "Mỏ sắt Magnitogorsk-40", icon: "⛓️", cat: "iron" },
+   
 
     ],
     "Vietnam": [
@@ -5179,7 +5654,64 @@ const railwayData = [
             [21.2731, 106.1946], // Bắc Giang
             [21.8510, 106.7570]  // Lạng Sơn (Đồng Đăng)
         ]
-    }
+    },
+
+    {
+        name: "Đường sắt Lào - Trung (Vientiane - Boten)",
+        color: "#ed1b24", // Màu đỏ cờ Lào
+        coords: [
+            [17.9667, 102.6000], // Vientiane (Thủ đô Viêng Chăn)
+            [18.4722, 102.4350], // Phonhong
+            [18.9333, 102.4500], // Vang Vieng (Điểm du lịch nổi tiếng)
+            [19.3833, 102.1333], // Kasi
+            [19.8833, 102.1333], // Luang Prabang (Cố đô)
+            [20.4500, 101.9833], // Muang Xay (Oudomxay)
+            [20.9500, 101.6833], // Nateuy
+            [21.1850, 101.6870]  // Boten (Cửa khẩu biên giới với Trung Quốc)
+        ]
+    },
+
+    {
+        name: "Đường sắt Nga - Đức (Moscow - Berlin)",
+        color: "#0000ff", // Màu xanh dương cờ Nga 
+        coords: [
+            [55.7558, 37.6173], // Moscow (Thủ đô Nga)
+            [54.6872, 25.2797], // Vilnius (Lithuania)
+            [53.5511, 9.9937],  // Hamburg (Đức)
+            [52.5200, 13.4050]  // Berlin (Thủ đô Đức)
+        ]     
+    },
+
+    {
+        name: "Đường sắt Pháp - Tây Ban Nha (Paris - Barcelona)",
+        color: "#ff6600", // Màu cam cờ Pháp
+        coords: [
+            [48.8566, 2.3522],  // Paris (Thủ đô Pháp)
+            [43.6045, 1.4440],  // Toulouse (Pháp)
+            [42.3601, 2.1550],  // Perpignan (Pháp)
+            [41.3851, 2.1734]   // Barcelona (Tây Ban Nha)
+        ]     
+    },
+
+    {
+    name: "Tuyến đường sắt Maple Leaf (New York - Toronto)",
+    color: "#00ccff",
+    coords: [
+        [40.7128, -74.0060], // New York (Ga Penn)
+        [41.0339, -73.7629], // White Plains
+        [42.6526, -73.7562], // Albany (Thủ phủ bang NY)
+        [43.0481, -76.1474], // Syracuse
+        [43.1566, -77.6088], // Rochester
+        [42.8864, -78.8784], // Buffalo
+        [43.0896, -79.0849], // Niagara Falls (Mỹ) - Biên giới
+        [43.0828, -79.0742], // Niagara Falls (Canada)
+        [43.2557, -79.8711], // Hamilton (Canada)
+        [43.4675, -79.6877], // Oakville
+        [43.6532, -79.3832]  // Toronto (Ga Union)
+    ]
+}
+
+
 ];
 
 
@@ -5856,15 +6388,844 @@ function generateSeaportData() {
 // GA TÀU (RAILWAYS)
 function generateRailwayData() {
     const railwayData = [
-        { lat: 21.02, lng: 105.84, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Điểm đầu của tuyến đường sắt Bắc - Nam lịch sử." },
-        { lat: 10.83, lng: 106.69, name: "Ga Sài Gòn", icon: "🚉", cat: "railway", details: "Ga đường sắt quan trọng nhất miền Nam." },
-        { lat: 35.68, lng: 139.76, name: "Ga Tokyo", icon: "🚉", cat: "railway", details: "Trung tâm của hệ thống tàu cao tốc Shinkansen." },
-        { lat: 39.90, lng: 116.42, name: "Ga Bắc Kinh", icon: "🚉", cat: "railway", details: "Đầu mối đường sắt khổng lồ của Trung Quốc." }
-    ];
+    
+    // ĐƯỜNG SẮT ĐÔNG NAM Á (SOUTHEAST ASIA RAILWAYS)
+    
+    
+    // VIỆT NAM (Đầu mối quốc tế)
+    { lat: 21.0285, lng: 105.8412, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Đầu mối giao thông lâu đời, kết nối tuyến Bắc - Nam và các tuyến quốc tế đi Trung Quốc." },
+    { lat: 10.7769, lng: 106.6823, name: "Ga Sài Gòn", icon: "🚉", cat: "railway", details: "Ga hành khách lớn nhất miền Nam, điểm cuối của tuyến đường sắt xuyên Việt." },
 
+    // LÀO (Siêu dự án mới)
+    { lat: 17.9667, lng: 102.6000, name: "Ga Vientiane (Lào)", icon: "🚄", cat: "railway", details: "Ga hiện đại nhất trên tuyến đường sắt Lào - Trung, cửa ngõ kết nối giao thương lục địa." },
+
+    // THÁI LAN (Trung tâm khu vực)
+    { lat: 13.8044, lng: 100.5403, name: "Ga Bang Sue Grand (Bangkok)", icon: "🚉", cat: "railway", details: "Đầu mối đường sắt lớn nhất Đông Nam Á hiện nay, trung tâm tàu cao tốc của Thái Lan." },
+
+    // CAMPUCHIA
+    { lat: 11.5683, lng: 104.9167, name: "Ga Phnom Penh", icon: "🚉", cat: "railway", details: "Điểm giao kết giữa tuyến đường sắt phía Nam đi cảng Sihanoukville và tuyến phía Tây đi Thái Lan." },
+
+    // MALAYSIA
+    { lat: 3.1342, lng: 101.6865, name: "Ga KL Sentral (Kuala Lumpur)", icon: "🚉", cat: "railway", details: "Trái tim của hệ thống đường sắt cao tốc ETS và kết nối trực tiếp ra sân bay quốc tế." },
+
+    // INDONESIA (Tàu cao tốc đầu tiên)
+    { lat: -6.2415, lng: 106.8850, name: "Ga Halim (Jakarta)", icon: "🚄", cat: "railway", details: "Ga đầu tiên của tuyến tàu cao tốc Whoosh (Jakarta-Bandung), hiện đại nhất khu vực." },
+
+    // MIẾN ĐIỆN (MYANMAR)
+    { lat: 16.7800, lng: 96.1600, name: "Ga Yangon Central", icon: "🚉", cat: "railway", details: "Kiến trúc di sản độc đáo, trung tâm mạng lưới đường sắt quốc gia Myanmar." },
+
+
+
+// ĐƯỜNG SẮT NAM Á (SOUTH ASIA RAILWAYS)
+
+// ẤN ĐỘ (Hệ thống đường sắt lớn nhất thế giới)
+    { lat: 28.6448, lng: 77.2167, name: "Ga New Delhi (India)", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Ấn Độ, kết nối toàn quốc và quốc tế." },
+    { lat: 19.0760, lng: 72.8777, name: "Ga Mumbai CST (India)", icon: "🚉", cat: "railway", details: "Di sản thế giới UNESCO, ga trung tâm của Mumbai." },
+    { lat: 22.5726, lng: 88.3639, name: "Ga Howrah (Kolkata)", icon: "🚉", cat: "railway", details: "Một trong những ga bận rộn nhất Ấn Độ, phục vụ Kolkata và khu vực lân cận." },
+    { lat: 13.0827, lng: 80.2707, name: "Ga Chennai Central (India)", icon: "🚉", cat: "railway", details: "Ga chính của Chennai, cửa ngõ phía Nam của Ấn Độ." },
+    { lat: 26.9124, lng: 75.7873, name: "Ga Jaipur (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rajasthan, phục vụ thành phố du lịch Jaipur." },
+    { lat: 17.3850, lng: 78.4867, name: "Ga Hyderabad Deccan (India)", icon: "🚉", cat: "railway", details: "Ga trung tâm của Hyderabad, kết nối miền Nam và miền Trung Ấn Độ." },
+    { lat: 23.0225, lng: 72.5714, name: "Ga Ahmedabad Junction (India)", icon: "🚉", cat: "railway", details: "Ga chính của Ahmedabad, trung tâm giao thông của bang Gujarat." },
+    { lat: 25.5941, lng: 85.1376, name: "Ga Patna Junction (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của bang Bihar, phục vụ thành phố Patna." },
+    { lat: 21.1702, lng: 72.8311, name: "Ga Surat (India)", icon: "🚉", cat: "railway", details: "Ga chính của Surat, trung tâm công nghiệp và thương mại của Gujarat." },
+    { lat: 19.2183, lng: 72.9781, name: "Ga Navi Mumbai (India)", icon: "🚉", cat: "railway", details: "Ga mới của khu đô thị Navi Mumbai, kết nối với mạng lưới đường sắt Mumbai." },
+    { lat: 28.4595, lng: 77.0266, name: "Ga Gurgaon (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của khu vực đô thị Gurgaon, gần New Delhi."},
+
+    // BANGLADESH
+    { lat: 23.8103, lng: 90.4125, name: "Ga Dhaka (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga chính của thủ đô Dhaka, trung tâm mạng lưới đường sắt Bangladesh." },
+    { lat: 22.3569, lng: 91.7832, name: "Ga Chittagong (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố cảng Chittagong." },
+    { lat: 24.9045, lng: 91.8611, name: "Ga Sylhet (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga chính của Sylhet, khu vực nổi tiếng với trà và cảnh đẹp." },
+    { lat: 23.6850, lng: 90.3563, name: "Ga Narayanganj (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố công nghiệp Narayanganj, gần Dhaka." },
+    { lat: 22.3475, lng: 91.8123, name: "Ga Cox's Bazar (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ khu du lịch biển Cox's Bazar." },
+
+    // PAKISTAN
+    { lat: 24.8607, lng: 67.0011, name: "Ga Karachi Cantt (Pakistan)", icon: "🚉", cat: "railway", details: "Ga chính của Karachi, trung tâm mạng lưới đường sắt Pakistan." },
+    { lat: 31.5497, lng: 74.3436, name: "Ga Lahore Junction (Pakistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lahore, gần biên giới Ấn Độ." },
+    { lat: 33.6844, lng: 73.0479, name: "Ga Islamabad (Pakistan)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ thủ đô Islamabad." },
+    { lat: 30.1575, lng: 71.5249, name: "Ga Multan (Pakistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Multan, trung tâm thương mại và văn hóa." },
+    { lat: 32.0853, lng: 72.6748, name: "Ga Faisalabad (Pakistan)", icon: "🚉", cat: "railway", details: "Ga chính của Faisalabad, trung tâm công nghiệp dệt may." },
+
+    // SRI LANKA
+    { lat: 6.9271, lng: 79.8612, name: "Ga Colombo Fort (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga chính của Colombo, trung tâm mạng lưới đường sắt Sri Lanka." },
+    { lat: 7.2906, lng: 80.6337, name: "Ga Kandy (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kandy, điểm dừng chân phổ biến cho du khách." },
+    { lat: 6.0535, lng: 80.2210, name: "Ga Galle (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố cảng Galle trên bờ biển phía Nam." },
+    { lat: 7.8731, lng: 80.7718, name: "Ga Anuradhapura (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Anuradhapura, trung tâm tôn giáo và lịch sử." },
+    { lat: 6.9271, lng: 79.8612, name: "Ga Colombo (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga chính của Colombo, trung tâm mạng lưới đường sắt Sri Lanka." },
+
+    
+
+
+    // ĐƯỜNG SẮT TRUNG Á (CENTRAL ASIA RAILWAYS)
+
+    // KAZAKHSTAN
+    { lat: 51.1694, lng: 71.4491, name: "Ga Almaty-1 (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga chính của Almaty, trung tâm mạng lưới đường sắt Kazakhstan." },
+    { lat: 43.2565, lng: 76.9286, name: "Ga Shymkent (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Shymkent, trung tâm thương mại phía Nam." },
+    { lat: 50.4501, lng: 30.5234, name: "Ga Astana (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ thủ đô Astana (Nur-Sultan)." },
+    { lat: 44.8404, lng: 65.5022, name: "Ga Aktobe (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aktobe, trung tâm công nghiệp phía Tây." },
+    { lat: 49.8063, lng: 73.0858, name: "Ga Karaganda (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga chính của Karaganda, trung tâm công nghiệp và khai thác than." },
+
+    // UZBEKISTAN
+    { lat: 41.3111, lng: 69.2797, name: "Ga Tashkent (Uzbekistan)", icon: "🚉", cat: "railway", details: "Ga chính của Tashkent, trung tâm mạng lưới đường sắt Uzbekistan." },
+    { lat: 39.6542, lng: 66.9597, name: "Ga Samarkand (Uzbekistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Samarkand, điểm dừng chân phổ biến cho du khách." },
+    { lat: 40.7128, lng: 72.2838, name: "Ga Bukhara (Uzbekistan)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố lịch sử Bukhara." },
+    { lat: 41.6525, lng: 60.3600, name: "Ga Nukus (Uzbekistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nukus, trung tâm văn hóa và nghệ thuật vùng Karakalpakstan." },
+    { lat: 42.8746, lng: 74.6122, name: "Ga Andijan (Uzbekistan)", icon: "🚉", cat: "railway", details: "Ga chính của Andijan, trung tâm thương mại phía Đông." },
+
+    // TURKMENISTAN
+    { lat: 37.9601, lng: 58.3261, name: "Ga Ashgabat (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga chính của Ashgabat, trung tâm mạng lưới đường sắt Turkmenistan." },
+    { lat: 39.6542, lng: 66.9597, name: "Ga Mary (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mary, trung tâm công nghiệp và thương mại." },
+    { lat: 38.9697, lng: 59.5563, name: "Ga Turkmenabat (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố Turkmenabat gần biên giới Uzbekistan." },
+    { lat: 37.1100, lng: 61.5800, name: "Ga Dashoguz (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dashoguz, trung tâm công nghiệp phía Bắc." },
+    { lat: 38.9697, lng: 59.5563, name: "Ga Balkanabat (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga chính của Balkanabat, trung tâm công nghiệp và khai thác dầu khí." },
+
+    
+
+
+
+    // ĐÔNG Á (EAST ASIA RAILWAYS)              DONE
+
+    // gồm Trung Quốc, Nhật Bản, Hàn Quốc, Triều Tiên, Đài Loan, Mông Cổ. chia từng bộ code như các dòng code trên và dưới
+
+    // TRUNG QUỐC (Hệ thống đường sắt lớn nhất châu Á)
+    { lat: 39.9042, lng: 116.4074, name: "Ga Bắc Kinh (China)", icon: "🚉", cat: "railway", details: "Ga chính của thủ đô Bắc Kinh, trung tâm mạng lưới đường sắt Trung Quốc." },
+    { lat: 31.2304, lng: 121.4737, name: "Ga Thượng Hải (China)", icon: "🚉", cat: "railway", details: "Ga chính của Thượng Hải, trung tâm mạng lưới đường sắt Trung Quốc." },
+    { lat: 22.3193, lng: 114.1694, name: "Ga Hồng Kông (China)", icon: "🚉", cat: "railway", details: "Ga chính của Hồng Kông, kết nối với mạng lưới đường sắt Trung Quốc." },
+    { lat: 23.1291, lng: 113.2644, name: "Ga Quảng Châu (China)", icon: "🚉", cat: "railway", details: "Ga chính của Quảng Châu, trung tâm mạng lưới đường sắt miền Nam Trung Quốc." },
+    { lat: 30.5728, lng: 104.0668, name: "Ga Thành Đô (China)", icon: "🚉", cat: "railway", details: "Ga chính của Thành Đô, trung tâm mạng lưới đường sắt Tây Nam Trung Quốc." },
+
+    // NHẬT BẢN
+    { lat: 35.6895, lng: 139.6917, name: "Ga Tokyo (Japan)", icon: "🚉", cat: "railway", details: "Ga chính của Tokyo, trung tâm mạng lưới đường sắt Nhật Bản." },
+    { lat: 34.6937, lng: 135.5023, name: "Ga Osaka (Japan)", icon: "🚉", cat: "railway", details: "Ga chính của Osaka, trung tâm mạng lưới đường sắt Nhật Bản." },
+    { lat: 35.0116, lng: 135.7681, name: "Ga Kyoto (Japan)", icon: "🚉", cat: "railway", details: "Ga chính của Kyoto, trung tâm mạng lưới đường sắt Nhật Bản." },
+    { lat: 43.0618, lng: 141.3545, name: "Ga Sapporo (Japan)", icon: "🚉", cat: "railway", details: "Ga chính của Sapporo, trung tâm mạng lưới đường sắt Hokkaido." },
+    { lat: 33.5902, lng: 130.4017, name: "Ga Fukuoka (Japan)", icon: "🚉", cat: "railway", details: "Ga chính của Fukuoka, trung tâm mạng lưới đường sắt Kyushu." },
+
+    // HÀN QUỐC
+    { lat: 37.5665, lng: 126.9780, name: "Ga Seoul (South Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Seoul, trung tâm mạng lưới đường sắt Hàn Quốc." },
+    { lat: 35.1796, lng: 129.0756, name: "Ga Busan (South Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Busan, trung tâm mạng lưới đường sắt Hàn Quốc." },
+    { lat: 35.8714, lng: 128.6014, name: "Ga Daegu (South Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Daegu, trung tâm mạng lưới đường sắt Hàn Quốc." },
+    { lat: 36.3504, lng: 127.3845, name: "Ga Daejeon (South Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Daejeon, trung tâm mạng lưới đường sắt Hàn Quốc." },
+    { lat: 37.4563, lng: 126.7052, name: "Ga Incheon (South Korea)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Incheon, kết nối với sân bay quốc tế và mạng lưới đường sắt Hàn Quốc." },
+    
+    // TRIỀU TIÊN
+    { lat: 39.0392, lng: 125.7625, name: "Ga Pyongyang (North Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Pyongyang, trung tâm mạng lưới đường sắt Triều Tiên." },
+    { lat: 38.9987, lng: 125.7140, name: "Ga Sinuiju (North Korea)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sinuiju, gần biên giới Trung Quốc." },
+    { lat: 40.3399, lng: 127.5101, name: "Ga Hamhung (North Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Hamhung, trung tâm mạng lưới đường sắt phía Đông Triều Tiên." },
+    { lat: 39.0194, lng: 125.7540, name: "Ga Nampo (North Korea)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nampo, thành phố cảng trên bờ biển phía Tây Triều Tiên." },
+    { lat: 40.7128, lng: 127.5101, name: "Ga Chongjin (North Korea)", icon: "🚉", cat: "railway", details: "Ga chính của Chongjin, trung tâm mạng lưới đường sắt phía Đông Triều Tiên." },
+
+    // ĐÀI LOAN
+    { lat: 25.0330, lng: 121.5654, name: "Ga Taipei (Taiwan)", icon: "🚉", cat: "railway", details: "Ga chính của Taipei, trung tâm mạng lưới đường sắt Đài Loan." },
+    { lat: 22.6273, lng: 120.3014, name: "Ga Kaohsiung (Taiwan)", icon: "🚉", cat: "railway", details: "Ga chính của Kaohsiung, trung tâm mạng lưới đường sắt Đài Loan." },
+    { lat: 24.1477, lng: 120.6736, name: "Ga Taichung (Taiwan)", icon: "🚉", cat: "railway", details: "Ga chính của Taichung, trung tâm mạng lưới đường sắt Đài Loan." },
+    { lat: 23.6978, lng: 120.9605, name: "Ga Tainan (Taiwan)", icon: "🚉", cat: "railway", details: "Ga chính của Tainan, trung tâm mạng lưới đường sắt Đài Loan." },
+    { lat: 24.8039, lng: 120.9718, name: "Ga Hsinchu (Taiwan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Hsinchu, trung tâm công nghệ và mạng lưới đường sắt Đài Loan." },
+
+    // MÔNG CỔ
+    { lat: 47.9200, lng: 106.9200, name: "Ga Ulaanbaatar (Mongolia)", icon: "🚉", cat: "railway", details: "Ga chính của Ulaanbaatar, trung tâm mạng lưới đường sắt Mongolia." },
+    { lat: 46.9200, lng: 106.9200, name: "Ga Darkhan (Mongolia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Darkhan, trung tâm công nghiệp phía Bắc Mongolia." },
+    { lat: 45.0000, lng: 106.9200, name: "Ga Erdenet (Mongolia)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố Erdenet, trung tâm khai thác đồng lớn nhất Mongolia." },
+    { lat: 44.0000, lng: 106.9200, name: "Ga Sainshand (Mongolia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sainshand, trung tâm thương mại phía Đông Mongolia." },
+    { lat: 43.0000, lng: 106.9200, name: "Ga Choibalsan (Mongolia)", icon: "🚉", cat: "railway", details: "Ga chính của Choibalsan, trung tâm mạng lưới đường sắt phía Đông Mongolia." },
+
+
+    
+
+
+
+    // ĐƯỜNG SẮT TRUNG ĐÔNG (MIDDLE EAST RAILWAYS)            DONE
+
+    // gồm Ả Rập Xê Út, UAE, Iran, Iraq, Thổ Nhĩ Kỳ, Israel, Jordan, Lebanon, Syria, Yemen, Oman, Qatar, Kuwait, Bahrain, Palestine, Georgia. chia từng bộ code như các dòng code trên và dưới
+
+    // Ả RẬP XÊ ÚT
+    { lat: 24.7136, lng: 46.6753, name: "Ga Riyadh (Saudi Arabia)", icon: "🚉", cat: "railway", details: "Ga chính của Riyadh, trung tâm mạng lưới đường sắt Saudi Arabia." },
+    { lat: 21.3891, lng: 39.8579, name: "Ga Jeddah (Saudi Arabia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Jeddah, trung tâm mạng lưới đường sắt phía Tây Saudi Arabia." },
+    { lat: 26.4207, lng: 50.0888, name: "Ga Dammam (Saudi Arabia)", icon: "🚉", cat: "railway", details: "Ga chính của Dammam, trung tâm mạng lưới đường sắt phía Đông Saudi Arabia." },
+    { lat: 24.7743, lng: 46.7386, name: "Ga King Abdullah Economic City (Saudi Arabia)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ Khu kinh tế King Abdullah gần Jeddah." },
+    { lat: 25.2854, lng: 51.5310, name: "Ga Al Khobar (Saudi Arabia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Khobar, trung tâm mạng lưới đường sắt phía Đông Saudi Arabia." },
+
+    // UAE
+    { lat: 24.4539, lng: 54.3773, name: "Ga Abu Dhabi (UAE)", icon: "🚉", cat: "railway", details: "Ga chính của Abu Dhabi, trung tâm mạng lưới đường sắt UAE." },
+    { lat: 24.4667, lng: 54.3667, name: "Ga Dubai (UAE)", icon: "🚉", cat: "railway", details: "Ga chính của Dubai, trung tâm mạng lưới đường sắt UAE." },
+    { lat: 24.0000, lng: 55.0000, name: "Ga Sharjah (UAE)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sharjah, trung tâm mạng lưới đường sắt UAE." },
+    { lat: 24.0000, lng: 56.0000, name: "Ga Ajman (UAE)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ajman, trung tâm mạng lưới đường sắt UAE." },
+    { lat: 24.0000, lng: 57.0000, name: "Ga Ras Al Khaimah (UAE)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ras Al Khaimah, trung tâm mạng lưới đường sắt UAE." },
+
+    // IRAN
+    { lat: 35.6892, lng: 51.3890, name: "Ga Tehran (Iran)", icon: "🚉", cat: "railway", details: "Ga chính của Tehran, trung tâm mạng lưới đường sắt Iran." },
+    { lat: 32.4279, lng: 53.6880, name: "Ga Isfahan (Iran)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Isfahan, trung tâm mạng lưới đường sắt Iran." },
+    { lat: 29.5918, lng: 52.5836, name: "Ga Shiraz (Iran)", icon: "🚉", cat: "railway", details: "Ga chính của Shiraz, trung tâm mạng lưới đường sắt Iran." },
+    { lat: 34.6399, lng: 50.8759, name: "Ga Qom (Iran)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Qom, trung tâm mạng lưới đường sắt Iran." },
+    { lat: 36.2605, lng: 59.6168, name: "Ga Mashhad (Iran)", icon: "🚉", cat: "railway", details: "Ga chính của Mashhad, trung tâm mạng lưới đường sắt Iran." },
+
+    // IRAQ
+    { lat: 33.3152, lng: 44.3661, name: "Ga Baghdad (Iraq)", icon: "🚉", cat: "railway", details: "Ga chính của Baghdad, trung tâm mạng lưới đường sắt Iraq." },
+    { lat: 31.7683, lng: 35.2137, name: "Ga Basra (Iraq)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Basra, trung tâm mạng lưới đường sắt phía Nam Iraq." },
+    { lat: 34.5553, lng: 69.2075, name: "Ga Mosul (Iraq)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mosul, trung tâm mạng lưới đường sắt phía Bắc Iraq." },
+    { lat: 32.0000, lng: 44.0000, name: "Ga Kirkuk (Iraq)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kirkuk, trung tâm mạng lưới đường sắt phía Đông Iraq." },
+    { lat: 33.0000, lng: 43.0000, name: "Ga Erbil (Iraq)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Erbil, trung tâm mạng lưới đường sắt phía Bắc Iraq." },
+
+    // THỔ NHĨ KỲ
+    { lat: 39.9334, lng: 32.8597, name: "Ga Ankara (Turkey)", icon: "🚉", cat: "railway", details: "Ga chính của Ankara, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ." },
+    { lat: 41.0082, lng: 28.9784, name: "Ga Istanbul (Turkey)", icon: "🚉", cat: "railway", details: "Ga chính của Istanbul, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ." },
+    { lat: 38.4237, lng: 27.1428, name: "Ga Izmir (Turkey)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Izmir, trung tâm mạng lưới đường sắt phía Tây Thổ Nhĩ Kỳ." },
+    { lat: 37.7749, lng: 30.5234, name: "Ga Antalya (Turkey)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Antalya, trung tâm mạng lưới đường sắt phía Nam Thổ Nhĩ Kỳ." },
+    { lat: 40.0000, lng: 35.0000, name: "Ga Konya (Turkey)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Konya, trung tâm mạng lưới đường sắt phía Trung Thổ Nhĩ Kỳ." },
+
+    // ISRAEL
+    { lat: 31.7683, lng: 35.2137, name: "Ga Tel Aviv (Israel)", icon: "🚉", cat: "railway", details: "Ga chính của Tel Aviv, trung tâm mạng lưới đường sắt Israel." },
+    { lat: 32.0853, lng: 34.7818, name: "Ga Jerusalem (Israel)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Jerusalem, trung tâm mạng lưới đường sắt Israel." },
+    { lat: 32.8167, lng: 35.1000, name: "Ga Haifa (Israel)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Haifa, trung tâm mạng lưới đường sắt Israel." },
+    { lat: 31.2357, lng: 34.2893, name: "Ga Ashdod (Israel)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ashdod, trung tâm mạng lưới đường sắt Israel." },
+    { lat: 32.7940, lng: 35.5417, name: "Ga Beer Sheva (Israel)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Beer Sheva, trung tâm mạng lưới đường sắt Israel." },
+
+    // JORDAN
+    { lat: 31.9454, lng: 35.9284, name: "Ga Amman (Jordan)", icon: "🚉", cat: "railway", details: "Ga chính của Amman, trung tâm mạng lưới đường sắt Jordan." },
+    { lat: 31.9539, lng: 35.9106, name: "Ga Zarqa (Jordan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zarqa, trung tâm mạng lưới đường sắt Jordan." },
+    { lat: 32.0000, lng: 36.0000, name: "Ga Irbid (Jordan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Irbid, trung tâm mạng lưới đường sắt phía Bắc Jordan." },
+    { lat: 31.0000, lng: 36.0000, name: "Ga Aqaba (Jordan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aqaba, trung tâm mạng lưới đường sắt phía Nam Jordan." },
+    { lat: 31.5000, lng: 35.5000, name: "Ga Madaba (Jordan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Madaba, trung tâm mạng lưới đường sắt phía Tây Jordan." },
+
+    // LEBANON
+    { lat: 33.8938, lng: 35.5018, name: "Ga Beirut (Lebanon)", icon: "🚉", cat: "railway", details: "Ga chính của Beirut, trung tâm mạng lưới đường sắt Lebanon." },
+    { lat: 34.0000, lng: 35.5000, name: "Ga Tripoli (Lebanon)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tripoli, trung tâm mạng lưới đường sắt phía Bắc Lebanon." },
+    { lat: 33.5000, lng: 35.5000, name: "Ga Sidon (Lebanon)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sidon, trung tâm mạng lưới đường sắt phía Nam Lebanon." },
+    { lat: 33.7500, lng: 35.2500, name: "Ga Zahle (Lebanon)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zahle, trung tâm mạng lưới đường sắt phía Đông Lebanon." },
+    { lat: 33.2500, lng: 35.2500, name: "Ga Tyre (Lebanon)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tyre, trung tâm mạng lưới đường sắt phía Tây Lebanon." },
+
+    // SYRIA
+    { lat: 33.5138, lng: 36.2765, name: "Ga Damascus (Syria)", icon: "🚉", cat: "railway", details: "Ga chính của Damascus, trung tâm mạng lưới đường sắt Syria." },
+    { lat: 35.1389, lng: 36.2011, name: "Ga Aleppo (Syria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aleppo, trung tâm mạng lưới đường sắt phía Bắc Syria." },
+    { lat: 34.8021, lng: 38.9968, name: "Ga Homs (Syria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Homs, trung tâm mạng lưới đường sắt phía Trung Syria." },
+    { lat: 34.7296, lng: 36.7184, name: "Ga Latakia (Syria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Latakia, trung tâm mạng lưới đường sắt phía Tây Syria." },
+    { lat: 33.0000, lng: 36.0000, name: "Ga Deir ez-Zor (Syria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Deir ez-Zor, trung tâm mạng lưới đường sắt phía Đông Syria." },
+
+    // YEMEN
+    { lat: 15.3694, lng: 44.1910, name: "Ga Sana'a (Yemen)", icon: "🚉", cat: "railway", details: "Ga chính của Sana'a, trung tâm mạng lưới đường sắt Yemen." },
+    { lat: 14.5494, lng: 46.3798, name: "Ga Aden (Yemen)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aden, trung tâm mạng lưới đường sắt phía Nam Yemen." },
+    { lat: 16.0000, lng: 44.0000, name: "Ga Taiz (Yemen)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Taiz, trung tâm mạng lưới đường sắt phía Tây Yemen." },
+    { lat: 15.0000, lng: 45.0000, name: "Ga Al Hudaydah (Yemen)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Hudaydah, trung tâm mạng lưới đường sắt phía Bắc Yemen." },
+    { lat: 14.0000, lng: 46.0000, name: "Ga Ibb (Yemen)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ibb, trung tâm mạng lưới đường sắt phía Đông Yemen." },
+
+    // OMAN
+    { lat: 23.5859, lng: 58.4059, name: "Ga Muscat (Oman)", icon: "🚉", cat: "railway", details: "Ga chính của Muscat, trung tâm mạng lưới đường sắt Oman." },
+    { lat: 22.0000, lng: 57.0000, name: "Ga Salalah (Oman)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Salalah, trung tâm mạng lưới đường sắt phía Nam Oman." },
+    { lat: 24.0000, lng: 56.0000, name: "Ga Sohar (Oman)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sohar, trung tâm mạng lưới đường sắt phía Bắc Oman." },
+    { lat: 23.0000, lng: 57.0000, name: "Ga Nizwa (Oman)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nizwa, trung tâm mạng lưới đường sắt phía Tây Oman." },
+    { lat: 24.0000, lng: 58.0000, name: "Ga Sur (Oman)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sur, trung tâm mạng lưới đường sắt phía Đông Oman." },
+
+    // QATAR
+    { lat: 25.2854, lng: 51.5310, name: "Ga Doha (Qatar)", icon: "🚉", cat: "railway", details: "Ga chính của Doha, trung tâm mạng lưới đường sắt Qatar." },
+    { lat: 24.0000, lng: 51.0000, name: "Ga Al Wakrah (Qatar)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Wakrah, trung tâm mạng lưới đường sắt phía Nam Qatar." },
+    { lat: 25.0000, lng: 50.0000, name: "Ga Al Khor (Qatar)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Khor, trung tâm mạng lưới đường sắt phía Bắc Qatar." },
+    { lat: 24.5000, lng: 51.5000, name: "Ga Lusail (Qatar)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lusail, trung tâm mạng lưới đường sắt phía Đông Qatar." },
+    { lat: 25.5000, lng: 51.5000, name: "Ga Dukhan (Qatar)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dukhan, trung tâm mạng lưới đường sắt phía Tây Qatar." },
+
+    // KUWAIT
+    { lat: 29.3759, lng: 47.9774, name: "Ga Kuwait City (Kuwait)", icon: "🚉", cat: "railway", details: "Ga chính của Kuwait City, trung tâm mạng lưới đường sắt Kuwait." },
+    { lat: 28.0000, lng: 48.0000, name: "Ga Al Ahmadi (Kuwait)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Ahmadi, trung tâm mạng lưới đường sắt phía Nam Kuwait." },
+    { lat: 30.0000, lng: 48.0000, name: "Ga Jahra (Kuwait)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Jahra, trung tâm mạng lưới đường sắt phía Bắc Kuwait." },
+    { lat: 29.5000, lng: 48.5000, name: "Ga Salmiya (Kuwait)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Salmiya, trung tâm mạng lưới đường sắt phía Đông Kuwait." },
+    { lat: 29.0000, lng: 47.5000, name: "Ga Fahaheel (Kuwait)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Fahaheel, trung tâm mạng lưới đường sắt phía Tây Kuwait." },
+
+    // BAHRAIN
+    { lat: 26.0667, lng: 50.5577, name: "Ga Manama (Bahrain)", icon: "🚉", cat: "railway", details: "Ga chính của Manama, trung tâm mạng lưới đường sắt Bahrain." },
+    { lat: 26.0000, lng: 50.0000, name: "Ga Riffa (Bahrain)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Riffa, trung tâm mạng lưới đường sắt phía Nam Bahrain." },
+    { lat: 26.5000, lng: 50.0000, name: "Ga Muharraq (Bahrain)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Muharraq, trung tâm mạng lưới đường sắt phía Bắc Bahrain." },
+    { lat: 26.2500, lng: 50.2500, name: "Ga Hamad Town (Bahrain)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Hamad Town, trung tâm mạng lưới đường sắt phía Đông Bahrain." },
+    { lat: 26.7500, lng: 50.2500, name: "Ga Isa Town (Bahrain)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Isa Town, trung tâm mạng lưới đường sắt phía Tây Bahrain." },
+
+    // PALESTINE
+    { lat: 31.7683, lng: 35.2137, name: "Ga Jerusalem (Palestine)", icon: "🚉", cat: "railway", details: "Ga chính của Jerusalem, trung tâm mạng lưới đường sắt Palestine." },
+    { lat: 31.5000, lng: 35.0000, name: "Ga Ramallah (Palestine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ramallah, trung tâm mạng lưới đường sắt Palestine." },
+    { lat: 31.0000, lng: 35.0000, name: "Ga Hebron (Palestine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Hebron, trung tâm mạng lưới đường sắt phía Nam Palestine." },
+    { lat: 32.0000, lng: 35.0000, name: "Ga Nablus (Palestine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nablus, trung tâm mạng lưới đường sắt phía Bắc Palestine." },
+    { lat: 31.7500, lng: 35.2500, name: "Ga Bethlehem (Palestine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bethlehem, trung tâm mạng lưới đường sắt Palestine." },
+    { lat: 31.0000, lng: 35.5000, name: "Ga Gaza (Palestine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gaza, trung tâm mạng lưới đường sắt phía Nam Palestine." },
+
+    // GEORGIA
+    { lat: 41.7151, lng: 44.8271, name: "Ga Tbilisi (Georgia)", icon: "🚉", cat: "railway", details: "Ga chính của Tbilisi, trung tâm mạng lưới đường sắt Georgia." },
+    { lat: 42.0000, lng: 44.0000, name: "Ga Batumi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Batumi, trung tâm mạng lưới đường sắt phía Tây Georgia." },
+    { lat: 41.5000, lng: 45.0000, name: "Ga Kutaisi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kutaisi, trung tâm mạng lưới đường sắt phía Trung Georgia." },
+    { lat: 42.5000, lng: 44.5000, name: "Ga Zugdidi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zugdidi, trung tâm mạng lưới đường sắt phía Bắc Georgia." },
+    { lat: 41.0000, lng: 45.0000, name: "Ga Rustavi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rustavi, trung tâm mạng lưới đường sắt phía Đông Georgia." },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//----------CHÂU ÂU------------
+
+    // ĐƯỜNG SẮT BẮC ÂU (NORTH EUROPE RAILWAYS)            DONE
+
+    // gồm Anh, Ireland, Na Uy, Thụy Điển, Phần Lan, Đan Mạch, Iceland, Estonia, Latvia, Lithuania. chia từng bộ code như các dòng code trên và dưới
+
+    // ANH
+    { lat: 51.5074, lng: -0.1278, name: "Ga London (United Kingdom)", icon: "🚉", cat: "railway", details: "Ga chính của London, trung tâm mạng lưới đường sắt Anh." },
+    { lat: 53.4808, lng: -2.2426, name: "Ga Manchester (United Kingdom)", icon: "🚉", cat: "railway", details: "Ga chính của Manchester, trung tâm mạng lưới đường sắt Anh." },
+    { lat: 55.9533, lng: -3.1883, name: "Ga Edinburgh (United Kingdom)", icon: "🚉", cat: "railway", details: "Ga chính của Edinburgh, trung tâm mạng lưới đường sắt Scotland." },
+    { lat: 52.4862, lng: -1.8904, name: "Ga Birmingham (United Kingdom)", icon: "🚉", cat: "railway", details: "Ga chính của Birmingham, trung tâm mạng lưới đường sắt Anh." },
+    { lat: 53.4084, lng: -2.9916, name: "Ga Liverpool (United Kingdom)", icon: "🚉", cat: "railway", details: "Ga chính của Liverpool, trung tâm mạng lưới đường sắt Anh." },
+
+    // IRELAND
+    { lat: 53.3498, lng: -6.2603, name: "Ga Dublin (Ireland)", icon: "🚉", cat: "railway", details: "Ga chính của Dublin, trung tâm mạng lưới đường sắt Ireland." },
+    { lat: 51.8985, lng: -8.4756, name: "Ga Cork (Ireland)", icon: "🚉", cat: "railway", details: "Ga chính của Cork, trung tâm mạng lưới đường sắt Ireland." },
+    { lat: 52.6680, lng: -8.6305, name: "Ga Limerick (Ireland)", icon: "🚉", cat: "railway", details: "Ga chính của Limerick, trung tâm mạng lưới đường sắt Ireland." },
+    { lat: 53.2707, lng: -9.0568, name: "Ga Galway (Ireland)", icon: "🚉", cat: "railway", details: "Ga chính của Galway, trung tâm mạng lưới đường sắt Ireland." },
+    { lat: 54.5973, lng: -5.9301, name: "Ga Belfast (Northern Ireland)", icon: "🚉", cat: "railway", details: "Ga chính của Belfast, trung tâm mạng lưới đường sắt Bắc Ireland." },
+
+    // NA UY
+    { lat: 59.9139, lng: 10.7522, name: "Ga Oslo (Norway)", icon: "🚉", cat: "railway", details: "Ga chính của Oslo, trung tâm mạng lưới đường sắt Na Uy." },
+    { lat: 60.3913, lng: 5.3221, name: "Ga Bergen (Norway)", icon: "🚉", cat: "railway", details: "Ga chính của Bergen, trung tâm mạng lưới đường sắt Na Uy." },
+    { lat: 63.4305, lng: 10.3951, name: "Ga Trondheim (Norway)", icon: "🚉", cat: "railway", details: "Ga chính của Trondheim, trung tâm mạng lưới đường sắt Na Uy." },
+    { lat: 58.9690, lng: 5.7331, name: "Ga Stavanger (Norway)", icon: "🚉", cat: "railway", details: "Ga chính của Stavanger, trung tâm mạng lưới đường sắt Na Uy." },
+    { lat: 61.2181, lng: -149.9003, name: "Ga Tromsø (Norway)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tromsø, trung tâm mạng lưới đường sắt Na Uy ở vùng cực Bắc." },
+
+    // THỤY ĐIỂN
+    { lat: 59.3293, lng: 18.0686, name: "Ga Stockholm (Sweden)", icon: "🚉", cat: "railway", details: "Ga chính của Stockholm, trung tâm mạng lưới đường sắt Thụy Điển." },
+    { lat: 57.7089, lng: 11.9746, name: "Ga Gothenburg (Sweden)", icon: "🚉", cat: "railway", details: "Ga chính của Gothenburg, trung tâm mạng lưới đường sắt Thụy Điển." },
+    { lat: 55.6049, lng: 13.0038, name: "Ga Malmö (Sweden)", icon: "🚉", cat: "railway", details: "Ga chính của Malmö, trung tâm mạng lưới đường sắt Thụy Điển." },
+    { lat: 63.8258, lng: 20.2630, name: "Ga Umeå (Sweden)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Umeå, trung tâm mạng lưới đường sắt Thụy Điển ở vùng Bắc." },
+    { lat: 58.4108, lng: 15.6214, name: "Ga Linköping (Sweden)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Linköping, trung tâm mạng lưới đường sắt Thụy Điển." },
+
+    // PHẦN LAN
+    { lat: 60.1695, lng: 24.9354, name: "Ga Helsinki (Finland)", icon: "🚉", cat: "railway", details: "Ga chính của Helsinki, trung tâm mạng lưới đường sắt Phần Lan." },
+    { lat: 61.4978, lng: 23.7610, name: "Ga Tampere (Finland)", icon: "🚉", cat: "railway", details: "Ga chính của Tampere, trung tâm mạng lưới đường sắt Phần Lan." },
+    { lat: 62.2426, lng: 25.7473, name: "Ga Jyväskylä (Finland)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Jyväskylä, trung tâm mạng lưới đường sắt Phần Lan." },
+    { lat: 65.0121, lng: 25.4651, name: "Ga Oulu (Finland)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Oulu, trung tâm mạng lưới đường sắt Phần Lan ở vùng Bắc." },
+    { lat: 60.4518, lng: 22.2666, name: "Ga Turku (Finland)", icon: "🚉", cat: "railway", details: "Ga chính của Turku, trung tâm mạng lưới đường sắt Phần Lan." },
+
+    // ĐAN MẠCH
+    { lat: 55.6761, lng: 12.5683, name: "Ga Copenhagen (Denmark)", icon: "🚉", cat: "railway", details: "Ga chính của Copenhagen, trung tâm mạng lưới đường sắt Đan Mạch." },
+    { lat: 56.1629, lng: 10.2039, name: "Ga Aarhus (Denmark)", icon: "🚉", cat: "railway", details: "Ga chính của Aarhus, trung tâm mạng lưới đường sắt Đan Mạch." },
+    { lat: 55.4038, lng: 10.4024, name: "Ga Odense (Denmark)", icon: "🚉", cat: "railway", details: "Ga chính của Odense, trung tâm mạng lưới đường sắt Đan Mạch." },
+    { lat: 57.0488, lng: 9.9187, name: "Ga Aalborg (Denmark)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aalborg, trung tâm mạng lưới đường sắt Đan Mạch ở vùng Bắc." },
+    { lat: 55.6761, lng: 12.5683, name: "Ga Roskilde (Denmark)", icon: "🚉", cat: "railway", details: "Ga phụ của Copenhagen, kết nối với mạng lưới đường sắt Đan Mạch." },
+
+    // ICELAND
+    { lat: 64.1265, lng: -21.8174, name: "Ga Reykjavik (Iceland)", icon: "🚉", cat: "railway", details: "Ga chính của Reykjavik, trung tâm mạng lưới đường sắt Iceland." },
+    { lat: 65.6833, lng: -18.1000, name: "Ga Akureyri (Iceland)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Akureyri, trung tâm mạng lưới đường sắt Iceland ở vùng Bắc." },
+    { lat: 63.9850, lng: -22.6050, name: "Ga Keflavik (Iceland)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Keflavik, kết nối với sân bay quốc tế và mạng lưới đường sắt Iceland." },
+    { lat: 64.1265, lng: -21.8174, name: "Ga Selfoss (Iceland)", icon: "🚉", cat: "railway", details: "Ga phụ của Reykjavik, kết nối với mạng lưới đường sắt Iceland." },
+    { lat: 65.6833, lng: -18.1000, name: "Ga Egilsstaðir (Iceland)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Egilsstaðir, trung tâm mạng lưới đường sắt Iceland ở vùng Đông." },
+
+    // ESTONIA
+    { lat: 59.4370, lng: 24.7536, name: "Ga Tallinn (Estonia)", icon: "🚉", cat: "railway", details: "Ga chính của Tallinn, trung tâm mạng lưới đường sắt Estonia." },
+    { lat: 58.3776, lng: 26.7290, name: "Ga Tartu (Estonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tartu, trung tâm mạng lưới đường sắt Estonia." },
+    { lat: 58.3558, lng: 25.5636, name: "Ga Narva (Estonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Narva, trung tâm mạng lưới đường sắt Estonia gần biên giới Nga." },
+    { lat: 59.4370, lng: 24.7536, name: "Ga Pärnu (Estonia)", icon: "🚉", cat: "railway", details: "Ga phụ của Tallinn, kết nối với mạng lưới đường sắt Estonia." },
+    { lat: 58.3776, lng: 26.7290, name: "Ga Viljandi (Estonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Viljandi, trung tâm mạng lưới đường sắt Estonia." },
+
+    // LATVIA
+    { lat: 56.9496, lng: 24.1052, name: "Ga Riga (Latvia)", icon: "🚉", cat: "railway", details: "Ga chính của Riga, trung tâm mạng lưới đường sắt Latvia." },
+    { lat: 57.1526, lng: 24.3718, name: "Ga Daugavpils (Latvia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Daugavpils, trung tâm mạng lưới đường sắt Latvia ở vùng Đông." },
+    { lat: 56.8796, lng: 24.6032, name: "Ga Liepāja (Latvia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liepāja, trung tâm mạng lưới đường sắt Latvia ở vùng Tây." },
+    { lat: 56.9496, lng: 24.1052, name: "Ga Jūrmala (Latvia)", icon: "🚉", cat: "railway", details: "Ga phụ của Riga, kết nối với mạng lưới đường sắt Latvia." },
+    { lat: 57.1526, lng: 24.3718, name: "Ga Valmiera (Latvia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Valmiera, trung tâm mạng lưới đường sắt Latvia ở vùng Bắc." },
+
+    // LITHUANIA
+    { lat: 54.6872, lng: 25.2797, name: "Ga Vilnius (Lithuania)", icon: "🚉", cat: "railway", details: "Ga chính của Vilnius, trung tâm mạng lưới đường sắt Lithuania." },
+    { lat: 55.1694, lng: 23.8813, name: "Ga Kaunas (Lithuania)", icon: "🚉", cat: "railway", details: "Ga chính của Kaunas, trung tâm mạng lưới đường sắt Lithuania." },
+    { lat: 55.7033, lng: 21.1443, name: "Ga Klaipėda (Lithuania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Klaipėda, trung tâm mạng lưới đường sắt Lithuania ở vùng biển Baltic." },
+    { lat: 54.6872, lng: 25.2797, name: "Ga Šiauliai (Lithuania)", icon: "🚉", cat: "railway", details: "Ga phụ của Vilnius, kết nối với mạng lưới đường sắt Lithuania." },
+    { lat: 55.1694, lng: 23.8813, name: "Ga Panevėžys (Lithuania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Panevėžys, trung tâm mạng lưới đường sắt Lithuania ở vùng Bắc." },
+
+
+
+
+
+
+    // ĐƯỜNG SẮT ĐÔNG ÂU (EAST EUROPE RAILWAYS)                 DONE
+
+    // gồm Nga, Ukraine, Belarus, Romania, Bulgaria, Moldova, Cộng hòa Síp, Thổ Nhĩ Kỳ, Georgia, Azerbaijan, Kazakhstan, Armenia. chia từng bộ code như các dòng code trên và dưới
+
+    // NGA
+    { lat: 55.7558, lng: 37.6173, name: "Ga Moscow (Russia)", icon: "🚉", cat: "railway", details: "Ga chính của Moscow, trung tâm mạng lưới đường sắt Nga." },
+    { lat: 59.9343, lng: 30.3351, name: "Ga Saint Petersburg (Russia)", icon: "🚉", cat: "railway", details: "Ga chính của Saint Petersburg, trung tâm mạng lưới đường sắt Nga." },
+    { lat: 56.8389, lng: 60.6057, name: "Ga Yekaterinburg (Russia)", icon: "🚉", cat: "railway", details: "Ga chính của Yekaterinburg, trung tâm mạng lưới đường sắt Nga." },
+    { lat: 53.1959, lng: 50.1000, name: "Ga Samara (Russia)", icon: "🚉", cat: "railway", details: "Ga chính của Samara, trung tâm mạng lưới đường sắt Nga." },
+    { lat: 54.9833, lng: 73.3667, name: "Ga Novosibirsk (Russia)", icon: "🚉", cat: "railway", details: "Ga chính của Novosibirsk, trung tâm mạng lưới đường sắt Nga." },
+
+    // UKRAINE
+    { lat: 50.4501, lng: 30.5234, name: "Ga Kyiv (Ukraine)", icon: "🚉", cat: "railway", details: "Ga chính của Kyiv, trung tâm mạng lưới đường sắt Ukraine." },
+    { lat: 49.8397, lng: 24.0297, name: "Ga Lviv (Ukraine)", icon: "🚉", cat: "railway", details: "Ga chính của Lviv, trung tâm mạng lưới đường sắt Ukraine ở phía Tây." },
+    { lat: 48.9226, lng: 24.7111, name: "Ga Ivano-Frankivsk (Ukraine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ivano-Frankivsk, trung tâm mạng lưới đường sắt Ukraine ở vùng Carpathian." },
+    { lat: 46.4825, lng: 30.7233, name: "Ga Odessa (Ukraine)", icon: "🚉", cat: "railway", details: "Ga chính của Odessa, trung tâm mạng lưới đường sắt Ukraine ở vùng biển Đen." },
+    { lat: 48.6208, lng: 22.2879, name: "Ga Uzhhorod (Ukraine)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Uzhhorod, trung tâm mạng lưới đường sắt Ukraine gần biên giới Slovakia và Hungary." },
+    
+    // BELARUS
+    { lat: 53.9006, lng: 27.5590, name: "Ga Minsk (Belarus)", icon: "🚉", cat: "railway", details: "Ga chính của Minsk, trung tâm mạng lưới đường sắt Belarus." },
+    { lat: 52.0976, lng: 23.6877, name: "Ga Brest (Belarus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Brest, trung tâm mạng lưới đường sắt Belarus gần biên giới Ba Lan." },
+    { lat: 53.8939, lng: 30.3302, name: "Ga Gomel (Belarus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gomel, trung tâm mạng lưới đường sắt Belarus ở phía Đông." },
+    { lat: 53.6884, lng: 23.8258, name: "Ga Baranovichi (Belarus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Baranovichi, trung tâm mạng lưới đường sắt Belarus ở phía Tây." },
+    { lat: 53.9006, lng: 27.5590, name: "Ga Vitebsk (Belarus)", icon: "🚉", cat: "railway", details: "Ga phụ của Minsk, kết nối với mạng lưới đường sắt Belarus." },
+
+    // ROMANIA
+    { lat: 44.4268, lng: 26.1025, name: "Ga Bucharest (Romania)", icon: "🚉", cat: "railway", details: "Ga chính của Bucharest, trung tâm mạng lưới đường sắt Romania." },
+    { lat: 45.7489, lng: 21.2087, name: "Ga Timișoara (Romania)", icon: "🚉", cat: "railway", details: "Ga chính của Timișoara, trung tâm mạng lưới đường sắt Romania ở phía Tây." },
+    { lat: 47.1585, lng: 27.6014, name: "Ga Iași (Romania)", icon: "🚉", cat: "railway", details: "Ga chính của Iași, trung tâm mạng lưới đường sắt Romania ở phía Đông." },
+    { lat: 46.7704, lng: 23.5914, name: "Ga Cluj-Napoca (Romania)", icon: "🚉", cat: "railway", details: "Ga chính của Cluj-Napoca, trung tâm mạng lưới đường sắt Romania ở vùng Transylvania." },
+    { lat: 45.9432, lng: 24.9668, name: "Ga Brașov (Romania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Brașov, trung tâm mạng lưới đường sắt Romania ở vùng núi Carpathian." },
+
+    // BULGARIA
+    { lat: 42.6977, lng: 23.3219, name: "Ga Sofia (Bulgaria)", icon: "🚉", cat: "railway", details: "Ga chính của Sofia, trung tâm mạng lưới đường sắt Bulgaria." },
+    { lat: 43.2141, lng: 27.9147, name: "Ga Varna (Bulgaria)", icon: "🚉", cat: "railway", details: "Ga chính của Varna, trung tâm mạng lưới đường sắt Bulgaria ở vùng biển Đen." },
+    { lat: 42.1354, lng: 24.7453, name: "Ga Plovdiv (Bulgaria)", icon: "🚉", cat: "railway", details: "Ga chính của Plovdiv, trung tâm mạng lưới đường sắt Bulgaria ở vùng Trung." },
+    { lat: 43.4167, lng: 27.9667, name: "Ga Burgas (Bulgaria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Burgas, trung tâm mạng lưới đường sắt Bulgaria ở vùng biển Đen." },
+    { lat: 42.6977, lng: 23.3219, name: "Ga Ruse (Bulgaria)", icon: "🚉", cat: "railway", details: "Ga phụ của Sofia, kết nối với mạng lưới đường sắt Bulgaria và quốc tế." },
+
+    // MOLDOVA
+    { lat: 47.0105, lng: 28.8638, name: "Ga Chișinău (Moldova)", icon: "🚉", cat: "railway", details: "Ga chính của Chișinău, trung tâm mạng lưới đường sắt Moldova." },
+    { lat: 47.5615, lng: 28.8353, name: "Ga Bălți (Moldova)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bălți, trung tâm mạng lưới đường sắt Moldova ở phía Bắc." },
+    { lat: 46.7704, lng: 23.5914, name: "Ga Tiraspol (Moldova)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tiraspol, trung tâm mạng lưới đường sắt Moldova." },
+
+    // CỘNG HÒA SÍP
+    { lat: 35.1856, lng: 33.3823, name: "Ga Nicosia (Cyprus)", icon: "🚉", cat: "railway", details: "Ga chính của Nicosia, trung tâm mạng lưới đường sắt Cộng hòa Síp." },
+    { lat: 34.9021, lng: 33.6232, name: "Ga Limassol (Cyprus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Limassol, trung tâm mạng lưới đường sắt Cộng hòa Síp." },
+    { lat: 35.1264, lng: 33.4299, name: "Ga Larnaca (Cyprus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Larnaca, trung tâm mạng lưới đường sắt Cộng hòa Síp." },
+    { lat: 35.1856, lng: 33.3823, name: "Ga Paphos (Cyprus)", icon: "🚉", cat: "railway", details: "Ga phụ của Nicosia, kết nối với mạng lưới đường sắt Cộng hòa Síp." },
+    { lat: 34.9021, lng: 33.6232, name: "Ga Famagusta (Cyprus)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Famagusta, trung tâm mạng lưới đường sắt Cộng hòa Síp ở vùng Đông." },
+
+    // THỔ NHĨ KỲ
+    { lat: 41.0082, lng: 28.9784, name: "Ga Istanbul (Turkey)", icon: "🚉", cat: "railway", details: "Ga chính của Istanbul, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ." },
+    { lat: 38.4237, lng: 27.1428, name: "Ga İzmir (Turkey)", icon: "🚉", cat: "railway", details: "Ga chính của İzmir, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ ở vùng biển Aegean." },
+    { lat: 39.9334, lng: 32.8597, name: "Ga Ankara (Turkey)", icon: "🚉", cat: "railway", details: "Ga chính của Ankara, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ ở vùng Trung." },
+    { lat: 37.7749, lng: 29.0864, name: "Ga Antalya (Turkey)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Antalya, trung tâm mạng lưới đường sắt Thổ Nhĩ Kỳ ở vùng Địa Trung Hải." },
+    { lat: 40.6401, lng: 22.9444, name: "Ga Thessaloniki (Greece)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Thessaloniki, trung tâm mạng lưới đường sắt Hy Lạp và kết nối với Thổ Nhĩ Kỳ." },
+
+    // GEORGIA
+    { lat: 41.7151, lng: 44.8271, name: "Ga Tbilisi (Georgia)", icon: "🚉", cat: "railway", details: "Ga chính của Tbilisi, trung tâm mạng lưới đường sắt Georgia." },
+    { lat: 42.3154, lng: 43.3569, name: "Ga Batumi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Batumi, trung tâm mạng lưới đường sắt Georgia ở vùng biển Đen." },
+    { lat: 41.6941, lng: 44.8330, name: "Ga Kutaisi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kutaisi, trung tâm mạng lưới đường sắt Georgia ở vùng Tây." },
+    { lat: 41.7151, lng: 44.8271, name: "Ga Rustavi (Georgia)", icon: "🚉", cat: "railway", details: "Ga phụ của Tbilisi, kết nối với mạng lưới đường sắt Georgia." },
+    { lat: 42.3154, lng: 43.3569, name: "Ga Zugdidi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zugdidi, trung tâm mạng lưới đường sắt Georgia ở vùng Tây Bắc." },
+
+    // AZERBAIJAN
+    { lat: 40.4093, lng: 49.8671, name: "Ga Baku (Azerbaijan)", icon: "🚉", cat: "railway", details: "Ga chính của Baku, trung tâm mạng lưới đường sắt Azerbaijan." },
+    { lat: 41.7151, lng: 44.8271, name: "Ga Ganja (Azerbaijan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ganja, trung tâm mạng lưới đường sắt Azerbaijan ở vùng Tây." },
+    { lat: 40.4093, lng: 49.8671, name: "Ga Sumqayit (Azerbaijan)", icon: "🚉", cat: "railway", details: "Ga phụ của Baku, kết nối với mạng lưới đường sắt Azerbaijan." },
+    { lat: 41.7151, lng: 44.8271, name: "Ga Mingachevir (Azerbaijan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mingachevir, trung tâm mạng lưới đường sắt Azerbaijan ở vùng Trung." },
+    { lat: 40.4093, lng: 49.8671, name: "Ga Lankaran (Azerbaijan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lankaran, trung tâm mạng lưới đường sắt Azerbaijan ở vùng Địa Trung Hải." },
+
+    // KAZAKHSTAN
+    { lat: 51.1605, lng: 71.4704, name: "Ga Almaty (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga chính của Almaty, trung tâm mạng lưới đường sắt Kazakhstan." },
+    { lat: 51.1605, lng: 71.4704, name: "Ga Nur-Sultan (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nur-Sultan, trung tâm mạng lưới đường sắt Kazakhstan ở vùng Trung." },
+    { lat: 51.1605, lng: 71.4704, name: "Ga Shymkent (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Shymkent, trung tâm mạng lưới đường sắt Kazakhstan ở vùng Nam." },
+    { lat: 51.1605, lng: 71.4704, name: "Ga Karaganda (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Karaganda, trung tâm mạng lưới đường sắt Kazakhstan ở vùng Bắc." },
+    { lat: 51.1605, lng: 71.4704, name: "Ga Aktau (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aktau, trung tâm mạng lưới đường sắt Kazakhstan ở vùng biển Caspian." },
+
+    // ARMENIA
+    { lat: 40.1792, lng: 44.4991, name: "Ga Yerevan (Armenia)", icon: "🚉", cat: "railway", details: "Ga chính của Yerevan, trung tâm mạng lưới đường sắt Armenia." },
+    { lat: 40.1792, lng: 44.4991, name: "Ga Gyumri (Armenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gyumri, trung tâm mạng lưới đường sắt Armenia ở vùng Tây." },
+    { lat: 40.1792, lng: 44.4991, name: "Ga Vanadzor (Armenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Vanadzor, trung tâm mạng lưới đường sắt Armenia ở vùng Bắc." },
+    { lat: 40.1792, lng: 44.4991, name: "Ga Kapan (Armenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kapan, trung tâm mạng lưới đường sắt Armenia ở vùng Nam." },
+    { lat: 40.1792, lng: 44.4991, name: "Ga Hrazdan (Armenia)", icon: "🚉", cat: "railway", details: "Ga phụ của Yerevan, kết nối với mạng lưới đường sắt Armenia." },
+
+
+
+
+
+
+    // ĐƯỜNG SẮT TÂY ÂU (WEST EUROPE RAILWAYS)            DONE
+
+    // gồm Áo, Bỉ, Đức, Pháp, Liechtenstein, Luxembourg, Monaco, Hà Lan và Thụy Sĩ, chia từng bộ code như các dòng code trên và dưới
+    
+    // ÁO
+    { lat: 48.2082, lng: 16.3738, name: "Ga Vienna Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Vienna, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 47.0707, lng: 15.4395, name: "Ga Graz Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Graz, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 48.3069, lng: 14.2858, name: "Ga Linz Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Linz, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 47.8095, lng: 13.0550, name: "Ga Salzburg Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Salzburg, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 48.2082, lng: 16.3738, name: "Ga Vienna Westbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga phụ của Vienna, kết nối với mạng lưới đường sắt Áo và quốc tế." },
+
+    // BỈ
+    { lat: 50.8503, lng: 4.3517, name: "Ga Brussels Central (Belgium)", icon: "🚉", cat: "railway", details: "Ga chính của Brussels, trung tâm mạng lưới đường sắt Bỉ." },
+    { lat: 51.2194, lng: 4.4025, name: "Ga Antwerp Central (Belgium)", icon: "🚉", cat: "railway", details: "Ga chính của Antwerp, trung tâm mạng lưới đường sắt Bỉ." },
+    { lat: 50.9375, lng: 6.9603, name: "Ga Cologne (Germany)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Cologne, trung tâm mạng lưới đường sắt Đức và kết nối với Bỉ." },
+    { lat: 51.0543, lng: 3.7174, name: "Ga Ghent-Sint-Pieters (Belgium)", icon: "🚉", cat: "railway", details: "Ga chính của Ghent, trung tâm mạng lưới đường sắt Bỉ." },
+    { lat: 50.8467, lng: 4.3528, name: "Ga Brussels Midi (Belgium)", icon: "🚉", cat: "railway", details: "Ga chính của Brussels, trung tâm mạng lưới đường sắt Bỉ và kết nối với Pháp và Hà Lan." },
+    
+    // ĐỨC
+    { lat: 52.5200, lng: 13.4050, name: "Ga Berlin Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Berlin, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 48.1351, lng: 11.5820, name: "Ga Munich Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Munich, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 50.1109, lng: 8.6821, name: "Ga Frankfurt (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Frankfurt, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 53.5511, lng: 9.9937, name: "Ga Hamburg Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Hamburg, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 51.1657, lng: 10.4515, name: "Ga Leipzig Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Leipzig, trung tâm mạng lưới đường sắt Đức." },
+
+    // PHÁP
+    { lat: 48.8566, lng: 2.3522, name: "Ga Paris Gare du Nord (France)", icon: "🚉", cat: "railway", details: "Ga chính của Paris, trung tâm mạng lưới đường sắt Pháp và kết nối với các nước châu Âu khác." },
+    { lat: 45.7640, lng: 4.8357, name: "Ga Lyon Part-Dieu (France)", icon: "🚉", cat: "railway", details: "Ga chính của Lyon, trung tâm mạng lưới đường sắt Pháp." },
+    { lat: 43.2965, lng: 5.3698, name: "Ga Marseille Saint-Charles (France)", icon: "🚉", cat: "railway", details: "Ga chính của Marseille, trung tâm mạng lưới đường sắt Pháp." },
+    { lat: 48.5734, lng: 7.7521, name: "Ga Strasbourg (France)", icon: "🚉", cat: "railway", details: "Ga chính của Strasbourg, trung tâm mạng lưới đường sắt Pháp và kết nối với Đức." },
+    { lat: 47.2184, lng: -1.5536, name: "Ga Nantes (France)", icon: "🚉", cat: "railway", details: "Ga chính của Nantes, trung tâm mạng lưới đường sắt Pháp." },
+
+    // LIECHTENSTEIN
+    { lat: 47.1410, lng: 9.5215, name: "Ga Schaan-Vaduz (Liechtenstein)", icon: "🚉", cat: "railway", details: "Ga chính của Liechtenstein, phục vụ thành phố Vaduz và Schaan." },
+    { lat: 47.1410, lng: 9.5215, name: "Ga Nendeln (Liechtenstein)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liechtenstein, phục vụ khu vực phía Bắc." },
+    { lat: 47.1410, lng: 9.5215, name: "Ga Schaanwald (Liechtenstein)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liechtenstein, phục vụ khu vực phía Nam." },
+    { lat: 47.1410, lng: 9.5215, name: "Ga Balzers (Liechtenstein)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liechtenstein, phục vụ thành phố Balzers." },
+    { lat: 47.1410, lng: 9.5215, name: "Ga Triesen (Liechtenstein)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liechtenstein, phục vụ thành phố Triesen." },
+
+    // LUXEMBOURG
+    { lat: 49.6117, lng: 6.1319, name: "Ga Luxembourg (Luxembourg)", icon: "🚉", cat: "railway", details: "Ga chính của Luxembourg, trung tâm mạng lưới đường sắt Luxembourg." },
+    { lat: 49.6117, lng: 6.1319, name: "Ga Esch-sur-Alzette (Luxembourg)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Esch-sur-Alzette, trung tâm mạng lưới đường sắt Luxembourg." },
+    { lat: 49.6117, lng: 6.1319, name: "Ga Differdange (Luxembourg)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Differdange, trung tâm mạng lưới đường sắt Luxembourg." },
+    { lat: 49.6117, lng: 6.1319, name: "Ga Dudelange (Luxembourg)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dudelange, trung tâm mạng lưới đường sắt Luxembourg." },
+    { lat: 49.6117, lng: 6.1319, name: "Ga Ettelbruck (Luxembourg)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ettelbruck, trung tâm mạng lưới đường sắt Luxembourg." },
+
+    // MONACO
+    { lat: 43.7384, lng: 7.4246, name: "Ga Monaco-Monte Carlo (Monaco)", icon: "🚉", cat: "railway", details: "Ga chính của Monaco, phục vụ khu vực Monte Carlo." },
+    { lat: 43.7384, lng: 7.4246, name: "Ga Monaco-Ville (Monaco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Monaco, phục vụ khu vực Ville." },
+    { lat: 43.7384, lng: 7.4246, name: "Ga Monaco-Monaco (Monaco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Monaco, phục vụ toàn bộ khu vực." },
+    { lat: 43.7384, lng: 7.4246, name: "Ga Monaco-Cap d'Ail (Monaco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Monaco, phục vụ khu vực Cap d'Ail." },
+    { lat: 43.7384, lng: 7.4246, name: "Ga Monaco-La Condamine (Monaco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Monaco, phục vụ khu vực La Condamine." },
+
+    // HÀ LAN
+    { lat: 52.3702, lng: 4.8952, name: "Ga Amsterdam Centraal (Netherlands)", icon: "🚉", cat: "railway", details: "Ga chính của Amsterdam, trung tâm mạng lưới đường sắt Hà Lan." },
+    { lat: 51.9225, lng: 4.4792, name: "Ga Rotterdam Centraal (Netherlands)", icon: "🚉", cat: "railway", details: "Ga chính của Rotterdam, trung tâm mạng lưới đường sắt Hà Lan." },
+    { lat: 52.0907, lng: 5.1214, name: "Ga Utrecht Centraal (Netherlands)", icon: "🚉", cat: "railway", details: "Ga chính của Utrecht, trung tâm mạng lưới đường sắt Hà Lan." },
+    { lat: 51.4416, lng: 5.4697, name: "Ga Eindhoven (Netherlands)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Eindhoven, trung tâm mạng lưới đường sắt Hà Lan." },
+    { lat: 52.1326, lng: 5.2913, name: "Ga Amersfoort (Netherlands)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Amersfoort, trung tâm mạng lưới đường sắt Hà Lan." },
+
+    // THỤY SĨ
+    { lat: 46.9481, lng: 7.4474, name: "Ga Bern (Switzerland)", icon: "🚉", cat: "railway", details: "Ga chính của Bern, trung tâm mạng lưới đường sắt Thụy Sĩ." },
+    { lat: 47.3769, lng: 8.5417, name: "Ga Zurich Hauptbahnhof (Switzerland)", icon: "🚉", cat: "railway", details: "Ga chính của Zurich, trung tâm mạng lưới đường sắt Thụy Sĩ." },
+    { lat: 46.2044, lng: 6.1432, name: "Ga Geneva Cornavin (Switzerland)", icon: "🚉", cat: "railway", details: "Ga chính của Geneva, trung tâm mạng lưới đường sắt Thụy Sĩ." },
+    { lat: 47.5596, lng: 7.5886, name: "Ga Basel SBB (Switzerland)", icon: "🚉", cat: "railway", details: "Ga chính của Basel, trung tâm mạng lưới đường sắt Thụy Sĩ và kết nối với Pháp và Đức." },
+    { lat: 46.5197, lng: 6.6323, name: "Ga Lausanne (Switzerland)", icon: "🚉", cat: "railway", details: "Ga chính của Lausanne, trung tâm mạng lưới đường sắt Thụy Sĩ." },
+
+
+
+
+
+
+    // ĐƯỜNG SẮT NAM ÂU (SOUTH EUROPE RAILWAYS)        DONE
+
+    // gồm Ý, Tây Ban Nha, Bồ Đào Nha, Hy Lạp, Croatia, Slovenia, Malta, Albania, Andorra, San Marino, Vatican, Bosnia và Herzegovina, Montenegro, Serbia, Bắc Macedonia, chia từng bộ code như các dòng code trên và dưới
+
+    // Ý
+    { lat: 41.9028, lng: 12.4964, name: "Ga Rome Termini (Italy)", icon: "🚉", cat: "railway", details: "Ga chính của Rome, trung tâm mạng lưới đường sắt Ý." },
+    { lat: 45.4642, lng: 9.1900, name: "Ga Milan Central (Italy)", icon: "🚉", cat: "railway", details: "Ga chính của Milan, trung tâm mạng lưới đường sắt Ý." },
+    { lat: 43.7696, lng: 11.2558, name: "Ga Florence Santa Maria Novella (Italy)", icon: "🚉", cat: "railway", details: "Ga chính của Florence, trung tâm mạng lưới đường sắt Ý." },
+    { lat: 40.8518, lng: 14.2681, name: "Ga Naples Central (Italy)", icon: "🚉", cat: "railway", details: "Ga chính của Naples, trung tâm mạng lưới đường sắt Ý." },
+    { lat: 45.4408, lng: 12.3155, name: "Ga Venice Santa Lucia (Italy)", icon: "🚉", cat: "railway", details: "Ga chính của Venice, trung tâm mạng lưới đường sắt Ý." },
+
+    // TÂY BAN NHA
+    { lat: 40.4168, lng: -3.7038, name: "Ga Madrid Atocha (Spain)", icon: "🚉", cat: "railway", details: "Ga chính của Madrid, trung tâm mạng lưới đường sắt Tây Ban Nha." },
+    { lat: 41.3851, lng: 2.1734, name: "Ga Barcelona Sants (Spain)", icon: "🚉", cat: "railway", details: "Ga chính của Barcelona, trung tâm mạng lưới đường sắt Tây Ban Nha." },
+    { lat: 37.3891, lng: -5.9845, name: "Ga Seville Santa Justa (Spain)", icon: "🚉", cat: "railway", details: "Ga chính của Seville, trung tâm mạng lưới đường sắt Tây Ban Nha." },
+    { lat: 39.4699, lng: -0.3763, name: "Ga Valencia Joaquín Sorolla (Spain)", icon: "🚉", cat: "railway", details: "Ga chính của Valencia, trung tâm mạng lưới đường sắt Tây Ban Nha." },
+    { lat: 36.7213, lng: -4.4214, name: "Ga Málaga María Zambrano (Spain)", icon: "🚉", cat: "railway", details: "Ga chính của Málaga, trung tâm mạng lưới đường sắt Tây Ban Nha." },
+
+    // BỒ ĐÀO NHA
+    { lat: 38.7223, lng: -9.1393, name: "Ga Lisbon Oriente (Portugal)", icon: "🚉", cat: "railway", details: "Ga chính của Lisbon, trung tâm mạng lưới đường sắt Bồ Đào Nha." },
+    { lat: 41.1496, lng: -8.6109, name: "Ga Porto Campanhã (Portugal)", icon: "🚉", cat: "railway", details: "Ga chính của Porto, trung tâm mạng lưới đường sắt Bồ Đào Nha." },
+    { lat: 39.3999, lng: -8.2245, name: "Ga Coimbra-B (Portugal)", icon: "🚉", cat: "railway", details: "Ga chính của Coimbra, trung tâm mạng lưới đường sắt Bồ Đào Nha." },
+    { lat: 38.7369, lng: -9.1427, name: "Ga Lisbon Santa Apolónia (Portugal)", icon: "🚉", cat: "railway", details: "Ga phụ của Lisbon, kết nối với mạng lưới đường sắt Bồ Đào Nha và quốc tế." },
+    { lat: 40.6405, lng: -8.6538, name: "Ga Aveiro (Portugal)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aveiro, trung tâm mạng lưới đường sắt Bồ Đào Nha." },
+
+    // HY LẠP
+    { lat: 37.9838, lng: 23.7275, name: "Ga Athens (Greece)", icon: "🚉", cat: "railway", details: "Ga chính của Athens, trung tâm mạng lưới đường sắt Hy Lạp." },
+    { lat: 40.6401, lng: 22.9444, name: "Ga Thessaloniki (Greece)", icon: "🚉", cat: "railway", details: "Ga chính của Thessaloniki, trung tâm mạng lưới đường sắt Hy Lạp." },
+    { lat: 38.2466, lng: 21.7346, name: "Ga Patras (Greece)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Patras, trung tâm mạng lưới đường sắt Hy Lạp và cảng biển." },
+    { lat: 37.9838, lng: 23.7275, name: "Ga Piraeus (Greece)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Piraeus, trung tâm mạng lưới đường sắt Hy Lạp và cảng biển." },
+    { lat: 39.0742, lng: 21.8243, name: "Ga Larissa (Greece)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Larissa, trung tâm mạng lưới đường sắt Hy Lạp." },
+
+    // CROATIA
+    { lat: 45.8150, lng: 15.9819, name: "Ga Zagreb Glavni Kolodvor (Croatia)", icon: "🚉", cat: "railway", details: "Ga chính của Zagreb, trung tâm mạng lưới đường sắt Croatia." },
+    { lat: 44.1194, lng: 15.2314, name: "Ga Split (Croatia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Split, trung tâm mạng lưới đường sắt Croatia và cảng biển." },
+    { lat: 45.3271, lng: 14.4422, name: "Ga Rijeka (Croatia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rijeka, trung tâm mạng lưới đường sắt Croatia và cảng biển." },
+    { lat: 43.5081, lng: 16.4402, name: "Ga Dubrovnik (Croatia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dubrovnik, trung tâm mạng lưới đường sắt Croatia và cảng biển." },
+    { lat: 45.8150, lng: 15.9819, name: "Ga Osijek (Croatia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Osijek, trung tâm mạng lưới đường sắt Croatia." },
+
+    // MALTA
+    { lat: 35.8997, lng: 14.5146, name: "Ga Valletta (Malta)", icon: "🚉", cat: "railway", details: "Ga chính của Valletta, trung tâm mạng lưới đường sắt Malta." },
+    { lat: 35.8997, lng: 14.5146, name: "Ga Sliema (Malta)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sliema, trung tâm mạng lưới đường sắt Malta." },
+    { lat: 35.8997, lng: 14.5146, name: "Ga St. Julian's (Malta)", icon: "🚉", cat: "railway", details: "Ga quan trọng của St. Julian's, trung tâm mạng lưới đường sắt Malta." },
+    { lat: 35.8997, lng: 14.5146, name: "Ga Mdina (Malta)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mdina, trung tâm mạng lưới đường sắt Malta." },
+    { lat: 35.8997, lng: 14.5146, name: "Ga Marsaxlokk (Malta)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Marsaxlokk, trung tâm mạng lưới đường sắt Malta và cảng biển." },
+
+    // ALBANIA
+    { lat: 41.3275, lng: 19.8189, name: "Ga Tirana (Albania)", icon: "🚉", cat: "railway", details: "Ga chính của Tirana, trung tâm mạng lưới đường sắt Albania." },
+    { lat: 40.6401, lng: 22.9444, name: "Ga Durrës (Albania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Durrës, trung tâm mạng lưới đường sắt Albania và cảng biển." },
+    { lat: 41.3275, lng: 19.8189, name: "Ga Shkodër (Albania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Shkodër, trung tâm mạng lưới đường sắt Albania." },
+    { lat: 40.6401, lng: 22.9444, name: "Ga Vlorë (Albania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Vlorë, trung tâm mạng lưới đường sắt Albania và cảng biển." },
+    { lat: 41.3275, lng: 19.8189, name: "Ga Elbasan (Albania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Elbasan, trung tâm mạng lưới đường sắt Albania." },
+
+    // ANDORRA
+    { lat: 42.5078, lng: 1.5211, name: "Ga Andorra la Vella (Andorra)", icon: "🚉", cat: "railway", details: "Ga chính của Andorra la Vella, trung tâm mạng lưới đường sắt Andorra." },
+    { lat: 42.5078, lng: 1.5211, name: "Ga Encamp (Andorra)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Encamp, trung tâm mạng lưới đường sắt Andorra." },
+    { lat: 42.5078, lng: 1.5211, name: "Ga Sant Julià de Lòria (Andorra)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sant Julià de Lòria, trung tâm mạng lưới đường sắt Andorra." },
+    { lat: 42.5078, lng: 1.5211, name: "Ga Canillo (Andorra)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Canillo, trung tâm mạng lưới đường sắt Andorra." },
+    { lat: 42.5078, lng: 1.5211, name: "Ga Ordino (Andorra)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ordino, trung tâm mạng lưới đường sắt Andorra." },
+
+    // SAN MARINO
+    { lat: 43.9333, lng: 12.4500, name: "Ga San Marino (San Marino)", icon: "🚉", cat: "railway", details: "Ga chính của San Marino, trung tâm mạng lưới đường sắt San Marino." },
+    { lat: 43.9333, lng: 12.4500, name: "Ga Serravalle (San Marino)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Serravalle, trung tâm mạng lưới đường sắt San Marino." },
+    { lat: 43.9333, lng: 12.4500, name: "Ga Borgo Maggiore (San Marino)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Borgo Maggiore, trung tâm mạng lưới đường sắt San Marino." },
+    { lat: 43.9333, lng: 12.4500, name: "Ga Domagnano (San Marino)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Domagnano, trung tâm mạng lưới đường sắt San Marino." },
+    { lat: 43.9333, lng: 12.4500, name: "Ga Faetano (San Marino)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Faetano, trung tâm mạng lưới đường sắt San Marino." },
+
+    // VATICAN
+    { lat: 41.9029, lng: 12.4534, name: "Ga Vatican City (Vatican)", icon: "🚉", cat: "railway", details: "Ga chính của Vatican City, phục vụ khu vực Vatican." },
+    { lat: 41.9029, lng: 12.4534, name: "Ga St. Peter's Square (Vatican)", icon: "🚉", cat: "railway", details: "Ga quan trọng của St. Peter's Square, phục vụ khu vực Vatican." },
+    { lat: 41.9029, lng: 12.4534, name: "Ga Castel Gandolfo (Vatican)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Castel Gandolfo, phục vụ khu vực Vatican." },
+    { lat: 41.9029, lng: 12.4534, name: "Ga Vatican Gardens (Vatican)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Vatican Gardens, phục vụ khu vực Vatican." },
+    { lat: 41.9029, lng: 12.4534, name: "Ga Apostolic Palace (Vatican)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Apostolic Palace, phục vụ khu vực Vatican." },
+
+    // BOSNIA VÀ HERZEGOVINA
+    { lat: 43.8563, lng: 18.4131, name: "Ga Sarajevo (Bosnia and Herzegovina)", icon: "🚉", cat: "railway", details: "Ga chính của Sarajevo, trung tâm mạng lưới đường sắt Bosnia và Herzegovina." },
+    { lat: 44.7866, lng: 17.1870, name: "Ga Banja Luka (Bosnia and Herzegovina)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Banja Luka, trung tâm mạng lưới đường sắt Bosnia và Herzegovina." },
+    { lat: 43.3333, lng: 17.8167, name: "Ga Mostar (Bosnia and Herzegovina)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mostar, trung tâm mạng lưới đường sắt Bosnia và Herzegovina." },
+    { lat: 44.1994, lng: 17.9089, name: "Ga Tuzla (Bosnia and Herzegovina)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tuzla, trung tâm mạng lưới đường sắt Bosnia và Herzegovina." },
+    { lat: 43.6500, lng: 18.3500, name: "Ga Zenica (Bosnia and Herzegovina)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zenica, trung tâm mạng lưới đường sắt Bosnia và Herzegovina." },
+
+    // MONTENEGRO
+    { lat: 42.4304, lng: 19.2594, name: "Ga Podgorica (Montenegro)", icon: "🚉", cat: "railway", details: "Ga chính của Podgorica, trung tâm mạng lưới đường sắt Montenegro." },
+    { lat: 42.4411, lng: 19.2636, name: "Ga Bar (Montenegro)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bar, trung tâm mạng lưới đường sắt Montenegro và cảng biển." },
+    { lat: 42.4304, lng: 19.2594, name: "Ga Nikšić (Montenegro)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nikšić, trung tâm mạng lưới đường sắt Montenegro." },
+    { lat: 42.4304, lng: 19.2594, name: "Ga Bijelo Polje (Montenegro)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bijelo Polje, trung tâm mạng lưới đường sắt Montenegro." },
+    { lat: 42.4304, lng: 19.2594, name: "Ga Pljevlja (Montenegro)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Pljevlja, trung tâm mạng lưới đường sắt Montenegro." },
+
+    // SERBIA
+    { lat: 44.7866, lng: 20.4489, name: "Ga Belgrade (Serbia)", icon: "🚉", cat: "railway", details: "Ga chính của Belgrade, trung tâm mạng lưới đường sắt Serbia." },
+    { lat: 43.3209, lng: 21.8958, name: "Ga Novi Sad (Serbia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Novi Sad, trung tâm mạng lưới đường sắt Serbia." },
+    { lat: 44.0165, lng: 21.0059, name: "Ga Niš (Serbia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Niš, trung tâm mạng lưới đường sắt Serbia." },
+    { lat: 44.7866, lng: 20.4489, name: "Ga Kragujevac (Serbia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kragujevac, trung tâm mạng lưới đường sắt Serbia." },
+    { lat: 44.7866, lng: 20.4489, name: "Ga Subotica (Serbia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Subotica, trung tâm mạng lưới đường sắt Serbia và kết nối với Hungary." },
+
+    // BẮC MACEDONIA
+    { lat: 41.9981, lng: 21.4254, name: "Ga Skopje (North Macedonia)", icon: "🚉", cat: "railway", details: "Ga chính của Skopje, trung tâm mạng lưới đường sắt Bắc Macedonia." },
+    { lat: 41.9981, lng: 21.4254, name: "Ga Bitola (North Macedonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bitola, trung tâm mạng lưới đường sắt Bắc Macedonia." },
+    { lat: 41.9981, lng: 21.4254, name: "Ga Kumanovo (North Macedonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kumanovo, trung tâm mạng lưới đường sắt Bắc Macedonia." },
+    { lat: 41.9981, lng: 21.4254, name: "Ga Tetovo (North Macedonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tetovo, trung tâm mạng lưới đường sắt Bắc Macedonia." },
+    { lat: 41.9981, lng: 21.4254, name: "Ga Ohrid (North Macedonia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ohrid, trung tâm mạng lưới đường sắt Bắc Macedonia và cảng biển." },
+
+
+
+
+
+
+
+    // ĐƯỜNG SẮT TRUNG ÂU (CENTRAL EUROPE RAILWAYS)   DONE
+
+    // gồm Đức, Áo, Cộng hòa Séc, Hungary, Slovakia, Slovenia, chia từng bộ code như các dòng code trên và dưới
+
+    // ĐỨC
+    { lat: 52.5200, lng: 13.4050, name: "Ga Berlin Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Berlin, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 48.1351, lng: 11.5820, name: "Ga Munich Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Munich, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 50.1109, lng: 8.6821, name: "Ga Frankfurt Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Frankfurt, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 53.5511, lng: 9.9937, name: "Ga Hamburg Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Hamburg, trung tâm mạng lưới đường sắt Đức." },
+    { lat: 51.1657, lng: 10.4515, name: "Ga Cologne Hauptbahnhof (Germany)", icon: "🚉", cat: "railway", details: "Ga chính của Cologne, trung tâm mạng lưới đường sắt Đức." },
+
+    // ÁO
+    { lat: 48.2082, lng: 16.3738, name: "Ga Vienna Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Vienna, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 47.0707, lng: 15.4395, name: "Ga Graz Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Graz, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 48.3069, lng: 14.2858, name: "Ga Linz Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Linz, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 47.8095, lng: 13.0550, name: "Ga Salzburg Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Salzburg, trung tâm mạng lưới đường sắt Áo." },
+    { lat: 47.2672, lng: 11.3923, name: "Ga Innsbruck Hauptbahnhof (Austria)", icon: "🚉", cat: "railway", details: "Ga chính của Innsbruck, trung tâm mạng lưới đường sắt Áo." },
+
+    // CỘNG HÒA SÉC
+    { lat: 50.0755, lng: 14.4378, name: "Ga Prague Main (Czech Republic)", icon: "🚉", cat: "railway", details: "Ga chính của Prague, trung tâm mạng lưới đường sắt Cộng hòa Séc." },
+    { lat: 49.1951, lng: 16.6068, name: "Ga Brno Main (Czech Republic)", icon: "🚉", cat: "railway", details: "Ga chính của Brno, trung tâm mạng lưới đường sắt Cộng hòa Séc." },
+    { lat: 50.0880, lng: 14.4208, name: "Ga Ostrava Main (Czech Republic)", icon: "🚉", cat: "railway", details: "Ga chính của Ostrava, trung tâm mạng lưới đường sắt Cộng hòa Séc." },
+    { lat: 49.8175, lng: 15.4730, name: "Ga Plzeň Main (Czech Republic)", icon: "🚉", cat: "railway", details: "Ga chính của Plzeň, trung tâm mạng lưới đường sắt Cộng hòa Séc." },
+    { lat: 50.0755, lng: 14.4378, name: "Ga Liberec Main (Czech Republic)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Liberec, trung tâm mạng lưới đường sắt Cộng hòa Séc." },
+
+    // HUNGARY
+    { lat: 47.4979, lng: 19.0402, name: "Ga Budapest Keleti (Hungary)", icon: "🚉", cat: "railway", details: "Ga chính của Budapest, trung tâm mạng lưới đường sắt Hungary." },
+    { lat: 47.4979, lng: 19.0402, name: "Ga Budapest Nyugati (Hungary)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Budapest, trung tâm mạng lưới đường sắt Hungary." },
+    { lat: 47.4979, lng: 19.0402, name: "Ga Budapest Déli (Hungary)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Budapest, trung tâm mạng lưới đường sắt Hungary." },
+    { lat: 47.4979, lng: 19.0402, name: "Ga Szeged (Hungary)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Szeged, trung tâm mạng lưới đường sắt Hungary." },
+    { lat: 47.4979, lng: 19.0402, name: "Ga Debrecen (Hungary)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Debrecen, trung tâm mạng lưới đường sắt Hungary." },
+
+    // SLOVAKIA
+    { lat: 48.1486, lng: 17.1077, name: "Ga Bratislava Main (Slovakia)", icon: "🚉", cat: "railway", details: "Ga chính của Bratislava, trung tâm mạng lưới đường sắt Slovakia." },
+    { lat: 48.1486, lng: 17.1077, name: "Ga Košice (Slovakia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Košice, trung tâm mạng lưới đường sắt Slovakia." },
+    { lat: 48.1486, lng: 17.1077, name: "Ga Prešov (Slovakia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Prešov, trung tâm mạng lưới đường sắt Slovakia." },
+    { lat: 48.1486, lng: 17.1077, name: "Ga Žilina (Slovakia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Žilina, trung tâm mạng lưới đường sắt Slovakia." },
+    { lat: 48.1486, lng: 17.1077, name: "Ga Nitra (Slovakia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nitra, trung tâm mạng lưới đường sắt Slovakia." },
+
+    // SLOVENIA
+    { lat: 46.0569, lng: 14.5058, name: "Ga Ljubljana (Slovenia)", icon: "🚉", cat: "railway", details: "Ga chính của Ljubljana, trung tâm mạng lưới đường sắt Slovenia." },
+    { lat: 45.8150, lng: 15.9819, name: "Ga Maribor (Slovenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Maribor, trung tâm mạng lưới đường sắt Slovenia." },
+    { lat: 46.0569, lng: 14.5058, name: "Ga Celje (Slovenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Celje, trung tâm mạng lưới đường sắt Slovenia." },
+    { lat: 45.8150, lng: 15.9819, name: "Ga Koper (Slovenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Koper, trung tâm mạng lưới đường sắt Slovenia và cảng biển." },
+    { lat: 46.0569, lng: 14.5058, name: "Ga Novo Mesto (Slovenia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Novo Mesto, trung tâm mạng lưới đường sắt Slovenia." },
+
+
+
+
+
+
+
+
+
+
+//-----------CHÂU PHI---------------
+
+// BẮC PHI
+
+// gồm  Ai Cập, Algeria, Libya, Morocco, Tunisia, Tây Sahara, chia từng bộ code như các dòng code trên và dưới
+
+    // AI CẬP
+    { lat: 30.0444, lng: 31.2357, name: "Ga Cairo (Egypt)", icon: "🚉", cat: "railway", details: "Ga chính của Cairo, trung tâm mạng lưới đường sắt Ai Cập." },
+    { lat: 31.2001, lng: 29.9187, name: "Ga Alexandria (Egypt)", icon: "🚉", cat: "railway", details: "Ga chính của Alexandria, trung tâm mạng lưới đường sắt Ai Cập và cảng biển." },
+    { lat: 30.0131, lng: 31.2089, name: "Ga Giza (Egypt)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Giza, trung tâm mạng lưới đường sắt Ai Cập." },
+    { lat: 29.9553, lng: 31.1376, name: "Ga Luxor (Egypt)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Luxor, trung tâm mạng lưới đường sắt Ai Cập." },
+    { lat: 31.2653, lng: 32.3019, name: "Ga Aswan (Egypt)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Aswan, trung tâm mạng lưới đường sắt Ai Cập." },
+
+    // ALGERIA
+    { lat: 36.7372, lng: 3.0863, name: "Ga Algiers (Algeria)", icon: "🚉", cat: "railway", details: "Ga chính của Algiers, trung tâm mạng lưới đường sắt Algeria." },
+    { lat: 36.7538, lng: 3.0588, name: "Ga Oran (Algeria)", icon: "🚉", cat: "railway", details: "Ga chính của Oran, trung tâm mạng lưới đường sắt Algeria và cảng biển." },
+    { lat: 35.6911, lng: 5.8317, name: "Ga Constantine (Algeria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Constantine, trung tâm mạng lưới đường sắt Algeria." },
+    { lat: 36.7529, lng: 3.0420, name: "Ga Annaba (Algeria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Annaba, trung tâm mạng lưới đường sắt Algeria và cảng biển." },
+    { lat: 35.6997, lng: 5.9050, name: "Ga Béjaïa (Algeria)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Béjaïa, trung tâm mạng lưới đường sắt Algeria và cảng biển." },
+
+    // LIBYA
+    { lat: 32.8872, lng: 13.1913, name: "Ga Tripoli (Libya)", icon: "🚉", cat: "railway", details: "Ga chính của Tripoli, trung tâm mạng lưới đường sắt Libya." },
+    { lat: 31.2001, lng: 29.9187, name: "Ga Benghazi (Libya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Benghazi, trung tâm mạng lưới đường sắt Libya và cảng biển." },
+    { lat: 30.3358, lng: 17.2283, name: "Ga Sabha (Libya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sabha, trung tâm mạng lưới đường sắt Libya." },
+    { lat: 32.8872, lng: 13.1913, name: "Ga Misrata (Libya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Misrata, trung tâm mạng lưới đường sắt Libya và cảng biển." },
+    { lat: 31.2001, lng: 29.9187, name: "Ga Al Bayda (Libya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Al Bayda, trung tâm mạng lưới đường sắt Libya." },
+
+    // MOROCCO
+    { lat: 33.5731, lng: -7.5898, name: "Ga Casablanca (Morocco)", icon: "🚉", cat: "railway", details: "Ga chính của Casablanca, trung tâm mạng lưới đường sắt Morocco và cảng biển." },
+    { lat: 34.0209, lng: -6.8416, name: "Ga Rabat (Morocco)", icon: "🚉", cat: "railway", details: "Ga chính của Rabat, trung tâm mạng lưới đường sắt Morocco." },
+    { lat: 31.6295, lng: -8.0089, name: "Ga Marrakech (Morocco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Marrakech, trung tâm mạng lưới đường sắt Morocco." },
+    { lat: 35.7595, lng: -5.8339, name: "Ga Tangier (Morocco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tangier, trung tâm mạng lưới đường sắt Morocco và cảng biển." },
+    { lat: 32.2968, lng: -9.2370, name: "Ga Agadir (Morocco)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Agadir, trung tâm mạng lưới đường sắt Morocco và cảng biển." },
+
+    // TUNISIA
+    { lat: 36.8065, lng: 10.1815, name: "Ga Tunis (Tunisia)", icon: "🚉", cat: "railway", details: "Ga chính của Tunis, trung tâm mạng lưới đường sắt Tunisia." },
+    { lat: 36.8008, lng: 10.1797, name: "Ga Sfax (Tunisia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sfax, trung tâm mạng lưới đường sắt Tunisia và cảng biển." },
+    { lat: 36.8188, lng: 10.1650, name: "Ga Sousse (Tunisia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Sousse, trung tâm mạng lưới đường sắt Tunisia và cảng biển." },
+    { lat: 36.8065, lng: 10.1815, name: "Ga Kairouan (Tunisia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kairouan, trung tâm mạng lưới đường sắt Tunisia." },
+    { lat: 36.8065, lng: 10.1815, name: "Ga Bizerte (Tunisia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bizerte, trung tâm mạng lưới đường sắt Tunisia và cảng biển." },
+
+    // TÂY SAHARA
+    { lat: 24.2155, lng: -12.8858, name: "Ga Laayoune (Western Sahara)", icon: "🚉", cat: "railway", details: "Ga chính của Laayoune, trung tâm mạng lưới đường sắt Tây Sahara." },
+    { lat: 27.1547, lng: -13.2032, name: "Ga Dakhla (Western Sahara)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dakhla, trung tâm mạng lưới đường sắt Tây Sahara và cảng biển." },
+    { lat: 26.7150, lng: -14.4978, name: "Ga Smara (Western Sahara)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Smara, trung tâm mạng lưới đường sắt Tây Sahara." },
+    { lat: 27.1547, lng: -13.2032, name: "Ga Boujdour (Western Sahara)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Boujdour, trung tâm mạng lưới đường sắt Tây Sahara và cảng biển." },
+    { lat: 24.2155, lng: -12.8858, name: "Ga Es Semara (Western Sahara)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Es Semara, trung tâm mạng lưới đường sắt Tây Sahara." },
+
+
+
+
+
+    // đường sắt đông phi (EAST AFRICA RAILWAYS)   DONE
+
+    // gồm Ethiopia, Kenya, Tanzania, Uganda, Rwanda, Burundi, chia từng bộ code như các dòng code trên và dưới
+
+    // ETHIOPIA
+    { lat: 9.0300, lng: 38.7400, name: "Ga Addis Ababa (Ethiopia)", icon: "🚉", cat: "railway", details: "Ga chính của Addis Ababa, trung tâm mạng lưới đường sắt Ethiopia." },
+    { lat: 8.9806, lng: 38.7578, name: "Ga Dire Dawa (Ethiopia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dire Dawa, trung tâm mạng lưới đường sắt Ethiopia." },
+    { lat: 9.1450, lng: 40.4897, name: "Ga Awash (Ethiopia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Awash, trung tâm mạng lưới đường sắt Ethiopia." },
+    { lat: 9.1450, lng: 40.4897, name: "Ga Harar (Ethiopia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Harar, trung tâm mạng lưới đường sắt Ethiopia." },
+    { lat: 9.1450, lng: 40.4897, name: "Ga Adama (Ethiopia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Adama, trung tâm mạng lưới đường sắt Ethiopia." },
+
+    // KENYA
+    { lat: -1.2921, lng: 36.8219, name: "Ga Nairobi (Kenya)", icon: "🚉", cat: "railway", details: "Ga chính của Nairobi, trung tâm mạng lưới đường sắt Kenya." },
+    { lat: -4.0435, lng: 39.6682, name: "Ga Mombasa (Kenya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mombasa, trung tâm mạng lưới đường sắt Kenya và cảng biển." },
+    { lat: -0.0236, lng: 37.9062, name: "Ga Kisumu (Kenya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kisumu, trung tâm mạng lưới đường sắt Kenya và cảng biển." },
+    { lat: -3.3869, lng: 36.6822, name: "Ga Nakuru (Kenya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Nakuru, trung tâm mạng lưới đường sắt Kenya." },
+    { lat: -0.0236, lng: 37.9062, name: "Ga Eldoret (Kenya)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Eldoret, trung tâm mạng lưới đường sắt Kenya." },
+
+    // TANZANIA
+    { lat: -6.7924, lng: 39.2083, name: "Ga Dar es Salaam (Tanzania)", icon: "🚉", cat: "railway", details: "Ga chính của Dar es Salaam, trung tâm mạng lưới đường sắt Tanzania và cảng biển." },
+    { lat: -3.3869, lng: 36.6822, name: "Ga Mwanza (Tanzania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mwanza, trung tâm mạng lưới đường sắt Tanzania và cảng biển." },
+    { lat: -5.0667, lng: 39.0833, name: "Ga Arusha (Tanzania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Arusha, trung tâm mạng lưới đường sắt Tanzania." },
+    { lat: -6.7924, lng: 39.2083, name: "Ga Dodoma (Tanzania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dodoma, trung tâm mạng lưới đường sắt Tanzania." },
+    { lat: -5.0667, lng: 39.0833, name: "Ga Mbeya (Tanzania)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mbeya, trung tâm mạng lưới đường sắt Tanzania." },
+
+    // UGANDA
+    { lat: 0.3476, lng: 32.5825, name: "Ga Kampala (Uganda)", icon: "🚉", cat: "railway", details: "Ga chính của Kampala, trung tâm mạng lưới đường sắt Uganda." },
+    { lat: 1.3733, lng: 32.2903, name: "Ga Jinja (Uganda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Jinja, trung tâm mạng lưới đường sắt Uganda và cảng biển." },
+    { lat: 0.3476, lng: 32.5825, name: "Ga Entebbe (Uganda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Entebbe, trung tâm mạng lưới đường sắt Uganda và cảng biển." },
+    { lat: 1.3733, lng: 32.2903, name: "Ga Gulu (Uganda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gulu, trung tâm mạng lưới đường sắt Uganda." },
+    { lat: 0.3476, lng: 32.5825, name: "Ga Lira (Uganda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lira, trung tâm mạng lưới đường sắt Uganda." },
+
+    // RWANDA
+    { lat: -1.9706, lng: 30.1044, name: "Ga Kigali (Rwanda)", icon: "🚉", cat: "railway", details: "Ga chính của Kigali, trung tâm mạng lưới đường sắt Rwanda." },
+    { lat: -2.0000, lng: 30.0000, name: "Ga Butare (Rwanda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Butare, trung tâm mạng lưới đường sắt Rwanda." },
+    { lat: -1.9706, lng: 30.1044, name: "Ga Ruhengeri (Rwanda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ruhengeri, trung tâm mạng lưới đường sắt Rwanda." },
+    { lat: -2.0000, lng: 30.0000, name: "Ga Gisenyi (Rwanda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gisenyi, trung tâm mạng lưới đường sắt Rwanda và cảng biển." },
+    { lat: -1.9706, lng: 30.1044, name: "Ga Cyangugu (Rwanda)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Cyangugu, trung tâm mạng lưới đường sắt Rwanda và cảng biển." },
+
+    // BURUNDI
+    { lat: -3.3731, lng: 29.9189, name: "Ga Bujumbura (Burundi)", icon: "🚉", cat: "railway", details: "Ga chính của Bujumbura, trung tâm mạng lưới đường sắt Burundi và cảng biển." },
+    { lat: -3.3731, lng: 29.9189, name: "Ga Gitega (Burundi)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gitega, trung tâm mạng lưới đường sắt Burundi." },
+    { lat: -3.3731, lng: 29.9189, name: "Ga Ngozi (Burundi)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ngozi, trung tâm mạng lưới đường sắt Burundi." },
+    { lat: -3.3731, lng: 29.9189, name: "Ga Rumonge (Burundi)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rumonge, trung tâm mạng lưới đường sắt Burundi và cảng biển." },
+    { lat: -3.3731, lng: 29.9189, name: "Ga Ruyigi (Burundi)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ruyigi, trung tâm mạng lưới đường sắt Burundi." },
+
+
+
+    // đường sắt nam phi (SOUTH AFRICA RAILWAYS)               DONE
+
+    // gồm Nam Phi, Botswana, Namibia, Zimbabwe, Zambia, chia từng bộ code như các dòng code trên và dưới
+
+    // NAM PHI
+    { lat: -26.2041, lng: 28.0473, name: "Ga Johannesburg (South Africa)", icon: "🚉", cat: "railway", details: "Ga chính của Johannesburg, trung tâm mạng lưới đường sắt Nam Phi." },
+    { lat: -33.9249, lng: 18.4241, name: "Ga Cape Town (South Africa)", icon: "🚉", cat: "railway", details: "Ga chính của Cape Town, trung tâm mạng lưới đường sắt Nam Phi và cảng biển." },
+    { lat: -29.8587, lng: 31.0218, name: "Ga Durban (South Africa)", icon: "🚉", cat: "railway", details: "Ga chính của Durban, trung tâm mạng lưới đường sắt Nam Phi và cảng biển." },
+    { lat: -26.2041, lng: 28.0473, name: "Ga Pretoria (South Africa)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Pretoria, trung tâm mạng lưới đường sắt Nam Phi." },
+    { lat: -29.8587, lng: 31.0218, name: "Ga Port Elizabeth (South Africa)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Port Elizabeth, trung tâm mạng lưới đường sắt Nam Phi và cảng biển." },
+
+
+    // BOTSWANA
+    { lat: -24.6545, lng: 25.9086, name: "Ga Gaborone (Botswana)", icon: "🚉", cat: "railway", details: "Ga chính của Gaborone, trung tâm mạng lưới đường sắt Botswana." },
+    { lat: -21.1702, lng: 27.4794, name: "Ga Francistown (Botswana)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Francistown, trung tâm mạng lưới đường sắt Botswana." },
+    { lat: -22.3285, lng: 24.6849, name: "Ga Maun (Botswana)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Maun, trung tâm mạng lưới đường sắt Botswana và cảng biển." },
+    { lat: -23.1690, lng: 25.1588, name: "Ga Selebi-Phikwe (Botswana)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Selebi-Phikwe, trung tâm mạng lưới đường sắt Botswana." },
+    { lat: -24.6545, lng: 25.9086, name: "Ga Lobatse (Botswana)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lobatse, trung tâm mạng lưới đường sắt Botswana." },
+
+    // NAMIBIA
+    { lat: -22.5609, lng: 17.0658, name: "Ga Windhoek (Namibia)", icon: "🚉", cat: "railway", details: "Ga chính của Windhoek, trung tâm mạng lưới đường sắt Namibia." },
+    { lat: -19.2576, lng: 17.0791, name: "Ga Swakopmund (Namibia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Swakopmund, trung tâm mạng lưới đường sắt Namibia và cảng biển." },
+    { lat: -22.5609, lng: 17.0658, name: "Ga Walvis Bay (Namibia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Walvis Bay, trung tâm mạng lưới đường sắt Namibia và cảng biển." },
+    { lat: -21.1702, lng: 27.4794, name: "Ga Lüderitz (Namibia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lüderitz, trung tâm mạng lưới đường sắt Namibia và cảng biển." },
+    { lat: -22.5609, lng: 17.0658, name: "Ga Keetmanshoop (Namibia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Keetmanshoop, trung tâm mạng lưới đường sắt Namibia." },
+
+    // ZIMBABWE
+    { lat: -17.8292, lng: 31.0522, name: "Ga Harare (Zimbabwe)", icon: "🚉", cat: "railway", details: "Ga chính của Harare, trung tâm mạng lưới đường sắt Zimbabwe." },
+    { lat: -20.1540, lng: 28.5869, name: "Ga Bulawayo (Zimbabwe)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bulawayo, trung tâm mạng lưới đường sắt Zimbabwe." },
+    { lat: -17.8292, lng: 31.0522, name: "Ga Mutare (Zimbabwe)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Mutare, trung tâm mạng lưới đường sắt Zimbabwe và cảng biển." },
+    { lat: -20.1540, lng: 28.5869, name: "Ga Gweru (Zimbabwe)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Gweru, trung tâm mạng lưới đường sắt Zimbabwe." },
+    { lat: -17.8292, lng: 31.0522, name: "Ga Kwekwe (Zimbabwe)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kwekwe, trung tâm mạng lưới đường sắt Zimbabwe." },
+
+    // ZAMBIA
+    { lat: -15.3875, lng: 28.3228, name: "Ga Lusaka (Zambia)", icon: "🚉", cat: "railway", details: "Ga chính của Lusaka, trung tâm mạng lưới đường sắt Zambia." },
+    { lat: -13.1339, lng: 27.8493, name: "Ga Ndola (Zambia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Ndola, trung tâm mạng lưới đường sắt Zambia." },
+    { lat: -15.3875, lng: 28.3228, name: "Ga Kitwe (Zambia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kitwe, trung tâm mạng lưới đường sắt Zambia." },
+    { lat: -13.1339, lng: 27.8493, name: "Ga Chingola (Zambia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Chingola, trung tâm mạng lưới đường sắt Zambia." },
+    { lat: -15.3875, lng: 28.3228, name: "Ga Kabwe (Zambia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kabwe, trung tâm mạng lưới đường sắt Zambia." },
+
+
+
+
+
+
+]
+// Đẩy dữ liệu vào mảng tổng
     railwayData.forEach(item => economyData.push(item));
+    
     console.log(`✅ Đã tải ${railwayData.length} ga tàu trọng điểm.`);
-}
+} // <--- QUAN TRỌNG: Phải đóng hàm bằng dấu };
+
 
 
 
@@ -5922,521 +7283,6 @@ console.log("Hệ thống Athemianarotry Geography: Tài nguyên đã sẵn sàn
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ====================== KHỞI TẠO TOÀN BỘ KHI TRANG LOAD ======================
-window.addEventListener('load', () => {
-    console.log("🚀 Trang đã load hoàn tất - Khởi tạo Athe Studio");
-
-    // 1. Khôi phục trạng thái ticker từ cài đặt (nếu có) - PHẢI TRƯỚC fetchDailyNews
-    if (typeof initTickerState === "function") {
-        initTickerState();
-    }
-
-    // 1a. Khôi phục trạng thái biên giới xanh dương / đơn giản
-    if (typeof initBorderStyleState === "function") {
-        initBorderStyleState();
-    }
-
-    // 1b. Gắn sự kiện cho nút trong modal khi DOM đã sẵn sàng
-    if (typeof initSettingsButtons === "function") {
-        initSettingsButtons();
-    }
-
-    // 1c. Khởi tạo trạng thái hiển thị Lat/Lon nếu có lưu trữ
-    if (typeof initLatLonState === "function") {
-        initLatLonState();
-    }
-
-    // 2. Khởi tạo ticker tin tức (chạy ngay lập tức và lặp mỗi 30 giây)
-    fetchDailyNews();
-
-    // 3. Nếu timeline đang mở sẵn thì gắn sự kiện track
-    if (document.getElementById('keyframe-panel').classList.contains('active')) {
-        attachTrackClickListeners();
-    }
-
-    // 4. Tăng độ mượt khi lăn chuột trên timeline
-    const wrapper = document.getElementById('tracks-wrapper');
-    if (wrapper) {
-        wrapper.addEventListener('wheel', function(e) {
-            if (document.getElementById('keyframe-panel').classList.contains('active')) {
-                e.preventDefault();   // Ngăn scroll trang chính
-            }
-            const scrollSpeed = 3;    // Tăng tốc độ cuộn
-            wrapper.scrollTop += e.deltaY * scrollSpeed;
-        }, { passive: false });
-    }
-});
-
-
-
-
-
-// Ẩn nút zoom mặc định của Leaflet
-if (map.zoomControl) {
-    map.zoomControl.remove();
-}
-
-// Tạo nút cài đặt tùy chỉnh, dịch xuống dưới để tránh ticker
-const settingsButton = L.control({position: 'topleft'});
-
-settingsButton.onAdd = function (map) {
-    const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar settings-control');
-    
-    // Dịch nút xuống dưới 40px (cách ticker)
-    div.style.marginTop = '40px';  // ← Đây là phần chỉnh vị trí xuống
-    
-    div.innerHTML = `
-        <a href="#" title="Cài đặt" role="button" class="settings-btn">
-            ⚙️
-        </a>
-    `;
-    
-    L.DomEvent.disableClickPropagation(div);
-    
-    div.querySelector('.settings-btn').onclick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleSettingsMenu();
-    };
-    
-    return div;
-};
-
-settingsButton.addTo(map);
-
-// Mở/đóng modal cài đặt
-function toggleSettingsMenu() {
-    const modal = document.getElementById('settings-modal');
-    if (modal) {
-        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
-    }
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (modal) modal.style.display = 'none';
-}
-
-// Tùy chọn tắt/mở ticker
-let borderStyleMode = 'glow';
-
-function toggleNewsTicker(checked) {
-    const ticker = document.getElementById('news-ticker');
-    if (ticker) ticker.style.display = checked ? 'block' : 'none';
-    // Lưu cài đặt vào localStorage
-    localStorage.setItem('tickerEnabled', checked);
-}
-
-// Khởi tạo trạng thái ticker từ localStorage khi trang tải
-function initTickerState() {
-    const tickerCheckbox = document.getElementById('toggle-ticker');
-    const savedState = localStorage.getItem('tickerEnabled');
-    
-    if (savedState !== null) {
-        // Nếu có lưu trữ, sử dụng giá trị đó
-        const isEnabled = savedState === 'true';
-        tickerCheckbox.checked = isEnabled;
-        toggleNewsTicker(isEnabled);
-    } else {
-        // Nếu chưa có cài đặt, mặc định BẬT ticker
-        tickerCheckbox.checked = true;
-        toggleNewsTicker(true);
-    }
-}
-
-function toggleBorderStyle() {
-    borderStyleMode = borderStyleMode === 'glow' ? 'simple' : 'glow';
-    updateBorderStyleButton();
-    renderBorders(0);
-    localStorage.setItem('borderStyleMode', borderStyleMode);
-}
-
-function updateBorderStyleButton() {
-    const button = document.getElementById('toggle-border-style-button');
-    const note = document.getElementById('border-style-note');
-    const label = document.getElementById('border-style-label');
-    if (!button || !note || !label) return;
-
-    if (borderStyleMode === 'glow') {
-        button.innerHTML = '🔵';
-        label.textContent = 'Chuyển sang biên giới';
-        note.textContent = 'Hiện đang dùng biên giới xanh dương cinematic.';
-    } else {
-        button.innerHTML = '✨';
-        label.textContent = 'Chuyển sang biên giới xanh dương';
-        note.textContent = 'Hiện đang dùng biên giới xanh đơn giản.';
-    }
-}
-
-function initBorderStyleState() {
-    const savedState = localStorage.getItem('borderStyleMode');
-    if (savedState === 'simple' || savedState === 'glow') {
-        borderStyleMode = savedState;
-    } else {
-        borderStyleMode = 'glow';
-    }
-    updateBorderStyleButton();
-}
-
-function initSettingsButtons() {
-    const latlonCheckbox = document.getElementById('toggle-latlon');
-    if (latlonCheckbox) {
-        latlonCheckbox.addEventListener('change', function() {
-            toggleLatLonOverlay(this.checked);
-        });
-    }
-}
-
-function toggleLatLonOverlay(checked) {
-    const coordsBox = document.getElementById('coords-box');
-    if (coordsBox) {
-        coordsBox.style.display = checked ? 'block' : 'none';
-    }
-
-    if (typeof climateLayerGroup !== 'undefined' && climateLayerGroup) {
-        if (checked) {
-            const selectedMode = document.getElementById('climate-select')?.value || 'lines';
-            toggleClimateLayer(selectedMode);
-        } else {
-            climateLayerGroup.clearLayers();
-        }
-    }
-
-    localStorage.setItem('latlonEnabled', checked);
-}
-
-function initLatLonState() {
-    const checkbox = document.getElementById('toggle-latlon');
-    const savedState = localStorage.getItem('latlonEnabled');
-    const isEnabled = savedState !== null ? savedState === 'true' : false;
-    if (checkbox) {
-        checkbox.checked = isEnabled;
-    }
-    toggleLatLonOverlay(isEnabled);
-}
-
-// Tắt/mở hiển thị tình hình chính trị
-function togglePoliticalStatus(checked) {
-    showPoliticalStatus = checked;
-    renderBorders(0); // Vẽ lại biên giới để cập nhật hiệu ứng nháy
-    console.log("Tình hình chính trị:", showPoliticalStatus ? "HIỆN" : "ẨN");
-}
-
-// Đóng modal khi click bên ngoài
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return;
-    
-    const modalContent = document.querySelector('.modal-content');
-    if (modal.style.display === 'flex' && !modalContent.contains(e.target) && !e.target.closest('.settings-btn')) {
-        closeSettingsModal();
-    }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ====================== FIX HOÀN CHỈNH - THỦ ĐÔ & BANG + WIKIPEDIA ======================
-
-// ====================== WIKI & THỦ ĐÔ & BANG - PHIÊN BẢN KẾT NỐI API TOÀN CẦU ======================
-
-// 1. Hàm lấy thông tin Wikipedia từ API thật
-async function fetchWiki(countryName) {
-    const panel = document.getElementById('wiki-panel');
-    const title = document.getElementById('wiki-title');
-    const body = document.getElementById('wiki-body');
-
-    if (!panel || !title || !body) return;
-
-    // Hiển thị trạng thái đang tải
-    body.innerHTML = `
-        <div style="text-align:center; padding:50px 20px;">
-            <div class="loading-spinner" style="border: 4px solid rgba(255,204,0,0.1); border-left-color: #ffcc00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-            <p style="color:#ffcc00; font-weight:bold;">ĐANG TRUY XUẤT KHO DỮ LIỆU WIKIPEDIA...</p>
-            <p style="color:#888; font-size:12px;">Đang kết nối tới thư viện tri thức toàn cầu cho ${countryName}</p>
-        </div>
-    `;
-    title.textContent = countryName;
-    panel.classList.add('active');
-    panel.scrollTop = 0;
-
-    try {
-        const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
-        const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
-
-        // Gọi API Wikipedia (phiên bản tóm tắt tiếng Việt hoặc Anh)
-        const response = await fetch(`https://vi.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
-        const data = await response.json();
-
-        if (data.type === 'standard' || data.type === 'disambiguation') {
-            let html = `
-                <div style="animation: fadeIn 0.5s ease;">
-                    ${warBadge}
-                    ${data.thumbnail ? `<img src="${data.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">` : ''}
-                    <h2 style="color:#ffcc00; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:15px;">${data.title}</h2>
-                    <p style="line-height:1.8; color:#eee; font-size:14px; text-align:justify;">${data.extract}</p>
-                    <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                    <a href="${data.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">
-                        XEM CHI TIẾT TRÊN WIKIPEDIA ↗
-                    </a>
-                    ${isWarZone ? `
-                        <div style="margin-top:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444; animation: fadeIn 0.8s ease;">
-                            <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
-                            <div style="color:#eee; font-size:13px;">
-                                <b>Trạng thái:</b> ${warZones[countryName].status}<br>
-                                <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
-                            </div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            body.innerHTML = html;
-        } else {
-            throw new Error("Không tìm thấy bài viết");
-        }
-    } catch (err) {
-        // Thử lại với tiếng Anh nếu tiếng Việt không có
-        try {
-            const responseEn = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(countryName)}`);
-            const dataEn = await responseEn.json();
-            
-            let html = `
-                <div style="animation: fadeIn 0.5s ease;">
-                    ${dataEn.thumbnail ? `<img src="${dataEn.thumbnail.source}" style="width:100%; border-radius:10px; border:1px solid #444; margin-bottom:15px;">` : ''}
-                    <h2 style="color:#ffcc00;">${dataEn.title} (English)</h2>
-                    <p style="line-height:1.8; color:#eee;">${dataEn.extract}</p>
-                    <a href="${dataEn.content_urls.desktop.page}" target="_blank" style="display:block; text-align:center; background:#ffcc00; color:#000; padding:10px; border-radius:5px; text-decoration:none; font-weight:bold;">READ MORE ↗</a>
-                </div>
-            `;
-            body.innerHTML = html;
-        } catch (e) {
-            body.innerHTML = `<h2>${countryName}</h2><p>Xin lỗi, dữ liệu về quốc gia này đang được Athemianartory cập nhật thủ công. Vui lòng thử lại sau.</p>`;
-        }
-    }
-}
 
 // ====================== SIÊU CƠ SỞ DỮ LIỆU ĐỊA CHÍ NGOẠI TUYẾN 2025 (HÀNH CHÍNH TOÀN CẦU) ======================
 const WORLD_OFFLINE_DB = {
@@ -6643,214 +7489,6 @@ const WORLD_OFFLINE_DB = {
     "Greenland": { capital: "Nuuk", pop: "56,000", area: "2,166,086", provinces: ["Avannaata","Kujalleq","Qeqertalik","Qeqqata","Sermersooq"] },
     "Zimbabwe": { capital: "Harare", pop: "16,000,000", area: "390,757", provinces: ["Bulawayo","Harare","Manicaland","Mashonaland Central","Mashonaland East","Mashonaland West","Masvingo","Matabeleland North","Matabeleland South","Midlands"] }
 };
-
-// 2. Hàm lấy thông tin Thủ đô & Bang (Tích hợp Offline + Online)
-async function showCountryDetails(countryName) {
-    const panel = document.getElementById('wiki-panel');
-    const title = document.getElementById('wiki-title');
-    const body = document.getElementById('wiki-body');
-
-    if (!panel || !title || !body) return;
-
-    // Reset giao diện
-    title.textContent = `${countryName} - Chi tiết`;
-    panel.classList.add('active');
-    panel.scrollTop = 0;
-
-    // 1. Kiểm tra trong DB Offline trước (Để dùng được khi không có mạng)
-    const offlineData = WORLD_OFFLINE_DB[countryName] || WORLD_OFFLINE_DB[Object.keys(WORLD_OFFLINE_DB).find(k => k.toLowerCase() === countryName.toLowerCase())];
-
-    if (offlineData) {
-        renderCountryUI(countryName, offlineData, true);
-        return;
-    }
-
-    // 2. Nếu không có Offline, thử gọi API Online
-    body.innerHTML = `
-        <div style="text-align:center; padding:50px 20px;">
-            <div class="loading-spinner" style="border: 4px solid rgba(0,255,204,0.1); border-left-color: #00ffcc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-            <p style="color:#00ffcc; font-weight:bold;">ĐANG TRA CỨU DỮ LIỆU TRỰC TUYẾN...</p>
-        </div>
-    `;
-
-    try {
-        const response = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`);
-        const data = await response.json();
-        const country = data[0];
-
-        const onlineData = {
-            capital: country.capital ? country.capital[0] : "N/A",
-            pop: country.population.toLocaleString(),
-            area: country.area.toLocaleString(),
-            flag: country.flags.svg,
-            latlng: country.latlng,
-            provinces: ["Dữ liệu tỉnh thành đang được cập nhật trực tuyến..."]
-        };
-
-        renderCountryUI(countryName, onlineData, false);
-    } catch (err) {
-        body.innerHTML = `<div style="padding:20px; text-align:center;"><p>⚠️ Lỗi kết nối. Không có dữ liệu offline cho quốc gia này.</p></div>`;
-    }
-}
-
-// Hàm vẽ giao diện chi tiết quốc gia
-function renderCountryUI(countryName, data, isOffline) {
-    const body = document.getElementById('wiki-body');
-    const isWarZone = showPoliticalStatus && (warZones[countryName] !== undefined);
-    const warBadge = isWarZone ? `<div style="background:#ff0000; color:white; padding:5px 10px; border-radius:5px; display:inline-block; margin-bottom:10px; font-weight:bold; animation: blinker 1s linear infinite;">⚠️ ĐANG CHIẾN TRANH</div>` : '';
-
-    let html = `
-        <div style="animation: slideUp 0.4s ease;">
-            ${warBadge}
-            ${data.flag ? `<img src="${data.flag}" style="width:100px; display:block; margin:0 auto 15px; border-radius:5px; box-shadow:0 3px 10px rgba(0,0,0,0.3);">` : ''}
-            <h2 style="color:#ffcc00; text-align:center; margin-bottom:20px;">${countryName} ${isOffline ? '<span style="font-size:10px; color:#555;">(Offline)</span>' : ''}</h2>
-            
-            <div style="background:rgba(255,204,0,0.1); padding:15px; border-radius:10px; border-left:5px solid #ffcc00; margin-bottom:15px;">
-                <span style="color:#888; font-size:12px;">THỦ ĐÔ CHÍNH THỨC</span><br>
-                <b style="font-size:24px; color:#ffcc00;">${data.capital}</b>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div style="background:#222; padding:10px; border-radius:8px;">
-                    <span style="color:#888; font-size:11px;">DÂN SỐ</span><br>
-                    <b style="color:#00ffcc;">${data.pop}</b>
-                </div>
-                <div style="background:#222; padding:10px; border-radius:8px;">
-                    <span style="color:#888; font-size:11px;">DIỆN TÍCH</span><br>
-                    <b style="color:#00ffcc;">${data.area} km²</b>
-                </div>
-            </div>
-
-            <h3 style="color:#fff; border-bottom:1px solid #333; padding-bottom:5px;">VÙNG HÀNH CHÍNH</h3>
-            ${isWarZone ? `
-                <div style="margin-bottom:15px; padding:12px; background:rgba(255,0,0,0.15); border-radius:8px; border:1px solid #ff4444;">
-                    <div style="color:#ff4444; font-weight:bold; font-size:14px; margin-bottom:5px;">⚠️ TÌNH HÌNH CHÍNH TRỊ</div>
-                    <div style="color:#eee; font-size:13px;">
-                        <b>Trạng thái:</b> ${warZones[countryName].status}<br>
-                        <b>Đối trọng:</b> ${warZones[countryName].enemies.join(", ")}
-                    </div>
-                </div>
-            ` : ''}
-            <div style="max-height:400px; overflow-y:auto; background:rgba(0,0,0,0.2); padding:10px; border-radius:5px; border:1px solid rgba(255,255,255,0.05);">
-    `;
-
-    data.provinces.forEach(p => {
-        const isCap = p.includes(data.capital);
-        html += `
-            <div style="padding:8px 12px; margin-bottom:4px; background:${isCap ? '#ffcc00' : '#222'}; color:${isCap ? '#000' : '#ccc'}; border-radius:4px; font-size:13px;">
-                ${p} ${isCap ? '★' : ''}
-            </div>
-        `;
-    });
-
-    html += `</div></div>`;
-    body.innerHTML = html;
-
-    // Fly tới nước đó nếu có tọa độ
-    if (data.latlng) {
-        map.flyTo([data.latlng[0], data.latlng[1]], 5);
-    }
-}
-
-// Thêm CSS hiệu ứng vào thẻ <style>
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes blinker { 50% { opacity: 0; } }
-    .loading-spinner { border-top-color: transparent !important; }
-    .war-zone-blink {
-        animation: warBlink 1s ease-in-out infinite !important;
-    }
-    @keyframes warBlink {
-        0% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
-        50% { opacity: 0.3; fill-opacity: 0.1; stroke-width: 2; }
-        100% { opacity: 1; fill-opacity: 0.6; stroke-width: 4; }
-    }
-`;
-document.head.appendChild(styleSheet);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -7612,499 +8250,6 @@ const maritimeCurrents = [
   { name:"Dòng nóng Biển Đông", type:"hot", color:"#ff3300",
     coords:[[21,118],[19,116],[16,113]] /*...*/ }
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ==================== TÍCH HỢP TIN VỆ TINH (GOOGLE NEWS RSS) ====================
-async function fetchHotNews() {
-    const query = encodeURIComponent('địa lý kinh tế thế giới thời sự mới nhất'); 
-    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=vi&gl=VN&ceid=VN:vi`;
-    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        
-        if (data.status === 'ok' && data.items.length > 0) {
-            const tickerContent = document.getElementById('ticker-content');
-            
-            // TẠO DÒNG CHẢY DỮ LIỆU DUY NHẤT
-            let longNewsStream = " 🔴 BẢN TIN ĐỊA LÝ KINH TẾ HÔM NAY: ";
-
-            data.items.forEach((item, index) => {
-                let rawDetail = item.description || item.content || "";
-                let cleanDetail = rawDetail
-                    .replace(/<[^>]+>/g, '') 
-                    .replace(/&nbsp;/g, ' ') 
-                    .replace(/\s+/g, ' ')
-                    .trim();
-
-                if (cleanDetail.length > 20) {
-                    // Nối các tin lại với nhau bằng ký hiệu đẹp
-                    longNewsStream += `${cleanDetail} ✦ `;
-                }
-            });
-
-            // Thêm một đoạn kết để vòng lặp mượt hơn
-            longNewsStream += " KẾT THÚC BẢN TIN CẬP NHẬT. ";
-
-            // Đưa vào 2 span để chạy nối đuôi nhau không có khoảng trống
-            const finalHTML = `<span class="news-item">${longNewsStream}</span>`;
-            tickerContent.innerHTML = finalHTML + finalHTML;
-
-            // TÍNH TOÁN TỐC ĐỘ DỰA TRÊN ĐỘ DÀI KHỦNG CỦA DÒNG CHỮ
-            const totalWidth = tickerContent.scrollWidth / 2; 
-            
-            // Vì nội dung rất dài, Sói nên để speed thấp (60-70) để học sinh đọc kịp
-            const speed = 400; 
-            const duration = totalWidth / speed;
-
-            tickerContent.style.animation = `ticker-scroll ${duration}s linear infinite`;
-        }
-    } catch (error) {
-        console.error('Lỗi kết nối:', error);
-    }
-}
-
-// Khởi chạy
-window.addEventListener('load', fetchHotNews);
-// Cập nhật sau mỗi 1 phút
-setInterval(fetchHotNews, 60000);
-
 
 
 </script>
