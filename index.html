@@ -2454,6 +2454,337 @@ function updateFilters() {
 
 
 
+// PHÍM TẮT - CHỈ MỘT KHỐI DUY NHẤT
+
+
+
+window.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    console.log("Phím được ấn:", e.key); // Debug: xem phím nào được nhận
+
+    if (e.code === "Space") {
+        e.preventDefault();
+        isPlaying ? stopAnimation() : playAnimation();
+    }
+
+    if (e.key.toLowerCase() === 'h') {
+        document.body.classList.toggle('cinematic-mode');
+    }
+
+    if (e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        console.log("Phím K: Đang toggle timeline...");
+        toggleTimeline();
+        makePlayheadDraggable();  // ← Đúng vị trí này, an toàn và hiệu quả
+    }
+
+    if (e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        takeScreenshot();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==========================================
+// 4. HÀM ĐIỀU KHIỂN GIAO DIỆN & PHÍM TẮT
+// ==========================================
+document.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    
+    // Ngăn chặn phím tắt khi đang gõ vào ô nhập liệu (input, select2, v.v.)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+
+    if (key === 'h') {
+        e.preventDefault();
+        toggleUI();
+    }
+    
+    if (key === 'c') {
+        e.preventDefault();
+        console.log("Phím C được nhấn - Bắt đầu chụp ảnh...");
+        takeScreenshot();
+    }
+    
+    if (key === 'k') {
+        e.preventDefault();
+        if (typeof toggleTimeline === 'function') toggleTimeline();
+    }
+});
+
+function toggleUI(state) {
+    uiVisible = (state !== undefined) ? state : !uiVisible;
+    const panels = ['control-panel', 'custom-panel', 'bottom-ui', 'wiki-panel', 'coords-box'];
+    panels.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.opacity = uiVisible ? "1" : "0";
+            el.style.pointerEvents = uiVisible ? "auto" : "none";
+            el.style.transition = "0.5s";
+        }
+    });
+    const attr = document.querySelector('.leaflet-control-attribution');
+    if (attr) attr.style.display = uiVisible ? "block" : "none";
+}
+
+
+function toggleCustomPanel() {
+    const p = document.getElementById('custom-panel');
+    if (!p) return;
+    customPanelOpen = !customPanelOpen;
+    p.style.left = customPanelOpen ? "0px" : "-260px";
+}
+
+
+function updateFilters() {
+    resourceLayerGroup.clearLayers();
+    economyLayerGroup.clearLayers();
+
+    const activeRes = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
+    const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
+
+    // Vẽ Tài nguyên - ĐỢC LỌC THEO QUỐC GIA
+    resourceData.forEach(r => {
+        // Kiểm tra 1: Danh mục phải được chọn
+        if (!activeRes.includes(r.cat)) return;
+        
+        // Kiểm tra 2: Nếu có quốc gia được chọn (từ GeoJSON double-click)
+        if (selectedCountryFilter) {
+            // Tìm quốc gia từ tên (format: "Name (CountryName)")
+            const countryMatch = r.name.match(/\(([^)]+)\)$/);
+            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
+        }
+        
+        L.marker([r.lat, r.lng], {
+            icon: L.divIcon({ html: `<div style="font-size:22px; filter: drop-shadow(0 0 5px gold);">${r.icon}</div>`, className: 'res-icon' })
+        }).bindTooltip(r.name).addTo(resourceLayerGroup);
+    });
+
+    // Vẽ Kinh tế - ĐỢC LỌC THEO QUỐC GIA
+    economyData.forEach(e => {
+        // Kiểm tra 1: Danh mục phải được chọn
+        if (!activeEco.includes(e.cat)) return;
+        
+        // Kiểm tra 2: Nếu có quốc gia được chọn, chỉ hiển thị quốc gia đó
+        if (selectedCountryFilter) {
+            // Tìm quốc gia từ tên (format: "[SECTOR] name (Country)")
+            const countryMatch = e.name.match(/\(([^)]+)\)$/);
+            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
+        }
+        
+        let shadowColor = "#00fbff"; 
+        if (e.cat === "automotive") shadowColor = "#ff3300"; 
+        if (e.cat === "heavy_industry") shadowColor = "#808080"; 
+
+        const marker = L.marker([e.lat, e.lng], {
+            icon: L.divIcon({
+                html: `<div class="eco-marker" style="font-size:25px; filter: drop-shadow(0 0 5px ${shadowColor}); cursor: pointer;">${e.icon}</div>`,
+                className: 'eco-icon', 
+                iconSize: [30, 30], 
+                iconAnchor: [15, 15]
+            })
+        });
+
+        // Gắn nội dung Popup (Đảm bảo có thông tin để nói)
+        const popupContent = `
+            <div style="background: #111; color: white; padding: 10px; border: 2px solid ${shadowColor}; border-radius: 8px; min-width: 180px;">
+                <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
+                <hr style="border-color: #333; margin: 5px 0;">
+                <div style="font-size: 12px; line-height: 1.4;">
+                    ${e.details ? e.details : "Hệ thống Athemianartory Geography đang cập nhật thông tin chi tiết về địa điểm này. Vui lòng quay lại sau để biết thêm chi tiết tại đây."}
+                </div>
+            </div>
+        `;
+
+        marker.bindPopup(popupContent, {
+            closeButton: false,
+            offset: L.point(0, -10)
+        });
+
+        // Thêm hiệu ứng hover bằng CSS thay vì viết trực tiếp vào HTML để tránh lỗi click
+        marker.on('mouseover', function() { this.openTooltip(); }); 
+        
+        marker.addTo(economyLayerGroup);
+    });
+
+    if (typeof updateRailways === "function") updateRailways();
+    drawRailways();
+    drawMaritime();
+}
+
+// Menu thả xuống cũng dùng chung bộ lọc này luôn cho đồng bộ
+function filterResources(val) { updateFilters(); }
+
+function clearCustomColors() {
+    customColors = {};
+    if (typeof renderBorders === 'function') renderBorders(document.getElementById('year-input').value);
+}
+
+
+
+
+
+
+//ĐƯỜNG SẮT
+
+
+function drawRailways() {
+    const railCheck = document.querySelector('.eco-check[value="railway"]');
+    if (railCheck && railCheck.checked) {
+        railwayData.forEach(path => {
+            L.polyline(path.coords, { color: path.color, weight: 3, dashArray: "1, 10" })
+            .bindPopup(`<b>🚂 ${path.name}</b>`).addTo(atheRailway);
+        });
+    }
+}
+
+
+
+
+//ĐƯỜNG BIỂN (các tuyến hàng hải)
+function drawMaritime() {
+    if (typeof atheRailway === 'undefined' || !atheRailway) return;
+    const seaCheck = document.querySelector('.eco-check[value="maritime"]');
+    
+    if (seaCheck && seaCheck.checked) {
+        maritimeData.forEach(route => {
+            // 1. Vẽ đường di chuyển
+            L.polyline(route.coords, {
+                color: route.color,
+                weight: 2,
+                dashArray: "10, 10",
+                opacity: 0.8
+            })
+            .bindTooltip(`🚢 ${route.name}`, { sticky: true })
+            .addTo(atheRailway);
+
+            // 2. Tự động đánh dấu Cảng Đầu và Cảng Cuối
+            const startPoint = route.coords[0];
+            const endPoint = route.coords[route.coords.length - 1];
+
+            // Icon mỏ neo cho cảng
+            const portIcon = L.divIcon({
+                html: `<div style="font-size:18px; filter: drop-shadow(0 0 2px black);">⚓</div>`,
+                className: 'port-marker'
+            });
+
+            L.marker(startPoint, { icon: portIcon }).bindPopup(`<b>Điểm đi:</b> ${route.portStart}`).addTo(atheRailway);
+            L.marker(endPoint, { icon: portIcon }).bindPopup(`<b>Điểm đến:</b> ${route.portEnd}`).addTo(atheRailway);
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2605,20 +2936,6 @@ const RAW_FORESTS = {
         { lat: 26.5, lng: 104.5, name: "Rừng Libo (Guizhou) - Rừng nhiệt đới với hệ sinh thái đa dạng" },
         { lat: 25.0, lng: 102.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
         { lat: 24.0, lng: 101.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
-        { lat: 23.5, lng: 100.5, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 22.0, lng: 99.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 21.5, lng: 98.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
-        { lat: 20.0, lng: 97.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 19.5, lng: 96.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 19.0, lng: 95.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
-        { lat: 18.5, lng: 94.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 18.0, lng: 93.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 17.5, lng: 92.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
-        { lat: 17.0, lng: 91.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 16.5, lng: 90.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 16.0, lng: 89.0, name: "Rừng Ailao (Yunnan) - Rừng nhiệt đới với hệ sinh thái phong phú" },
-        { lat: 15.5, lng: 88.0, name: "Rừng Gaoligong (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
-        { lat: 15.0, lng: 87.0, name: "Rừng Xishuangbanna (Yunnan) - Rừng nhiệt đới với nhiều loài động thực vật quý hiếm" },
     
     ],
 
@@ -2633,115 +2950,11 @@ const RAW_FORESTS = {
         { lat: 14.5, lng: 108.5, name: "Rừng Núi Chúa (Ninh Thuận)" },
         { lat: 13.0, lng: 109.0, name: "Rừng Bù Gia Mập (Bình Phước)" },
         { lat: 12.0, lng: 109.5, name: "Rừng Côn Đảo (Bà Rịa-Vũng Tàu)" },
-        { lat: 11.0, lng: 110.0, name: "Rừng Phú Quốc (Kiên Giang)" },
         { lat: 10.5, lng: 106.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: 9.5, lng: 105.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: 9.0, lng: 104.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: 8.5, lng: 104.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: 8.0, lng: 103.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: 7.5, lng: 103.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: 7.0, lng: 102.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: 6.5, lng: 102.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: 6.0, lng: 101.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: 5.5, lng: 101.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: 5.0, lng: 100.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: 4.5, lng: 100.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: 4.0, lng: 99.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: 3.5, lng: 99.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: 3.0, lng: 98.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: 2.5, lng: 98.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: 2.0, lng: 97.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: 1.5, lng: 97.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: 1.0, lng: 96.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: 0.5, lng: 96.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: 0.0, lng: 95.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -0.5, lng: 95.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -1.0, lng: 94.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -1.5, lng: 94.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -2.0, lng: 93.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -2.5, lng: 93.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -3.0, lng: 92.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -3.5, lng: 92.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -4.0, lng: 91.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -4.5, lng: 91.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -5.0, lng: 90.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -5.5, lng: 90.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -6.0, lng: 89.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -6.5, lng: 89.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -7.0, lng: 88.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -7.5, lng: 88.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -8.0, lng: 87.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -8.5, lng: 87.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -9.0, lng: 86.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -9.5, lng: 86.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -10.0, lng: 85.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -10.5, lng: 85.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -11.0, lng: 84.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -11.5, lng: 84.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -12.0, lng: 83.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -12.5, lng: 83.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -13.0, lng: 82.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -13.5, lng: 82.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -14.0, lng: 81.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -14.5, lng: 81.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -15.0, lng: 80.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -15.5, lng: 80.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -16.0, lng: 79.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -16.5, lng: 79.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -17.0, lng: 78.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -17.5, lng: 78.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -18.0, lng: 77.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -18.5, lng: 77.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -19.0, lng: 76.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -19.5, lng: 76.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -20.0, lng: 75.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -20.5, lng: 75.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -21.0, lng: 74.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -21.5, lng: 74.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -22.0, lng: 73.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -22.5, lng: 73.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -23.0, lng: 72.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -23.5, lng: 72.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -24.0, lng: 71.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -24.5, lng: 71.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -25.0, lng: 70.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -25.5, lng: 70.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -26.0, lng: 69.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -26.5, lng: 69.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -27.0, lng: 68.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -27.5, lng: 68.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -28.0, lng: 67.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -28.5, lng: 67.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -29.0, lng: 66.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -29.5, lng: 66.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -30.0, lng: 65.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -30.5, lng: 65.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -31.0, lng: 64.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -31.5, lng: 64.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -32.0, lng: 63.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -32.5, lng: 63.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -33.0, lng: 62.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -33.5, lng: 62.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -34.0, lng: 61.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -34.5, lng: 61.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -35.0, lng: 60.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -35.5, lng: 60.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -36.0, lng: 59.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -36.5, lng: 59.0, name: "Rừng Phước Long (Bình Phước)" },
-        { lat: -37.0, lng: 58.5, name: "Rừng Lâm Viên (Lâm Đồng)" },
-        { lat: -37.5, lng: 58.0, name: "Rừng Đa Mi (Bình Thuận)" },
-        { lat: -38.0, lng: 57.5, name: "Rừng Phú Lâm (Cà Mau)" },
-        { lat: -38.5, lng: 57.0, name: "Rừng Phú Quốc (Kiên Giang)" },
-        { lat: -39.0, lng: 56.5, name: "Rừng Cần Giờ (TP.HCM)" },
-        { lat: -39.5, lng: 56.0, name: "Rừng U Minh Thượng (Kiên Giang)" },
-        { lat: -40.0, lng: 55.5, name: "Rừng U Minh Hạ (Cà Mau)" },
-        { lat: -40.5, lng: 55.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
-        { lat: -41.0, lng: 54.5, name: "Rừng Láng Sen (Long An)" },
-        { lat: -41.5, lng: 54.0, name: "Rừng Phước Bình (Ninh Thuận)" },
-        { lat: -42.0, lng: 53.5, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
-        { lat: -42.5, lng: 53.0, name: "Rừng Cát Tiên (Đồng Nai)" },
-        { lat: -43.0, lng: 52.5, name: "Rừng Nam Cát Tiên (Đồng Nai)" },
-        { lat: -43.5, lng: 52.0, name: "Rừng Phước Long (Bình Phước)" },
+        { lat : 11.0, lng: 107.0, name: "Rừng Phước Bình (Ninh Thuận)" },
+        { lat: 15.5, lng: 108.0, name: "Rừng Bạch Mã (Thừa Thiên Huế)" },
+        { lat: 17.5, lng: 106.0, name: "Rừng Tràm Chim (Đồng Tháp)" },
+        { lat: 19.5, lng: 105.0, name: "Rừng Xuân Sơn (Phú Thọ)" },
     ]
 };
 
@@ -3983,194 +4196,6 @@ function drawRailways() {
 
 
 
-// ==========================================
-// 4. HÀM ĐIỀU KHIỂN GIAO DIỆN & PHÍM TẮT
-// ==========================================
-document.addEventListener('keydown', (e) => {
-    const key = e.key.toLowerCase();
-    
-    // Ngăn chặn phím tắt khi đang gõ vào ô nhập liệu (input, select2, v.v.)
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
-
-    if (key === 'h') {
-        e.preventDefault();
-        toggleUI();
-    }
-    
-    if (key === 'c') {
-        e.preventDefault();
-        console.log("Phím C được nhấn - Bắt đầu chụp ảnh...");
-        takeScreenshot();
-    }
-    
-    if (key === 'k') {
-        e.preventDefault();
-        if (typeof toggleTimeline === 'function') toggleTimeline();
-    }
-});
-
-function toggleUI(state) {
-    uiVisible = (state !== undefined) ? state : !uiVisible;
-    const panels = ['control-panel', 'custom-panel', 'bottom-ui', 'wiki-panel', 'coords-box'];
-    panels.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.opacity = uiVisible ? "1" : "0";
-            el.style.pointerEvents = uiVisible ? "auto" : "none";
-            el.style.transition = "0.5s";
-        }
-    });
-    const attr = document.querySelector('.leaflet-control-attribution');
-    if (attr) attr.style.display = uiVisible ? "block" : "none";
-}
-
-
-function toggleCustomPanel() {
-    const p = document.getElementById('custom-panel');
-    if (!p) return;
-    customPanelOpen = !customPanelOpen;
-    p.style.left = customPanelOpen ? "0px" : "-260px";
-}
-
-
-function updateFilters() {
-    resourceLayerGroup.clearLayers();
-    economyLayerGroup.clearLayers();
-
-    const activeRes = Array.from(document.querySelectorAll('.res-check:checked')).map(cb => cb.value);
-    const activeEco = Array.from(document.querySelectorAll('.eco-check:checked')).map(cb => cb.value);
-
-    // Vẽ Tài nguyên - ĐỢC LỌC THEO QUỐC GIA
-    resourceData.forEach(r => {
-        // Kiểm tra 1: Danh mục phải được chọn
-        if (!activeRes.includes(r.cat)) return;
-        
-        // Kiểm tra 2: Nếu có quốc gia được chọn (từ GeoJSON double-click)
-        if (selectedCountryFilter) {
-            // Tìm quốc gia từ tên (format: "Name (CountryName)")
-            const countryMatch = r.name.match(/\(([^)]+)\)$/);
-            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
-        }
-        
-        L.marker([r.lat, r.lng], {
-            icon: L.divIcon({ html: `<div style="font-size:22px; filter: drop-shadow(0 0 5px gold);">${r.icon}</div>`, className: 'res-icon' })
-        }).bindTooltip(r.name).addTo(resourceLayerGroup);
-    });
-
-    // Vẽ Kinh tế - ĐỢC LỌC THEO QUỐC GIA
-    economyData.forEach(e => {
-        // Kiểm tra 1: Danh mục phải được chọn
-        if (!activeEco.includes(e.cat)) return;
-        
-        // Kiểm tra 2: Nếu có quốc gia được chọn, chỉ hiển thị quốc gia đó
-        if (selectedCountryFilter) {
-            // Tìm quốc gia từ tên (format: "[SECTOR] name (Country)")
-            const countryMatch = e.name.match(/\(([^)]+)\)$/);
-            if (!countryMatch || countryMatch[1] !== selectedCountryFilter) return;
-        }
-        
-        let shadowColor = "#00fbff"; 
-        if (e.cat === "automotive") shadowColor = "#ff3300"; 
-        if (e.cat === "heavy_industry") shadowColor = "#808080"; 
-
-        const marker = L.marker([e.lat, e.lng], {
-            icon: L.divIcon({
-                html: `<div class="eco-marker" style="font-size:25px; filter: drop-shadow(0 0 5px ${shadowColor}); cursor: pointer;">${e.icon}</div>`,
-                className: 'eco-icon', 
-                iconSize: [30, 30], 
-                iconAnchor: [15, 15]
-            })
-        });
-
-        // Gắn nội dung Popup (Đảm bảo có thông tin để nói)
-        const popupContent = `
-            <div style="background: #111; color: white; padding: 10px; border: 2px solid ${shadowColor}; border-radius: 8px; min-width: 180px;">
-                <strong style="color: ${shadowColor}; font-size: 14px;">${e.name}</strong><br>
-                <hr style="border-color: #333; margin: 5px 0;">
-                <div style="font-size: 12px; line-height: 1.4;">
-                    ${e.details ? e.details : "Hệ thống Athemianartory Geography đang cập nhật thông tin chi tiết về địa điểm này. Vui lòng quay lại sau để biết thêm chi tiết tại đây."}
-                </div>
-            </div>
-        `;
-
-        marker.bindPopup(popupContent, {
-            closeButton: false,
-            offset: L.point(0, -10)
-        });
-
-        // Thêm hiệu ứng hover bằng CSS thay vì viết trực tiếp vào HTML để tránh lỗi click
-        marker.on('mouseover', function() { this.openTooltip(); }); 
-        
-        marker.addTo(economyLayerGroup);
-    });
-
-    if (typeof updateRailways === "function") updateRailways();
-    drawRailways();
-    drawMaritime();
-}
-
-// Menu thả xuống cũng dùng chung bộ lọc này luôn cho đồng bộ
-function filterResources(val) { updateFilters(); }
-
-function clearCustomColors() {
-    customColors = {};
-    if (typeof renderBorders === 'function') renderBorders(document.getElementById('year-input').value);
-}
-
-
-
-
-
-
-//ĐƯỜNG SẮT
-
-
-function drawRailways() {
-    const railCheck = document.querySelector('.eco-check[value="railway"]');
-    if (railCheck && railCheck.checked) {
-        railwayData.forEach(path => {
-            L.polyline(path.coords, { color: path.color, weight: 3, dashArray: "1, 10" })
-            .bindPopup(`<b>🚂 ${path.name}</b>`).addTo(atheRailway);
-        });
-    }
-}
-
-
-
-
-//ĐƯỜNG BIỂN (các tuyến hàng hải)
-function drawMaritime() {
-    if (typeof atheRailway === 'undefined' || !atheRailway) return;
-    const seaCheck = document.querySelector('.eco-check[value="maritime"]');
-    
-    if (seaCheck && seaCheck.checked) {
-        maritimeData.forEach(route => {
-            // 1. Vẽ đường di chuyển
-            L.polyline(route.coords, {
-                color: route.color,
-                weight: 2,
-                dashArray: "10, 10",
-                opacity: 0.8
-            })
-            .bindTooltip(`🚢 ${route.name}`, { sticky: true })
-            .addTo(atheRailway);
-
-            // 2. Tự động đánh dấu Cảng Đầu và Cảng Cuối
-            const startPoint = route.coords[0];
-            const endPoint = route.coords[route.coords.length - 1];
-
-            // Icon mỏ neo cho cảng
-            const portIcon = L.divIcon({
-                html: `<div style="font-size:18px; filter: drop-shadow(0 0 2px black);">⚓</div>`,
-                className: 'port-marker'
-            });
-
-            L.marker(startPoint, { icon: portIcon }).bindPopup(`<b>Điểm đi:</b> ${route.portStart}`).addTo(atheRailway);
-            L.marker(endPoint, { icon: portIcon }).bindPopup(`<b>Điểm đến:</b> ${route.portEnd}`).addTo(atheRailway);
-        });
-    }
-}
-
 
 function generateAgriData() {
     const agriData = [
@@ -4188,74 +4213,6 @@ function generateAgriData() {
         });
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4367,27 +4324,129 @@ function generateAIData() {
 
 function generateFishingData() {
     const fishingData = [
-        // ==================== VIỆT NAM (5 Ngư trường trọng điểm) ====================
-        { lat: 20.50, lng: 107.50, name: "Ngư trường Hải Phòng - Quảng Ninh", icon: "🐟", cat: "fishing", details: "Ngư trường lớn khu vực Vịnh Bắc Bộ, giàu hải sản tầng đáy." },
-        { lat: 16.50, lng: 112.00, name: "Ngư trường Quần đảo Hoàng Sa", coords: [16.5, 112.0], icon: "⚓", cat: "fishing", details: "Ngư trường xa bờ trọng điểm, nhiều loài cá ngừ và hải sản quý." },
-        { lat: 10.00, lng: 114.50, name: "Ngư trường Quần đảo Trường Sa", icon: "⚓", cat: "fishing", details: "Vùng đánh bắt xa bờ quan trọng nhất của Việt Nam." },
-        { lat: 10.50, lng: 109.00, name: "Ngư trường Ninh Thuận - Bình Thuận - BRVT", icon: "🐟", cat: "fishing", details: "Vùng nước trồi, năng suất sinh học cao, sản lượng khai thác lớn." },
-        { lat: 9.00, lng: 104.50, name: "Ngư trường Cà Mau - Kiên Giang", icon: "🐟", cat: "fishing", details: "Ngư trường lớn nhất Vịnh Thái Lan, giàu tôm và các loại cá tầng mặt." },
+        // ==================== VIỆT NAM (DỮ LIỆU NGƯ TRƯỜNG TOÀN DIỆN) ====================
+        
+        // KHU VỰC VỊNH BẮC BỘ & BẮC TRUNG BỘ
+        { lat: 19.00, lng: 106.50, name: "Ngư trường Thanh Hóa - Nghệ An - Hà Tĩnh", icon: "🐟", cat: "fishing", details: "Khu vực đánh bắt cá trích, cá cơm và các loài mực truyền thống của Bắc Trung Bộ." },
+        { lat: 20.00, lng: 108.50, name: "Ngư trường Bạch Long Vĩ", icon: "🏝️", cat: "fishing", details: "Ngư trường quanh đảo Bạch Long Vĩ, điểm dừng chân và khai thác quan trọng giữa Vịnh Bắc Bộ." },
+
+        // KHU VỰC NAM TRUNG BỘ (Vùng biển nước sâu)
+        { lat: 14.50, lng: 109.50, name: "Ngư trường Bình Định - Phú Yên", icon: "🎣", cat: "fishing", details: "Thủ phủ của nghề câu tay cá ngừ đại dương và các loài cá nổi lớn." },
+        { lat: 12.50, lng: 109.50, name: "Ngư trường Khánh Hòa", icon: "🌊", cat: "fishing", details: "Nổi tiếng với ngư trường yến sào và khai thác cá thu, cá cờ vùng biển sâu." },
+        
+        // KHU VỰC CÁC ĐẢO XA BỜ VÀ VÙNG TRÙNG VỚI NGƯ TRƯỜNG TRƯỜNG SA
+        { lat: 8.50, lng: 106.50, name: "Ngư trường Côn Đảo", icon: "🐚", cat: "fishing", details: "Khu vực giàu tài nguyên ốc, tôm hùm và các loài cá rạn san hô đặc trưng." },
+        { lat: 7.00, lng: 109.50, name: "Ngư trường Bãi Tư Chính", icon: "⚓", cat: "fishing", details: "Vùng thềm lục địa phía Nam Việt Nam, ngư trường quan trọng cho đánh bắt xa bờ." },
+        { lat: 10.20, lng: 107.80, name: "Ngư trường La Gi - Hàm Tân", icon: "🐟", cat: "fishing", details: "Nằm trong vùng nước trồi, sản lượng cá cơm và mực cực lớn phục vụ sản xuất nước mắm." },
+
+        // KHU VỰC TÂY NAM BỘ (Vịnh Thái Lan)
+        { lat: 10.30, lng: 104.00, name: "Ngư trường Phú Quốc - Thổ Chu", icon: "🏝️", cat: "fishing", details: "Khu vực giàu tài nguyên nhất phía Tây Nam, nổi tiếng với cá cơm sọc chì và mực nang." },
+        { lat: 9.50, lng: 106.50, name: "Ngư trường Tiền Giang - Bến Tre - Trà Vinh", icon: "🦐", cat: "fishing", details: "Ngư trường vùng cửa sông, giàu các loài thủy sản nước lợ và tôm biển." },
 
         // ==================== THẾ GIỚI (Các ngư trường lớn nhất toàn cầu) ====================
-        // Bắc Đại Tây Dương
-        { lat: 45.00, lng: -50.00, name: "Ngư trường Grand Banks (Canada)", icon: "🌊", cat: "fishing", details: "Một trong những ngư trường giàu có nhất thế giới ở Đại Tây Dương." },
-        { lat: 65.00, lng: -20.00, name: "Ngư trường Iceland", icon: "🐟", cat: "fishing", details: "Khu vực khai thác cá tuyết lớn của Châu Âu." },
-        { lat: 55.00, lng: 3.00, name: "Ngư trường Biển Bắc (North Sea)", icon: "🌊", cat: "fishing", details: "Ngư trường quan trọng của các nước Anh, Na Uy, Hà Lan." },
 
-        // Thái Bình Dương
-        { lat: -12.00, lng: -77.50, name: "Ngư trường Peru (Humboldt)", icon: "🐟", cat: "fishing", details: "Dòng biển lạnh tạo nên sản lượng cá cơm (anchovy) lớn nhất thế giới." },
-        { lat: 40.00, lng: 145.00, name: "Ngư trường Tây Bắc Thái Bình Dương (Nhật Bản)", icon: "🌊", cat: "fishing", details: "Nơi giao thoa dòng nóng Kuroshio và dòng lạnh Oyashio." },
-        { lat: 60.00, lng: -170.00, name: "Ngư trường Biển Bering", icon: "🦀", cat: "fishing", details: "Nổi tiếng với khai thác cua hoàng đế và cá minh thái." },
 
-        // Khu vực khác
-        { lat: -35.00, lng: 20.00, name: "Ngư trường Mũi Kim (Nam Phi)", icon: "🐟", cat: "fishing", details: "Điểm hội tụ dòng biển tạo nên vùng đánh bắt trù phú." },
-        { lat: 25.00, lng: 122.00, name: "Ngư trường Biển Hoa Đông", icon: "🐟", cat: "fishing", details: "Khu vực đánh bắt quan trọng của khu vực Đông Á." }
+
+
+
+
+        // ==================== BẮC ĐẠI TÂY DƯƠNG (NORTH ATLANTIC) - DÒNG CHẢY TRI THỨC ====================
+        
+        // KHU VỰC BẮC MỸ (Bờ Tây Đại Tây Dương)
+        { lat: 42.00, lng: -67.00, name: "Ngư trường Georges Bank (USA/Canada)", icon: "🐟", cat: "fishing", details: "Nằm sát Grand Banks, cực kỳ giàu cá tuyết, cá bơn và sò điệp nhờ sự pha trộn của dòng Gulf Stream." },
+        { lat: 43.50, lng: -65.00, name: "Ngư trường Scotian Shelf (Canada)", icon: "🌊", cat: "fishing", details: "Vùng thềm lục địa rộng lớn khai thác tôm hùm và cá tuyết quan trọng của bang Nova Scotia." },
+        { lat: 35.00, lng: -75.00, name: "Ngư trường Mũi Hatteras (USA)", icon: "🌊", cat: "fishing", details: "Điểm gặp gỡ của dòng hải lưu Labrador lạnh và Gulf Stream nóng, tạo nên hệ sinh thái cá ngừ và cá kiếm đa dạng." },
+
+        // KHU VỰC CHÂU ÂU (Bờ Đông Đại Tây Dương)
+        { lat: 62.00, lng: -7.00, name: "Ngư trường Quần đảo Faroe", icon: "🐟", cat: "fishing", details: "Vùng nước biệt lập giàu cá thu, cá trích và là điểm trung chuyển nghề cá lớn giữa Anh và Iceland." },
+        { lat: 58.00, lng: -10.00, name: "Ngư trường Rockall Bank (Anh/Ireland)", icon: "🌊", cat: "fishing", details: "Ngư trường xa bờ nằm trên các dải núi ngầm, nổi tiếng với cá tuyết đen và các loài hải sản nước sâu." },
+        { lat: 53.00, lng: -10.00, name: "Ngư trường Celtic Sea (Ireland/Pháp)", icon: "🐟", cat: "fishing", details: "Vùng biển có năng suất sinh học cao, cung cấp phần lớn sản lượng cá mòi và cá trích cho EU." },
+        { lat: 46.00, lng: -5.00, name: "Ngư trường Vịnh Biscay (Pháp/Tây Ban Nha)", icon: "🌊", cat: "fishing", details: "Ngư trường truyền thống nổi tiếng với cá cơm (Anchovy) và nghề đánh bắt cá ngừ lâu đời." },
+
+        // KHU VỰC TRUNG TÂM & CÁC DÃI NÚI NGẦM
+        { lat: 38.00, lng: -28.00, name: "Ngư trường Azores (Bồ Đào Nha)", icon: "🐋", cat: "fishing", details: "Vùng biển quanh quần đảo núi lửa giữa đại dương, trung tâm của các loài cá di cư và nghề câu cá ngừ bền vững." },
+        { lat: 60.00, lng: -30.00, name: "Ngư trường Dãy núi ngầm Reykjanes", icon: "🌊", cat: "fishing", details: "Một phần của sống núi giữa Đại Tây Dương, nơi khai thác cá sấu đỏ (Redfish) ở độ sâu lớn." },
+
+        // KHU VỰC CẬN BẮC CỰC
+        { lat: 67.00, lng: 10.00, name: "Ngư trường Lofoten (Na Uy)", icon: "🐟", cat: "fishing", details: "Nơi sinh sản lớn nhất thế giới của cá tuyết Đại Tây Dương (Skrei), đóng góp lớn vào xuất khẩu của Na Uy." },
+
+
+
+
+
+
+
+
+        // ==================== THÁI BÌNH DƯƠNG (PACIFIC OCEAN) - SIÊU DỮ LIỆU ====================
+        
+        // KHU VỰC TÂY THÁI BÌNH DƯƠNG (CHÂU Á & CHÂU ĐẠI DƯƠNG)
+        { lat: 25.00, lng: 122.00, name: "Ngư trường Biển Hoa Đông", icon: "🐟", cat: "fishing", details: "Vùng đánh bắt cực kỳ sôi động giữa Trung Quốc, Nhật Bản và Đài Loan, giàu cá hố và cá đù." },
+        { lat: 10.00, lng: 110.00, name: "Ngư trường Biển Đông (Việt Nam)", icon: "🇻🇳", cat: "fishing", details: "Ngư trường truyền thống giàu tài nguyên với các loài cá ngừ, cá thu và hải sản nhiệt đới đa dạng." },
+        { lat: -5.00, lng: 130.00, name: "Ngư trường Biển Arafura (Indonesia/Úc)", icon: "🦐", cat: "fishing", details: "Vùng thềm lục địa nông, nổi tiếng thế giới về trữ lượng tôm và các loài cá đáy chất lượng cao." },
+        { lat: -42.00, lng: 172.00, name: "Ngư trường New Zealand (Chatham Rise)", icon: "🌊", cat: "fishing", details: "Vùng nước sâu phía Nam Thái Bình Dương, khai thác cá Tuyết Hoki và cá Cam (Orange Roughy) xuất khẩu toàn cầu." },
+        { lat: 55.00, lng: 150.00, name: "Ngư trường Biển Okhotsk (Nga)", icon: "❄️", cat: "fishing", details: "Một trong những vùng biển lạnh giàu năng suất nhất, thủ phủ của cua tuyết và cá minh thái Nga." },
+
+        // KHU VỰC ĐÔNG THÁI BÌNH DƯƠNG (BỜ TÂY CHÂU MỸ)
+        { lat: 48.00, lng: -125.00, name: "Ngư trường British Columbia (Canada)", icon: "🐟", cat: "fishing", details: "Nổi tiếng thế giới với 5 loài cá hồi đặc hữu và nghề đánh bắt cá bơn Thái Bình Dương." },
+        { lat: 25.00, lng: -112.00, name: "Ngư trường Vịnh California (Mexico)", icon: "🌊", cat: "fishing", details: "Còn gọi là 'Bể thủy tinh của thế giới', cực kỳ giàu đa dạng sinh học và các loài cá vược." },
+        { lat: -35.00, lng: -73.00, name: "Ngư trường Chile (Dòng Humboldt)", icon: "🐟", cat: "fishing", details: "Nối tiếp ngư trường Peru, đây là vùng khai thác cá sòng và cá thu lớn nhất khu vực Nam Mỹ." },
+        { lat: 0.00, lng: -90.00, name: "Ngư trường Quần đảo Galapagos (Ecuador)", icon: "🐢", cat: "fishing", details: "Vùng biển giao thoa của 3 dòng hải lưu, tạo nên điểm nóng về cá ngừ đại dương." },
+
+        // KHU VỰC TRUNG TÂM (ĐẠI DƯƠNG MỞ)
+        { lat: 20.00, lng: -157.00, name: "Ngư trường Hawaii (USA)", icon: "🎣", cat: "fishing", details: "Trung tâm đánh bắt cá ngừ vây vàng và cá cờ lớn bằng phương pháp câu longline giữa đại dương." },
+        { lat: -15.00, lng: -175.00, name: "Ngư trường Nam Đảo (Polynesia)", icon: "🌊", cat: "fishing", details: "Vùng biển rộng lớn khai thác cá ngừ vây dài cho ngành công nghiệp đóng hộp thế giới." },
+
+
+
+
+
+
+        // ==================== BẮC BĂNG DƯƠNG (ARCTIC OCEAN) - NGƯ TRƯỜNG MỞ RỘNG ====================
+        
+        // KHU VỰC PHÍA BẮC NGA (Biển Laptev & Đông Siberia)
+        { lat: 75.50, lng: 115.00, name: "Ngư trường Biển Laptev (Nga)", icon: "❄️", cat: "fishing", details: "Vùng nước lạnh giá nơi khai thác cá hồi trắng và các loài cá bản địa Bắc Cực." },
+        { lat: 72.00, lng: 160.00, name: "Ngư trường Biển Đông Siberia", icon: "❄️", cat: "fishing", details: "Khu vực đánh bắt xa xôi, chủ yếu khai thác cá tầm Bắc Cực và cá tuyết cực." },
+        { lat: 68.50, lng: 40.00, name: "Ngư trường Biển Trắng (White Sea)", icon: "❄️", cat: "fishing", details: "Nổi tiếng với trữ lượng cá trích đặc trưng và đánh bắt hải cẩu có kiểm soát." },
+
+        // KHU VỰC BẮC MỸ (Alaska & Canada)
+        { lat: 71.00, lng: -155.00, name: "Ngư trường Biển Beaufort (USA/Canada)", icon: "❄️", cat: "fishing", details: "Vùng biên giới đánh bắt cá tuyết Bắc Cực và cá hồi đặc hữu của vùng Alaska." },
+        { lat: 69.00, lng: -130.00, name: "Ngư trường Vịnh Amundsen (Canada)", icon: "❄️", cat: "fishing", details: "Điểm nóng về sinh học, nơi tập trung các đàn cá tuyết lớn di cư dưới lớp băng." },
+        { lat: 60.00, lng: -85.00, name: "Ngư trường Vịnh Hudson (Canada)", icon: "❄️", cat: "fishing", details: "Ngư trường nội địa khổng lồ khai thác cá hồi chấm hồng và tôm Bắc Cực." },
+
+        // KHU VỰC BẮC ÂU & GREENLAND (Vùng nước giao thoa)
+        { lat: 65.00, lng: -18.00, name: "Ngư trường Biển Iceland", icon: "❄️", cat: "fishing", details: "Một trong những vùng biển năng suất nhất thế giới nhờ dòng hải lưu nóng và lạnh gặp nhau." },
+        { lat: 64.00, lng: -55.00, name: "Ngư trường Vịnh Baffin", icon: "❄️", cat: "fishing", details: "Nổi tiếng với nghề đánh bắt tôm hùm Bắc Cực và cá chim lớn Greenland." },
+        { lat: 71.00, lng: -10.00, name: "Ngư trường Jan Mayen (Na Uy)", icon: "❄️", cat: "fishing", details: "Vùng biển quanh đảo núi lửa, giàu tài nguyên cá tuyết và cá thu vùng cực." },
+
+        // KHU VỰC BIỂN CHUKOTKA (Cửa ngõ Thái Bình Dương)
+        { lat: 69.00, lng: 175.00, name: "Ngư trường Biển Chukchi", icon: "❄️", cat: "fishing", details: "Vùng đệm giữa Bắc Băng Dương và Thái Bình Dương, cực kỳ giàu động vật phù du và cá tầng đáy." },
+
+        // KHU VỰC TRUNG TÂM & CỰC
+        { lat: 82.00, lng: 0.00, name: "Vùng đệm Trung tâm Bắc Cực", icon: "🧊", cat: "fishing", details: "Khu vực đang được bảo vệ nghiêm ngặt, tiềm năng lớn về cá tuyết khi băng tan do biến đổi khí hậu." },
+
+
+
+
+
+
+        // ==================== NAM ĐẠI TÂY DƯƠNG & NAM ĐẠI DƯƠNG (SOUTHERN OCEAN) ====================
+        
+        // KHU VỰC NAM ĐẠI TÂY DƯƠNG (Bờ biển Nam Mỹ & Châu Phi)
+        { lat: -45.00, lng: -60.00, name: "Ngư trường Thềm lục địa Patagonia (Argentina)", icon: "🦑", cat: "fishing", details: "Một trong những vùng biển giàu tài nguyên nhất Nam Bán Cầu, nổi tiếng với mực ống và cá tuyết hake." },
+        { lat: -52.00, lng: -60.00, name: "Ngư trường Quần đảo Falkland", icon: "🦀", cat: "fishing", details: "Vùng nước lạnh giàu dinh dưỡng, trung tâm khai thác mực và các loài cá bơn nước sâu." },
+        { lat: -25.00, lng: 10.00, name: "Ngư trường Dòng biển Benguela (Namibia)", icon: "🐟", cat: "fishing", details: "Dòng biển lạnh trồi tạo nên vùng nước cực kỳ giàu cá thu và cá mòi dọc bờ biển Tây Nam Phi." },
+        { lat: -35.00, lng: 20.00, name: "Ngư trường Mũi Agulhas (Nam Phi)", icon: "🌊", cat: "fishing", details: "Nơi giao thoa giữa Đại Tây Dương và Ấn Độ Dương, tạo nên sự đa dạng sinh thái bậc nhất." },
+
+        // KHU VỰC NAM ĐẠI DƯƠNG (Quanh lục địa Nam Cực)
+        { lat: -60.00, lng: -40.00, name: "Ngư trường Biển Scotia", icon: "🦐", cat: "fishing", details: "Ngư trường chính khai thác loài Nhuyễn thể Nam Cực (Krill) - mắt xích quan trọng của chuỗi thức ăn toàn cầu." },
+        { lat: -54.00, lng: 37.00, name: "Ngư trường Đảo South Georgia", icon: "🐟", cat: "fishing", details: "Khu vực khai thác cá tuyết răng (Patagonian Toothfish) giá trị cực cao dưới sự kiểm soát nghiêm ngặt." },
+        { lat: -75.00, lng: 175.00, name: "Ngư trường Biển Ross", icon: "❄️", cat: "fishing", details: "Vùng biển xa nhất về phía Nam, nơi đánh bắt cá tuyết Nam Cực trong điều kiện băng giá khắc nghiệt." },
+        { lat: -50.00, lng: 70.00, name: "Ngư trường Đảo Kerguelen (Pháp)", icon: "🌊", cat: "fishing", details: "Vùng biển biệt lập giữa Nam Ấn Độ Dương, giàu tài nguyên sinh vật biển nước lạnh." },
+        { lat: -65.00, lng: 90.00, name: "Ngư trường Biển Mawson", icon: "🦐", cat: "fishing", details: "Khu vực tập trung trữ lượng tôm Krill khổng lồ của lục địa băng." },
+
+        // KHU VỰC CẬN NAM CỰC (Gần Châu Đại Dương)
+        { lat: -48.00, lng: 165.00, name: "Ngư trường Thềm Campbell (New Zealand)", icon: "🐟", cat: "fishing", details: "Vùng đánh bắt cá Tuyết Hoki và các loài hải sản có giá trị kinh tế cao của Nam Thái Bình Dương." }
+
     ];
 
     // Push tất cả vào economyData
@@ -4395,6 +4454,30 @@ function generateFishingData() {
 
     console.log(`✅ Đã thêm ${fishingData.length} ngư trường trọng điểm Việt Nam và Thế giới vào economyData`);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -5027,22 +5110,6 @@ function generateEnergyData() {
     { lat: -33.87, lng: 151.21, name: "BlueScope Steel Port Kembla", icon: "⛓️", cat: "heavy_industry", country: "australia", details: "Nhà máy thép lớn nhất Úc." },
     { lat: -31.95, lng: 115.86, name: "Perth Solar & Wind", icon: "☀️", cat: "renewable", country: "australia", details: "Năng lượng tái tạo vùng Tây Úc." },
     { lat: -27.47, lng: 153.02, name: "Brisbane Power Grid", icon: "⚡", cat: "power_plant", country: "australia", details: "Hệ thống điện lớn nhất Queensland." },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ];
 
     energyHubs.forEach(item => economyData.push(item));
@@ -5053,12 +5120,65 @@ function generateEnergyData() {
 
 
 
-// Mảng 1: Chỉ chứa đường sắt
+
+
+
+
+
 const railwayData = [
     {
-        name: "Đường sắt Bắc - Nam",
-        color: "#ff00ff",
-        coords: [[21.02, 105.84], [16.46, 107.59], [10.77, 106.69]] // Tọa độ chi tiết của ông
+        name: "Đường sắt Thống Nhất (Bắc - Nam)",
+        color: "#ff00ff", // Màu hồng neon nổi bật
+        coords: [
+            [21.0285, 105.8412], // Hà Nội (Ga Hà Nội)
+            [20.4276, 105.9189], // Nam Định
+            [20.2506, 105.9747], // Ninh Bình
+            [19.8067, 105.7767], // Thanh Hóa
+            [18.6734, 105.6813], // Vinh (Nghệ An)
+            [17.4760, 106.6000], // Đồng Hới (Quảng Bình)
+            [16.7441, 107.1950], // Đông Hà (Quảng Trị)
+            [16.4637, 107.5908], // Huế
+            [16.0544, 108.2022], // Đà Nẵng
+            [15.1226, 108.8045], // Quảng Ngãi
+            [13.7744, 109.2192], // Quy Nhơn (Ga Diêu Trì)
+            [13.0882, 109.3031], // Tuy Hòa (Phú Yên)
+            [12.2451, 109.1891], // Nha Trang
+            [11.5645, 108.9904], // Tháp Chàm (Ninh Thuận)
+            [10.9322, 108.1039], // Phan Thiết (Ga Bình Thuận)
+            [10.9574, 106.8427], // Biên Hòa (Đồng Nai)
+            [10.7769, 106.6823]  // TP. Hồ Chí Minh (Ga Sài Gòn)
+        ]
+    },
+    {
+        name: "Tuyến Hà Nội - Hải Phòng",
+        color: "#00ffff",
+        coords: [
+            [21.0285, 105.8412], // Hà Nội
+            [20.9392, 106.0023], // Hưng Yên
+            [20.9378, 106.3142], // Hải Dương
+            [20.8525, 106.6744]  // Hải Phòng
+        ]
+    },
+    {
+        name: "Tuyến Hà Nội - Lào Cai",
+        color: "#ffff00",
+        coords: [
+            [21.0285, 105.8412], // Hà Nội
+            [21.3089, 105.5961], // Vĩnh Yên
+            [21.3962, 105.2215], // Việt Trì
+            [21.7051, 104.8752], // Yên Bái
+            [22.4811, 103.9675]  // Lào Cai
+        ]
+    },
+    {
+        name: "Tuyến Hà Nội - Lạng Sơn",
+        color: "#00ff00",
+        coords: [
+            [21.0285, 105.8412], // Hà Nội
+            [21.1852, 105.9458], // Bắc Ninh
+            [21.2731, 106.1946], // Bắc Giang
+            [21.8510, 106.7570]  // Lạng Sơn (Đồng Đăng)
+        ]
     }
 ];
 
@@ -6216,39 +6336,6 @@ document.addEventListener('click', function(e) {
 
 
 
-
-
-
-// PHÍM TẮT - CHỈ MỘT KHỐI DUY NHẤT
-
-
-
-window.addEventListener('keydown', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-    console.log("Phím được ấn:", e.key); // Debug: xem phím nào được nhận
-
-    if (e.code === "Space") {
-        e.preventDefault();
-        isPlaying ? stopAnimation() : playAnimation();
-    }
-
-    if (e.key.toLowerCase() === 'h') {
-        document.body.classList.toggle('cinematic-mode');
-    }
-
-    if (e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        console.log("Phím K: Đang toggle timeline...");
-        toggleTimeline();
-        makePlayheadDraggable();  // ← Đúng vị trí này, an toàn và hiệu quả
-    }
-
-    if (e.key.toLowerCase() === 'c') {
-        e.preventDefault();
-        takeScreenshot();
-    }
-});
 
 
 
