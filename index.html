@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="ATHEMAP">
 
     <!-- Title & Favicon -->
-    <title>World History Encyclopedia: ATHEMIANARTORY GEOGRAPHIC-ASTRONOMY</title>
+    <title>World Encyclopedia: ATHEMIANARTORY GEOGRAPHY</title>
     <link rel="icon" type="image/x-icon" href="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg">
 
     <!-- Các thư viện cũ giữ nguyên -->
@@ -101,19 +101,43 @@ path.leaflet-interactive:hover {
     to { stroke-dashoffset: 0; }
 }
 
+/* Lớp biên giới phát sáng - Phiên bản Fix Zoom */
 .country-border {
     stroke: #00BFFF !important;
-    stroke-width: 1.8 !important;
-    stroke-opacity: 0.95;
+    stroke-width: 2px !important; /* Độ dày nét vẽ gốc */
+    stroke-opacity: 1;
+    
+    /* Giữ độ dày nét vẽ không đổi khi zoom */
     vector-effect: non-scaling-stroke;
-    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.55)) drop-shadow(0 0 18px rgba(0, 191, 255, 0.3));
-    animation: borderGlow 2.6s ease-in-out infinite alternate;
+
+    /* TẠO HIỆU ỨNG PHÁT SÁNG CỐ ĐỊNH */
+    /* Sử dụng filter với đơn vị không bị ảnh hưởng quá nhiều bởi tỷ lệ zoom của bản đồ */
+    filter: drop-shadow(0 0 3px #00BFFF) drop-shadow(0 0 6px rgba(0, 191, 255, 0.8));
+    
+    /* Hiệu ứng nhịp thở */
+    animation: borderGlowFix 3s ease-in-out infinite alternate;
 }
 
+.country-border {
+    will-change: filter, stroke-opacity;
+    transform: translateZ(0); /* Kích hoạt tăng tốc phần cứng */
+}
+
+@keyframes borderGlowFix {
+    0% {
+        stroke-opacity: 0.7;
+        filter: drop-shadow(0 0 2px #00BFFF) drop-shadow(0 0 5px rgba(0, 191, 255, 0.6));
+    }
+    100% {
+        stroke-opacity: 1;
+        filter: drop-shadow(0 0 4px #00BFFF) drop-shadow(0 0 10px rgba(0, 191, 255, 0.9));
+    }
+}
+
+/* Bản đơn giản khi không cần hiệu ứng */
 .country-border-simple {
     stroke: #00BFFF !important;
-    stroke-width: 1.5 !important;
-    stroke-opacity: 0.92;
+    stroke-width: 1.5px !important;
     vector-effect: non-scaling-stroke;
     filter: none;
     animation: none;
@@ -3224,6 +3248,62 @@ async function fetchWiki(countryName) {
 
 
 
+function toggleBorderStyle(isLightOn) {
+    // 1. Thực hiện logic đổi Style của Sói ở đây (ví dụ đổi class)
+    const countries = document.querySelectorAll('.country-feature'); // Thay bằng class thực tế của Sói
+    countries.forEach(country => {
+        if (isLightOn) {
+            country.classList.add('country-border');
+            country.classList.remove('country-border-simple');
+        } else {
+            country.classList.add('country-border-simple');
+            country.classList.remove('country-border');
+        }
+    });
+
+    // 2. LƯU TRẠNG THÁI: Lưu giá trị true/false vào "sổ tay" localStorage
+    localStorage.setItem('borderGlowStatus', isLightOn);
+}
+
+// Hàm này sẽ chạy ngay khi trang web tải xong
+window.onload = function() {
+    // Đọc trạng thái đã lưu từ localStorage (nếu chưa có thì mặc định là false)
+    const savedStatus = localStorage.getItem('borderGlowStatus') === 'true';
+
+    // 1. Cập nhật trạng thái của cái Checkbox (nút gạt)
+    const checkbox = document.getElementById('toggle-border-style');
+    if (checkbox) {
+        checkbox.checked = savedStatus;
+    }
+
+    // 2. Gọi hàm toggleBorderStyle để áp dụng style ngay lập tức
+    toggleBorderStyle(savedStatus);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4198,7 +4278,9 @@ const RAW_ECONOMY_DATA = {
     },
     "France": { // Đại diện cho Cơ quan Vũ trụ Châu Âu (ESA)
         "industry": [
-            { lat: 5.2, lng: -52.7, name: "Trung tâm vũ trụ Guiana (Nam Mỹ - ESA)", icon: "🚀", cat: "space" }
+            { lat: 5.2, lng: -52.7, name: "Trung tâm vũ trụ Guiana (Nam Mỹ - ESA)", icon: "🚀", cat: "space" },
+            { lat: 48.7, lng: 2.2, name: "Eurocontrol Paris (Kiểm soát không lưu châu Âu)", icon: "🛩️", cat: "aviation", details: "Trung tâm quản lý không lưu toàn châu Âu." },
+            
         ]
     },
     "India": {
@@ -4410,7 +4492,8 @@ const RAW_ECONOMY_DATA = {
     "Africa": { // Đại diện các vùng ở Châu Phi
         "agriculture": [
             { lat: 7.5, lng: -5.5, name: "Vùng Sắn Bờ Biển Ngà", icon: "🍠", cat: "cassava" },
-            { lat: 9.0, lng: 38.0, name: "Cà phê Ethiopia (Cội nguồn)", icon: "☕", cat: "coffee" }
+            { lat: 9.0, lng: 38.0, name: "Cà phê Ethiopia (Cội nguồn)", icon: "☕", cat: "coffee" },
+            { lat: -1.5, lng: 36.5, name: "Cà phê Kenya (Chất lượng cao)", icon: "☕", cat: "coffee" }
         ]
     }
     
@@ -5709,7 +5792,96 @@ const railwayData = [
         [43.4675, -79.6877], // Oakville
         [43.6532, -79.3832]  // Toronto (Ga Union)
     ]
-}
+},
+
+
+
+
+// ĐƯỜNG SẮT CỘNG HÒA LIÊN BANG ĐỨC
+
+{
+        name: "Tuyến đường sắt ICE Đông - Tây (Berlin - Cologne)",
+        color: "#ffffff", // Trắng sọc đỏ (Màu tàu ICE)
+        coords: [
+            [52.5250, 13.3694], // Berlin
+            [52.3767, 9.7408],  // Hannover
+            [51.9372, 8.5332],  // Bielefeld
+            [51.4580, 7.0147],  // Essen
+            [51.2198, 6.7945],  // Düsseldorf
+            [50.9413, 6.9583]   // Cologne (Ga cạnh nhà thờ lớn)
+        ]
+    },
+
+
+{
+        name: "Tuyến đường sắt ICE Bắc - Nam (Hamburg - Munich)",
+        color: "#ff0000", // Màu đỏ đặc trưng của Deutsche Bahn
+        coords: [
+            [53.5527, 10.0067], // Hamburg (Ga Trung tâm)
+            [52.5250, 13.3694], // Berlin (Ga Trung tâm)
+            [51.3456, 12.3811], // Leipzig
+            [50.9392, 11.0264], // Erfurt
+            [49.4464, 11.0820], // Nuremberg
+            [48.1402, 11.5583]  // Munich (Ga Trung tâm)
+        ]
+    },
+
+
+{
+        name: "Tuyến đường sắt ICE Đông - Tây (Berlin - Cologne)",
+        color: "#ffffff", // Trắng sọc đỏ (Màu tàu ICE)
+        coords: [
+            [52.5250, 13.3694], // Berlin
+            [52.3767, 9.7408],  // Hannover
+            [51.9372, 8.5332],  // Bielefeld
+            [51.4580, 7.0147],  // Essen
+            [51.2198, 6.7945],  // Düsseldorf
+            [50.9413, 6.9583]   // Cologne (Ga cạnh nhà thờ lớn)
+        ]
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ];
@@ -6388,76 +6560,62 @@ function generateSeaportData() {
 // GA TÀU (RAILWAYS)
 function generateRailwayData() {
     const railwayData = [
-    
-    // ĐƯỜNG SẮT ĐÔNG NAM Á (SOUTHEAST ASIA RAILWAYS)
-    
-    
-    // VIỆT NAM (Đầu mối quốc tế)
-    { lat: 21.0285, lng: 105.8412, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Đầu mối giao thông lâu đời, kết nối tuyến Bắc - Nam và các tuyến quốc tế đi Trung Quốc." },
-    { lat: 10.7769, lng: 106.6823, name: "Ga Sài Gòn", icon: "🚉", cat: "railway", details: "Ga hành khách lớn nhất miền Nam, điểm cuối của tuyến đường sắt xuyên Việt." },
+    //-----------CHÂU Á--------------
 
-    // LÀO (Siêu dự án mới)
-    { lat: 17.9667, lng: 102.6000, name: "Ga Vientiane (Lào)", icon: "🚄", cat: "railway", details: "Ga hiện đại nhất trên tuyến đường sắt Lào - Trung, cửa ngõ kết nối giao thương lục địa." },
 
-    // THÁI LAN (Trung tâm khu vực)
-    { lat: 13.8044, lng: 100.5403, name: "Ga Bang Sue Grand (Bangkok)", icon: "🚉", cat: "railway", details: "Đầu mối đường sắt lớn nhất Đông Nam Á hiện nay, trung tâm tàu cao tốc của Thái Lan." },
 
-    // CAMPUCHIA
-    { lat: 11.5683, lng: 104.9167, name: "Ga Phnom Penh", icon: "🚉", cat: "railway", details: "Điểm giao kết giữa tuyến đường sắt phía Nam đi cảng Sihanoukville và tuyến phía Tây đi Thái Lan." },
+    // ĐƯỜNG SẮT ĐÔNG NAM Á (SOUTHEAST ASIA RAILWAYS)             DONE
+
+
+    // gồm Việt Nam, Lào, Campuchia, Thái Lan, Myanmar, Malaysia, Singapore, Indonesia, Philippines, Brunei, Đông Timor.chia từng bộ code như các dòng code trên và dưới
+
+    // VIỆT NAM
+    { lat: 21.03, lng: 105.85, name: "Ga Hà Nội", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Hà Nội, kết nối toàn quốc." },
+    { lat: 10.77, lng: 106.66, name: "Ga Sài Gòn (Hồ Chí Minh)", icon: "🚉", cat: "railway", details: "Ga chính của thành phố Hồ Chí Minh, cửa ngõ phía Nam." },
+    { lat: 16.05, lng: 108.22, name: "Ga Đà Nẵng", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Trung Việt Nam." },
+    { lat: 15.50, lng: 108.47, name: "Ga Huế", icon: "🚉", cat: "railway", details: "Ga quan trọng của khu vực Trung Bộ." },
+    { lat: 14.75, lng: 108.10, name: "Ga Quy Nhơn", icon: "🚉", cat: "railway", details: "Ga quan trọng của khu vực duyên hải miền Trung." },
+    { lat: 12.67, lng: 109.17, name: "Ga Nha Trang", icon: "🚉", cat: "railway", details: "Ga quan trọng của khu vực duyên hải miền Trung." },
+
+    // THÁI LAN
+    { lat: 13.75, lng: 100.50, name: "Ga Hua Lamphong (Bangkok)", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Bangkok, kết nối toàn quốc." },
+    { lat: 18.79, lng: 98.98, name: "Ga Chiang Mai", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Bắc Thái Lan." },
+    { lat: 7.01, lng: 100.50, name: "Ga Hat Yai", icon: "🚉", cat: "railway", details: "Ga chính của miền Nam Thái Lan, gần biên giới Malaysia." },
+
+    // MYANMAR
+    { lat: 16.80, lng: 96.15, name: "Ga Yangon", icon: "🚉", cat: "railway", details: "Ga trung tâm của thành phố Yangon, kết nối toàn quốc." },
+    { lat: 21.97, lng: 96.08, name: "Ga Mandalay", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Bắc Myanmar." },
+    { lat: 19.75, lng: 95.25, name: "Ga Bagan", icon: "🚉", cat: "railway", details: "Ga phục vụ khu vực du lịch nổi tiếng Bagan." },
 
     // MALAYSIA
-    { lat: 3.1342, lng: 101.6865, name: "Ga KL Sentral (Kuala Lumpur)", icon: "🚉", cat: "railway", details: "Trái tim của hệ thống đường sắt cao tốc ETS và kết nối trực tiếp ra sân bay quốc tế." },
+    { lat: 3.14, lng: 101.69, name: "Ga Kuala Lumpur", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Kuala Lumpur, kết nối toàn quốc." },
+    { lat: 1.55, lng: 103.60, name: "Ga Johor Bahru", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Nam Malaysia, gần biên giới Singapore." },
+    { lat: 5.42, lng: 100.33, name: "Ga Butterworth", icon: "🚉", cat: "railway", details: "Ga chính của khu vực phía Tây Malaysia, phục vụ Penang." },
 
-    // INDONESIA (Tàu cao tốc đầu tiên)
-    { lat: -6.2415, lng: 106.8850, name: "Ga Halim (Jakarta)", icon: "🚄", cat: "railway", details: "Ga đầu tiên của tuyến tàu cao tốc Whoosh (Jakarta-Bandung), hiện đại nhất khu vực." },
+    // SINGAPORE
+    { lat: 1.28, lng: 103.85, name: "Ga Singapore", icon: "🚉", cat: "railway", details: "Ga trung tâm của Singapore, kết nối với mạng lưới đường sắt Malaysia." },
 
-    // MIẾN ĐIỆN (MYANMAR)
-    { lat: 16.7800, lng: 96.1600, name: "Ga Yangon Central", icon: "🚉", cat: "railway", details: "Kiến trúc di sản độc đáo, trung tâm mạng lưới đường sắt quốc gia Myanmar." },
+    // INDONESIA
+    { lat: -6.17, lng: 106.83, name: "Ga Jakarta Kota", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Jakarta, kết nối toàn quốc." },
+    { lat: -7.25, lng: 112.75, name: "Ga Surabaya Gubeng", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Đông Indonesia." },
+    { lat: -0.95, lng: 100.35, name: "Ga Padang", icon: "🚉", cat: "railway", details: "Ga chính của khu vực Tây Sumatra." },
 
+    // PHILIPPINES
+    { lat: 14.60, lng: 120.98, name: "Ga Manila", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Manila, kết nối với mạng lưới đường sắt quốc gia." },
+    { lat: 10.32, lng: 123.90, name: "Ga Cebu", icon: "🚉", cat: "railway", details: "Ga quan trọng của miền Trung Philippines." },
+    { lat: 7.25, lng: 125.00, name: "Ga Davao", icon: "🚉", cat: "railway", details: "Ga chính của miền Nam Philippines." },
 
+    // BRUNEI
+    { lat: 4.90, lng: 114.93, name: "Ga Bandar Seri Begawan", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Brunei, kết nối với mạng lưới đường sắt quốc gia." },
 
-// ĐƯỜNG SẮT NAM Á (SOUTH ASIA RAILWAYS)
-
-// ẤN ĐỘ (Hệ thống đường sắt lớn nhất thế giới)
-    { lat: 28.6448, lng: 77.2167, name: "Ga New Delhi (India)", icon: "🚉", cat: "railway", details: "Ga trung tâm của thủ đô Ấn Độ, kết nối toàn quốc và quốc tế." },
-    { lat: 19.0760, lng: 72.8777, name: "Ga Mumbai CST (India)", icon: "🚉", cat: "railway", details: "Di sản thế giới UNESCO, ga trung tâm của Mumbai." },
-    { lat: 22.5726, lng: 88.3639, name: "Ga Howrah (Kolkata)", icon: "🚉", cat: "railway", details: "Một trong những ga bận rộn nhất Ấn Độ, phục vụ Kolkata và khu vực lân cận." },
-    { lat: 13.0827, lng: 80.2707, name: "Ga Chennai Central (India)", icon: "🚉", cat: "railway", details: "Ga chính của Chennai, cửa ngõ phía Nam của Ấn Độ." },
-    { lat: 26.9124, lng: 75.7873, name: "Ga Jaipur (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rajasthan, phục vụ thành phố du lịch Jaipur." },
-    { lat: 17.3850, lng: 78.4867, name: "Ga Hyderabad Deccan (India)", icon: "🚉", cat: "railway", details: "Ga trung tâm của Hyderabad, kết nối miền Nam và miền Trung Ấn Độ." },
-    { lat: 23.0225, lng: 72.5714, name: "Ga Ahmedabad Junction (India)", icon: "🚉", cat: "railway", details: "Ga chính của Ahmedabad, trung tâm giao thông của bang Gujarat." },
-    { lat: 25.5941, lng: 85.1376, name: "Ga Patna Junction (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của bang Bihar, phục vụ thành phố Patna." },
-    { lat: 21.1702, lng: 72.8311, name: "Ga Surat (India)", icon: "🚉", cat: "railway", details: "Ga chính của Surat, trung tâm công nghiệp và thương mại của Gujarat." },
-    { lat: 19.2183, lng: 72.9781, name: "Ga Navi Mumbai (India)", icon: "🚉", cat: "railway", details: "Ga mới của khu đô thị Navi Mumbai, kết nối với mạng lưới đường sắt Mumbai." },
-    { lat: 28.4595, lng: 77.0266, name: "Ga Gurgaon (India)", icon: "🚉", cat: "railway", details: "Ga quan trọng của khu vực đô thị Gurgaon, gần New Delhi."},
-
-    // BANGLADESH
-    { lat: 23.8103, lng: 90.4125, name: "Ga Dhaka (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga chính của thủ đô Dhaka, trung tâm mạng lưới đường sắt Bangladesh." },
-    { lat: 22.3569, lng: 91.7832, name: "Ga Chittagong (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố cảng Chittagong." },
-    { lat: 24.9045, lng: 91.8611, name: "Ga Sylhet (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga chính của Sylhet, khu vực nổi tiếng với trà và cảnh đẹp." },
-    { lat: 23.6850, lng: 90.3563, name: "Ga Narayanganj (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố công nghiệp Narayanganj, gần Dhaka." },
-    { lat: 22.3475, lng: 91.8123, name: "Ga Cox's Bazar (Bangladesh)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ khu du lịch biển Cox's Bazar." },
-
-    // PAKISTAN
-    { lat: 24.8607, lng: 67.0011, name: "Ga Karachi Cantt (Pakistan)", icon: "🚉", cat: "railway", details: "Ga chính của Karachi, trung tâm mạng lưới đường sắt Pakistan." },
-    { lat: 31.5497, lng: 74.3436, name: "Ga Lahore Junction (Pakistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Lahore, gần biên giới Ấn Độ." },
-    { lat: 33.6844, lng: 73.0479, name: "Ga Islamabad (Pakistan)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ thủ đô Islamabad." },
-    { lat: 30.1575, lng: 71.5249, name: "Ga Multan (Pakistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Multan, trung tâm thương mại và văn hóa." },
-    { lat: 32.0853, lng: 72.6748, name: "Ga Faisalabad (Pakistan)", icon: "🚉", cat: "railway", details: "Ga chính của Faisalabad, trung tâm công nghiệp dệt may." },
-
-    // SRI LANKA
-    { lat: 6.9271, lng: 79.8612, name: "Ga Colombo Fort (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga chính của Colombo, trung tâm mạng lưới đường sắt Sri Lanka." },
-    { lat: 7.2906, lng: 80.6337, name: "Ga Kandy (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kandy, điểm dừng chân phổ biến cho du khách." },
-    { lat: 6.0535, lng: 80.2210, name: "Ga Galle (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố cảng Galle trên bờ biển phía Nam." },
-    { lat: 7.8731, lng: 80.7718, name: "Ga Anuradhapura (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Anuradhapura, trung tâm tôn giáo và lịch sử." },
-    { lat: 6.9271, lng: 79.8612, name: "Ga Colombo (Sri Lanka)", icon: "🚉", cat: "railway", details: "Ga chính của Colombo, trung tâm mạng lưới đường sắt Sri Lanka." },
 
     
+    
+// ĐƯỜNG SẮT TRUNG Á (CENTRAL ASIA RAILWAYS)          DONE
 
+// gồm Kazakhstan, Uzbekistan, Turkmenistan, Kyrgyzstan, Tajikistan. chia từng bộ code như các dòng code trên và dưới
 
-    // ĐƯỜNG SẮT TRUNG Á (CENTRAL ASIA RAILWAYS)
-
-    // KAZAKHSTAN
+// KAZAKHSTAN
     { lat: 51.1694, lng: 71.4491, name: "Ga Almaty-1 (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga chính của Almaty, trung tâm mạng lưới đường sắt Kazakhstan." },
     { lat: 43.2565, lng: 76.9286, name: "Ga Shymkent (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Shymkent, trung tâm thương mại phía Nam." },
     { lat: 50.4501, lng: 30.5234, name: "Ga Astana (Kazakhstan)", icon: "🚉", cat: "railway", details: "Ga mới phục vụ thủ đô Astana (Nur-Sultan)." },
@@ -6478,7 +6636,19 @@ function generateRailwayData() {
     { lat: 37.1100, lng: 61.5800, name: "Ga Dashoguz (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Dashoguz, trung tâm công nghiệp phía Bắc." },
     { lat: 38.9697, lng: 59.5563, name: "Ga Balkanabat (Turkmenistan)", icon: "🚉", cat: "railway", details: "Ga chính của Balkanabat, trung tâm công nghiệp và khai thác dầu khí." },
 
-    
+    // KYRGYZSTAN
+    { lat: 42.87, lng: 74.59, name: "Ga Bishkek (Kyrgyzstan)", icon: "🚉", cat: "railway", details: "Ga chính của thủ đô Bishkek, kết nối với mạng lưới đường sắt quốc gia." },
+    { lat: 40.52, lng: 72.82, name: "Ga Osh (Kyrgyzstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố Osh, trung tâm thương mại phía Nam." },
+    { lat: 41.28, lng: 75.97, name: "Ga Jalal-Abad (Kyrgyzstan)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố Jalal-Abad gần biên giới Uzbekistan." },
+    { lat: 42.50, lng: 74.60, name: "Ga Tokmok (Kyrgyzstan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Tokmok, trung tâm công nghiệp phía Bắc." },
+    { lat: 41.00, lng: 75.00, name: "Ga Karakol (Kyrgyzstan)", icon: "🚉", cat: "railway", details: "Ga chính của Karakol, trung tâm du lịch vùng núi phía Đông." },
+
+    // TAJIKISTAN
+    { lat: 38.55, lng: 68.78, name: "Ga Dushanbe (Tajikistan)", icon: "🚉", cat: "railway", details: "Ga chính của thủ đô Dushanbe, kết nối với mạng lưới đường sắt quốc gia." },
+    { lat: 39.65, lng: 71.80, name: "Ga Khujand (Tajikistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của thành phố Khujand, trung tâm thương mại phía Bắc." },
+    { lat: 37.85, lng: 69.17, name: "Ga Kulob (Tajikistan)", icon: "🚉", cat: "railway", details: "Ga phục vụ thành phố Kulob gần biên giới Afghanistan." },
+    { lat: 38.00, lng: 70.00, name: "Ga Bokhtar (Tajikistan)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Bokhtar, trung tâm công nghiệp phía Nam." },
+    { lat: 39.00, lng: 71.50, name: "Ga Istaravshan (Tajikistan)", icon: "🚉", cat: "railway", details: "Ga chính của Istaravshan, trung tâm văn hóa và lịch sử phía Bắc." },
 
 
 
@@ -6649,6 +6819,15 @@ function generateRailwayData() {
     { lat: 41.5000, lng: 45.0000, name: "Ga Kutaisi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Kutaisi, trung tâm mạng lưới đường sắt phía Trung Georgia." },
     { lat: 42.5000, lng: 44.5000, name: "Ga Zugdidi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Zugdidi, trung tâm mạng lưới đường sắt phía Bắc Georgia." },
     { lat: 41.0000, lng: 45.0000, name: "Ga Rustavi (Georgia)", icon: "🚉", cat: "railway", details: "Ga quan trọng của Rustavi, trung tâm mạng lưới đường sắt phía Đông Georgia." },
+
+
+
+
+
+
+
+    
+
 
 
 
